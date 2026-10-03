@@ -1,22 +1,11 @@
 import "server-only";
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { getDatabase, type Database } from "./connect";
 import * as schema from "./schema";
 
-const globalForDb = globalThis as unknown as { etternumDb?: NodePgDatabase<typeof schema> };
-
-function createDb() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("DATABASE_URL não configurada.");
-  const pool = new Pool({ connectionString, max: 5 });
-  return drizzle(pool, { schema });
-}
-
-/** Conexão única por processo (evita abrir pools novos a cada recarga em dev). */
-export const db: NodePgDatabase<typeof schema> = new Proxy({} as NodePgDatabase<typeof schema>, {
+/** Acesso preguiçoso ao banco: a conexão só abre na primeira consulta. */
+export const db: Database = new Proxy({} as Database, {
   get(_target, prop) {
-    globalForDb.etternumDb ??= createDb();
-    const real = globalForDb.etternumDb;
+    const real = getDatabase();
     const value = Reflect.get(real, prop);
     return typeof value === "function" ? value.bind(real) : value;
   },

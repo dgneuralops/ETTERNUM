@@ -31,7 +31,25 @@ signo da pessoa para orientar cada resposta.
 Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · PostgreSQL (Supabase ou qualquer Postgres) com
 Drizzle ORM · Claude (Anthropic) para as cápsulas · Vitest.
 
-## Rodando localmente
+## Ver funcionando no seu computador (modo demonstração)
+
+Não precisa de banco de dados nem de chave de API. O modo demonstração usa um banco embutido e respostas
+simuladas da IA.
+
+1. Instale o **Node.js** (versão LTS) em [nodejs.org](https://nodejs.org).
+2. Baixe o projeto: no GitHub, botão verde **Code → Download ZIP** (e descompacte), ou
+   `git clone https://github.com/dgneuralops/ETTERNUM.git`.
+3. Abra o **Terminal** dentro da pasta do projeto (no Mac: clique com o botão direito na pasta →
+   _Novo Terminal na Pasta_; no Windows: abra a pasta, digite `cmd` na barra de endereço e tecle Enter).
+4. Rode, uma vez: `npm install`
+5. Rode: `npm run demo`
+6. Abra **http://localhost:3000** no navegador e crie sua conta.
+
+Para conversar com a IA de verdade, coloque `ANTHROPIC_API_KEY=sua-chave` no arquivo `.env.local` (criado no
+primeiro `npm run demo`) e rode `npm run demo` de novo. Os dados da demonstração ficam na pasta
+`.etternum-demo`; apague-a para começar do zero. Para parar, pressione `Ctrl+C` no Terminal.
+
+## Rodando com Postgres (desenvolvimento e produção)
 
 Pré-requisitos: Node.js 20.9+ e um Postgres (local, Docker ou um projeto gratuito no Supabase).
 
@@ -42,7 +60,8 @@ npm run db:migrate           # cria as tabelas
 npm run dev                  # http://localhost:3000
 ```
 
-Sem chave da Anthropic? Coloque `ETTERNUM_AI_MOCK=1` no `.env.local` para navegar com respostas simuladas.
+Sem `DATABASE_URL`, o `npm run dev` usa o banco embutido da demonstração. Sem chave da Anthropic, coloque
+`ETTERNUM_AI_MOCK=1` no `.env.local` para navegar com respostas simuladas.
 
 Postgres rápido com Docker:
 
@@ -53,15 +72,16 @@ docker run -d --name etternum-db -e POSTGRES_USER=etternum -e POSTGRES_PASSWORD=
 
 ## Scripts
 
-| Comando                                                                            | O que faz                                                         |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `npm run dev` / `build` / `start`                                                  | Desenvolvimento, build e produção                                 |
-| `npm test`                                                                         | Testes de domínio (CPF, signos, planos, risco, catálogo, prompts) |
-| `npm run lint` / `npm run typecheck`                                               | ESLint e TypeScript                                               |
-| `npm run db:generate`                                                              | Gera uma migração depois de alterar `src/lib/db/schema.ts`        |
-| `npm run db:migrate`                                                               | Aplica as migrações no banco do `DATABASE_URL`                    |
-| `npm run conhecimento:importar -- --mente <slug> --arquivo <txt> --fonte "<obra>"` | Alimenta uma cápsula com um livro                                 |
-| `npm run usuario:plano -- <email> premium`                                         | Libera o Premium manualmente (até o checkout estar conectado)     |
+| Comando                                                                            | O que faz                                                            |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `npm run demo`                                                                     | Modo demonstração: banco embutido e IA simulada, sem configurar nada |
+| `npm run dev` / `build` / `start`                                                  | Desenvolvimento, build e produção                                    |
+| `npm test`                                                                         | Testes de domínio (CPF, signos, planos, risco, catálogo, prompts)    |
+| `npm run lint` / `npm run typecheck`                                               | ESLint e TypeScript                                                  |
+| `npm run db:generate`                                                              | Gera uma migração depois de alterar `src/lib/db/schema.ts`           |
+| `npm run db:migrate`                                                               | Aplica as migrações no banco do `DATABASE_URL`                       |
+| `npm run conhecimento:importar -- --mente <slug> --arquivo <txt> --fonte "<obra>"` | Alimenta uma cápsula com um livro                                    |
+| `npm run usuario:plano -- <email> premium`                                         | Libera o Premium manualmente (até o checkout estar conectado)        |
 
 ## Deploy (Vercel + Supabase)
 

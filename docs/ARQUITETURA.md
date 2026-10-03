@@ -65,6 +65,10 @@ respondendo à última mensagem da pessoa.
 
 ## Dados (Postgres)
 
+Em produção, qualquer Postgres (Supabase, Neon…) via `DATABASE_URL`. Para demonstração e desenvolvimento sem
+configuração, o app usa o **PGlite** (Postgres compilado para WebAssembly, gravando na pasta `.etternum-demo`); as
+migrações são aplicadas automaticamente quando o servidor sobe (`src/instrumentation.ts`).
+
 | Tabela             | Conteúdo                                                                                                                   |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------- |
 | `users`            | nome, e-mail, hash da senha, CPF (único), nascimento, signo, plano, fim do teste, cápsula gratuita, memória, consentimento |
