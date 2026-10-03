@@ -8,6 +8,7 @@ signo da pessoa para orientar cada resposta.
 - Visão do produto e roadmap: [`docs/VISAO.md`](docs/VISAO.md)
 - Arquitetura e decisões técnicas: [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md)
 - Como alimentar as cápsulas com livros: [`conhecimento/README.md`](conhecimento/README.md)
+- Prompt para desenhar a interface no Claude Design: [`docs/design/PROMPT_CLAUDE_DESIGN.md`](docs/design/PROMPT_CLAUDE_DESIGN.md)
 
 ## O que já funciona (MVP)
 
