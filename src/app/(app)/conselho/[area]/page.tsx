@@ -10,18 +10,26 @@ import { allConversationMessages, getOwnedConversation } from "@/lib/chat/servic
 import { agentsForArea } from "@/lib/domain/agents";
 import { getArea } from "@/lib/domain/areas";
 import { canSendMessage, planState } from "@/lib/domain/plans";
+import { localizeAgents } from "@/lib/i18n/content/agents";
+import { localizeArea } from "@/lib/i18n/content/areas";
+import { accessMessage } from "@/lib/i18n/format";
+import { getI18n } from "@/lib/i18n/server";
 
 export async function generateMetadata({ params }: PageProps<"/conselho/[area]">): Promise<Metadata> {
   const { area } = await params;
-  return { title: `Conselho · ${getArea(area)?.name ?? ""}` };
+  const { locale, t } = await getI18n();
+  const found = getArea(area);
+  return { title: t.meta.council(found ? localizeArea(found, locale).name : "") };
 }
 
 export default async function CouncilPage({ params, searchParams }: PageProps<"/conselho/[area]">) {
   const { area: areaSlug } = await params;
   const { c } = (await searchParams) as { c?: string };
-  const area = getArea(areaSlug);
-  if (!area) notFound();
+  const found = getArea(areaSlug);
+  if (!found) notFound();
   const { user } = await requireUser();
+  const { locale, t } = await getI18n();
+  const area = localizeArea(found, locale);
 
   const conversation = c ? await getOwnedConversation(user.id, c) : null;
   const valid = conversation && conversation.kind === "council" && conversation.areaSlug === area.slug;
@@ -36,18 +44,15 @@ export default async function CouncilPage({ params, searchParams }: PageProps<"/
       <section className="min-w-0">
         <div className="mb-6 flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-wider text-gold">Conselho</p>
+            <p className="text-xs uppercase tracking-wider text-gold">{t.council.eyebrow}</p>
             <h1 className="font-serif text-4xl leading-tight text-ink">{area.name}</h1>
-            <p className="mt-1 max-w-xl text-sm text-muted">
-              Escolha até 4 mentes, conte sua situação e receba a perspectiva de cada uma — e uma síntese do Maestro com
-              próximos passos.
-            </p>
+            <p className="mt-1 max-w-xl text-sm text-muted">{t.council.intro}</p>
           </div>
           <Link
             href={`/conselho/${area.slug}`}
             className="rounded-full p-2 text-muted hover:bg-white/5 hover:text-gold"
-            title="Novo Conselho"
-            aria-label="Novo Conselho"
+            title={t.council.newCouncil}
+            aria-label={t.council.newCouncil}
           >
             <Plus className="h-5 w-5" />
           </Link>
@@ -56,18 +61,23 @@ export default async function CouncilPage({ params, searchParams }: PageProps<"/
           key={valid ? conversation.id : "novo"}
           areaSlug={area.slug}
           areaName={area.name}
-          minds={agentsForArea(area.slug).map((a) => ({ slug: a.slug, name: a.name, focus: a.focus }))}
+          minds={localizeAgents(agentsForArea(area.slug), locale).map((a) => ({
+            slug: a.slug,
+            name: a.name,
+            focus: a.focus,
+          }))}
           conversationId={valid ? conversation.id : undefined}
           initialMessages={toClientMessages(messages)}
-          lockedMessage={access.ok ? null : access.message}
+          lockedMessage={access.ok ? null : accessMessage(t, access.reason)}
         />
       </section>
       <aside className="hidden lg:block">
         <div className="sticky top-24">
-          <h2 className="mb-3 px-3 text-xs uppercase tracking-wider text-faint">Conselhos anteriores</h2>
+          <h2 className="mb-3 px-3 text-xs uppercase tracking-wider text-faint">{t.council.previous}</h2>
           <ConversationList
             conversations={history}
             activeId={valid ? conversation.id : undefined}
+            timeZone={user.timeZone}
             hrefFor={(conv) => `/conselho/${area.slug}?c=${conv.id}`}
           />
         </div>

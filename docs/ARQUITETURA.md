@@ -39,12 +39,12 @@ Navegador / app ──► Next.js (Vercel)
 ## Fluxo de uma mensagem (`/api/chat`)
 
 1. Valida a sessão (cookie HttpOnly assinado) e a mente.
-2. Verifica o plano: teste → liberado; gratuito → 1 cápsula e 5 mensagens/dia (no fuso de Brasília);
+2. Verifica o plano: teste → liberado; gratuito → 1 cápsula e 5 mensagens/dia (no fuso horário da pessoa);
    Premium → liberado. No plano gratuito, a primeira cápsula usada vira a cápsula liberada.
-3. Salva a mensagem, marcando sinais de risco (suicídio, autolesão, violência).
+3. Salva a mensagem, marcando sinais de risco (suicídio, autolesão, violência) em qualquer um dos 4 idiomas.
 4. Monta o prompt de sistema (ordem pensada para o cache de prompt):
-   regras do Etternum (inclui o protocolo de segurança com CVV 188) → persona da mente → perfil da triagem +
-   signo + memória → aviso de risco, quando houver.
+   regras do Etternum (idioma da resposta + protocolo de segurança com as linhas de ajuda do idioma) → persona da
+   mente → perfil da triagem + signo + memória → aviso de risco, quando houver.
 5. Para cápsulas, busca até 4 trechos dos livros daquela mente e os anexa à última mensagem.
 6. Faz streaming da resposta do Claude para o navegador e salva a resposta.
 7. Depois da resposta, atualiza a memória de longo prazo a cada 3 mensagens (ou na primeira conversa).
@@ -52,6 +52,29 @@ Navegador / app ──► Next.js (Vercel)
 O Maestro recebe o catálogo de mentes e, quando recomenda alguém, escreve `[[mente:slug]]`; a interface
 transforma isso no botão "Continuar com …", que chama `/api/handoff` e abre a conversa com a mente já
 respondendo à última mensagem da pessoa.
+
+## Idiomas (i18n)
+
+Quatro idiomas: `pt-BR` (padrão), `en`, `es`, `fr`. Sem prefixo na URL: o idioma vem do cookie `etternum_lang`
+(escolha da pessoa) e, na falta dele, do `Accept-Language` do navegador (`src/lib/i18n/server.ts`). Com login, a
+escolha também fica em `users.locale` e é restaurada ao entrar em outro aparelho.
+
+- **Textos da interface:** `src/lib/i18n/messages/{pt-BR,en,es,fr}.ts`. O português é a fonte de verdade
+  (`Messages = typeof ptBR`); os outros são tipados com ele, então o TypeScript acusa qualquer chave faltando, e um
+  teste compara a estrutura dos quatro. Componentes de servidor usam `getI18n()`; de cliente, `useI18n()` (o
+  `LocaleProvider` fica no layout raiz, que também define `<html lang>`).
+- **Conteúdo:** `src/lib/i18n/content/` traduz nome, título, foco, frase e época das 61 mentes e do Maestro
+  (`localizeAgent`), as 10 áreas, os 12 signos e as linhas de ajuda em crise por idioma. A `persona` das mentes fica
+  em português: ela orienta o modelo, que escreve no idioma da pessoa.
+- **Modelo:** as instruções continuam em português; `baseRules(locale)` pede a resposta no idioma escolhido (ou no
+  idioma em que a pessoa escrever), troca as linhas de ajuda e localiza os títulos da síntese do Conselho e as
+  seções da memória.
+- **Regras de domínio sem texto:** `canSendMessage` devolve só o motivo (`daily_limit`, `capsule_locked`,
+  `premium_only`); a interface e as APIs escolhem o texto. Os formulários usam esquemas zod criados com as mensagens
+  do idioma (`signupSchema(t.validation, …)`).
+- **Brasil:** o CPF só é pedido no cadastro em português (coluna `cpf` aceita nulo). A busca nos livros continua
+  com o dicionário `portuguese` do Postgres; livros e perguntas em outros idiomas funcionam pela busca por termos,
+  com menos precisão (melhoria futura: busca por embeddings, que é multilíngue).
 
 ## Modelo de IA
 
@@ -71,7 +94,7 @@ migrações são aplicadas automaticamente quando o servidor sobe (`src/instrume
 
 | Tabela             | Conteúdo                                                                                                                   |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| `users`            | nome, e-mail, hash da senha, CPF (único), nascimento, signo, plano, fim do teste, cápsula gratuita, memória, consentimento |
+| `users`            | nome, e-mail, hash da senha, CPF (único, só Brasil), nascimento, signo, idioma, fuso, plano, teste, memória, consentimento |
 | `profiles`         | respostas da triagem e áreas de interesse                                                                                  |
 | `favorites`        | Quadro Eterno                                                                                                              |
 | `conversations`    | conversa com uma mente, com o Maestro ou Conselho de uma área                                                              |

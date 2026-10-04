@@ -7,6 +7,8 @@ import { createSession, destroySession } from "@/lib/auth/session";
 import { db, schema } from "@/lib/db";
 import { fieldErrorsOf, loginSchema, signupSchema, type FormState } from "@/lib/domain/forms";
 import { trialEndFrom } from "@/lib/domain/plans";
+import { isLocale } from "@/lib/i18n/config";
+import { getChosenLocale, getI18n, setLocaleCookie } from "@/lib/i18n/server";
 
 /** Só aceita caminhos internos para evitar redirecionamento aberto. */
 function safeNext(value: FormDataEntryValue | null, fallback: string): string {
@@ -15,8 +17,10 @@ function safeNext(value: FormDataEntryValue | null, fallback: string): string {
 }
 
 export async function signup(_prev: FormState, formData: FormData): Promise<FormState> {
+  const { locale, t } = await getI18n();
   const raw = Object.fromEntries(formData);
-  const parsed = signupSchema.safeParse(raw);
+  // CPF só no cadastro em português (Brasil).
+  const parsed = signupSchema(t.validation, { requireCpf: locale === "pt-BR" }).safeParse(raw);
   const values = {
     name: String(raw.name ?? ""),
     email: String(raw.email ?? ""),
@@ -27,17 +31,16 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error), values };
 
   const data = parsed.data;
+  const sameEmail = eq(schema.users.email, data.email);
   const existing = await db
-    .select({ email: schema.users.email, cpf: schema.users.cpf })
+    .select({ email: schema.users.email })
     .from(schema.users)
-    .where(or(eq(schema.users.email, data.email), eq(schema.users.cpf, data.cpf)))
+    .where(data.cpf ? or(sameEmail, eq(schema.users.cpf, data.cpf)) : sameEmail)
     .limit(1);
   if (existing.length > 0) {
     const field = existing[0].email === data.email ? "email" : "cpf";
     return {
-      fieldErrors: {
-        [field]: [field === "email" ? "Este e-mail já tem cadastro. Tente entrar." : "Este CPF já tem cadastro."],
-      },
+      fieldErrors: { [field]: [field === "email" ? t.validation.emailTaken : t.validation.cpfTaken] },
       values,
     };
   }
@@ -54,6 +57,8 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
         cpf: data.cpf,
         birthDate: data.birthDate,
         zodiacSign: data.zodiacSign,
+        locale,
+        timeZone: data.timeZone,
         trialEndsAt: trialEndFrom(now),
         consentAt: now,
       })
@@ -62,29 +67,39 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
   } catch (error) {
     // Dois cadastros simultâneos com o mesmo e-mail ou CPF: o banco garante a unicidade.
     if ((error as { cause?: { code?: string } }).cause?.code === "23505") {
-      return { message: "Este e-mail ou CPF já tem cadastro. Tente entrar.", values };
+      return { message: t.validation.accountTaken, values };
     }
     throw error;
   }
 
   await createSession(userId);
+  await setLocaleCookie(locale);
   redirect("/triagem");
 }
 
 export async function login(_prev: FormState, formData: FormData): Promise<FormState> {
-  const parsed = loginSchema.safeParse(Object.fromEntries(formData));
+  const { t } = await getI18n();
+  const parsed = loginSchema(t.validation).safeParse(Object.fromEntries(formData));
   const values = { email: String(formData.get("email") ?? "") };
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error), values };
 
   const [user] = await db
-    .select({ id: schema.users.id, passwordHash: schema.users.passwordHash })
+    .select({ id: schema.users.id, passwordHash: schema.users.passwordHash, locale: schema.users.locale })
     .from(schema.users)
     .where(eq(schema.users.email, parsed.data.email))
     .limit(1);
   const ok = user ? await bcrypt.compare(parsed.data.password, user.passwordHash) : false;
-  if (!user || !ok) return { message: "E-mail ou senha incorretos.", values };
+  if (!user || !ok) return { message: t.auth.invalidLogin, values };
 
   await createSession(user.id);
+  // Se a pessoa escolheu um idioma nesta visita, ele vira a preferência da conta;
+  // senão, a preferência da conta vale também neste aparelho.
+  const chosen = await getChosenLocale();
+  if (chosen && chosen !== user.locale) {
+    await db.update(schema.users).set({ locale: chosen }).where(eq(schema.users.id, user.id));
+  } else if (!chosen && isLocale(user.locale)) {
+    await setLocaleCookie(user.locale);
+  }
   redirect(safeNext(formData.get("voltar"), "/inicio"));
 }
 

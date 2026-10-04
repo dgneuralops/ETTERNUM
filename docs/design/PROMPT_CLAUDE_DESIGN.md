@@ -9,7 +9,7 @@ Como usar:
 4. Quando terminar, siga a seção **Como trazer o design de volta** no fim deste arquivo.
 
 ```text
-Você vai desenhar a interface completa do Etternum, uma plataforma web (e depois app iOS/Android) em português do Brasil. O produto já existe em código (Next.js + Tailwind) e funciona; o seu trabalho é elevar o design de todas as telas para um nível premium, mantendo as mesmas telas, conteúdos e fluxos descritos aqui, para que o design possa ser implementado fielmente depois.
+Você vai desenhar a interface completa do Etternum, uma plataforma web (e depois app iOS/Android) disponível em quatro idiomas: português do Brasil (principal), inglês, espanhol e francês. O produto já existe em código (Next.js + Tailwind) e funciona; o seu trabalho é elevar o design de todas as telas para um nível premium, mantendo as mesmas telas, conteúdos e fluxos descritos aqui, para que o design possa ser implementado fielmente depois.
 
 ==================================================
 1. O QUE É O ETTERNUM
@@ -27,7 +27,7 @@ Peças centrais:
 - PLANOS: teste grátis de 14 dias → depois, plano Gratuito (1 cápsula + 5 mensagens por dia) ou Premium (ilimitado, inclui o Conselho).
 - EM BREVE (Premium): "Cápsula de Memória Viva" — eternizar a própria história ou a de um ente querido.
 
-Público: adultos (18+) no Brasil, de 25 a 55 anos, em momentos de estresse, solidão, luto, dúvida de carreira ou busca de sentido; também empreendedores e líderes que "não têm com quem conversar". Muitos vão usar no celular, à noite.
+Público: adultos (18+) no Brasil e no exterior (o app fala português, inglês, espanhol e francês), de 25 a 55 anos, em momentos de estresse, solidão, luto, dúvida de carreira ou busca de sentido; também empreendedores e líderes que "não têm com quem conversar". Muitos vão usar no celular, à noite.
 
 ==================================================
 2. TOM E DIREÇÃO DE ARTE
@@ -61,7 +61,8 @@ Ponto de partida (tokens do código atual — pode refinar, mas mantenha os NOME
 
 Componentes a especificar (com todos os estados: padrão, hover, foco, pressionado, desabilitado, carregando, erro):
 - Botões: primário dourado (gradiente suave, texto escuro), secundário fantasma (borda fina), ícone redondo, link.
-- Campos: texto, e-mail, senha, CPF com máscara, data, select, textarea, checkbox, chips selecionáveis; rótulo, dica e mensagem de erro em vermelho suave.
+- Campos: texto, e-mail, senha, CPF com máscara (só aparece no cadastro em português), data, select, textarea, checkbox, chips selecionáveis; rótulo, dica e mensagem de erro em vermelho suave.
+- Seletor de idioma: compacto (ícone de globo + "Português" / "English" / "Español" / "Français") no topo de todas as páginas, e versão completa na seção "Idioma" do Perfil. O nome de cada idioma aparece sempre escrito nele mesmo.
 - Card de vidro (base de tudo).
 - Medalhão da mente (monograma) em 4 tamanhos: 36, 48, 80, 112px. O Maestro tem um medalhão próprio: dourado com o símbolo ∞.
 - Selo "Inspirado em" (discreto, com tooltip: "Cápsula de um especialista nas ideias desta pessoa — não é uma simulação dela.").
@@ -71,7 +72,7 @@ Componentes a especificar (com todos os estados: padrão, hover, foco, pressiona
 - Balões de chat: mensagem da pessoa (direita, dourado translúcido) e resposta da mente (esquerda, com medalhão pequeno, texto com markdown: negrito em dourado, listas, citações).
 - Indicador "pensando" (três pontos dourados pulsando) e resposta chegando em tempo real (streaming).
 - Botão de recomendação do Maestro: card compacto com medalhão + "Continuar com Viktor Frankl" + especialidade.
-- Aviso de crise (CVV): bloco em vermelho suave, acolhedor, com "Você não está sozinho(a). Se precisar de ajuda agora:" e a lista: Ligue 188 — CVV (gratuito, 24 horas, ou chat em cvv.org.br) · Ligue 192 — SAMU · Ligue 190 — Polícia · Ligue 180 — Central de Atendimento à Mulher.
+- Aviso de crise (CVV): bloco em vermelho suave, acolhedor, com "Você não está sozinho(a). Se precisar de ajuda agora:" e a lista: Ligue 188 — CVV (gratuito, 24 horas, ou chat em cvv.org.br) · Ligue 192 — SAMU · Ligue 190 — Polícia · Ligue 180 — Central de Atendimento à Mulher. Nos outros idiomas a lista muda (inglês: 988 e Samaritans 116 123; espanhol: 024 e Línea de la Vida; francês: 3114, Bélgica 0800 32 123 e Suíça 143) e pode ter 4 ou 5 itens — o bloco precisa acomodar isso.
 - Bloqueio de plano (card com mensagem + "Conhecer o Premium" + "Falar com o Maestro").
 - Chip de plano no topo ("Teste grátis · 14 dias", "Gratuito", "Premium") e botão "Fazer upgrade".
 - Barra lateral (desktop), barra superior, barra inferior (celular, 5 itens), item de lista de conversa, abas/filtros, tooltip, toast, modal de confirmação, skeletons de carregamento, estados vazios.
@@ -81,7 +82,7 @@ Componentes a especificar (com todos os estados: padrão, hover, foco, pressiona
 ==================================================
 Área logada:
 - Desktop (≥1024px): barra lateral fixa à esquerda com logo e os itens: Início, Maestro, Áreas da vida, Todas as mentes, Minhas conversas, Perfil, Plano; "Sair" no rodapé. Barra superior com "Olá, [nome]", chip do plano e botão "Fazer upgrade".
-- Celular: barra superior com logo e chip do plano; barra inferior com 5 itens: Início, Maestro, Áreas, Conversas, Perfil. Alvos de toque de no mínimo 44px; respeitar a área segura do iPhone.
+- Celular: barra superior com logo, seletor de idioma (só o ícone de globo, se faltar espaço) e chip do plano; barra inferior com 5 itens: Início, Maestro, Áreas, Conversas, Perfil. Alvos de toque de no mínimo 44px; respeitar a área segura do iPhone.
 Área pública: cabeçalho com logo, "Mentes", "Como funciona", "Entrar" e botão "Começar grátis"; rodapé com "Sobre o Etternum | Termos de Uso | Política de Privacidade", "© 2026 Etternum. Todos os direitos reservados." e o aviso: "O Etternum não substitui psicólogos, médicos ou outros profissionais. As cápsulas são recriações feitas por inteligência artificial a partir de ideias públicas e não representam as pessoas reais. Em crise, ligue 188 (CVV, 24 horas, gratuito)."
 
 ==================================================
@@ -148,7 +149,7 @@ Cabeçalho: medalhão, nome em serifa, "Psiquiatra, criador da Logoterapia · 19
 "Minhas conversas" / "Tudo o que você conversou fica guardado aqui. Continue de onde parou." Lista com medalhão, rótulo (nome da mente ou "Conselho · [área]"), título, data/hora e lixeira (com confirmação). Estado vazio: "Você ainda não conversou com ninguém. Comece pelo Maestro."
 
 13 PERFIL — /perfil
-Seções em cards: "Seus dados" (nome, e-mail, CPF mascarado ***.982.247-**, nascimento e signo); "Sua triagem" (todas as respostas + botão "Atualizar"); "O que o Etternum lembra sobre você" (memória em tópicos: Quem é, Momento atual, Desafios em andamento, Preferências e valores, Progressos e decisões, Pontos de atenção + botão "Apagar memória"); "Seu Quadro Eterno"; "Conta" (Sair; "Excluir minha conta e todos os meus dados" com confirmação digitando EXCLUIR).
+Seções em cards: "Seus dados" (nome, e-mail, CPF mascarado ***.982.247-** só para contas do Brasil, nascimento e signo); "Idioma" (seletor completo, com o texto "As telas e as respostas das mentes aparecem no idioma escolhido."); "Sua triagem" (todas as respostas + botão "Atualizar"); "O que o Etternum lembra sobre você" (memória em tópicos: Quem é, Momento atual, Desafios em andamento, Preferências e valores, Progressos e decisões, Pontos de atenção + botão "Apagar memória"); "Seu Quadro Eterno"; "Conta" (Sair; "Excluir minha conta e todos os meus dados" com confirmação digitando EXCLUIR).
 
 14 PLANO — /plano
 Três variantes: TESTE ("Seu teste de 14 dias termina em 17 de outubro (14 dias restantes). Até lá, tudo está liberado."), GRATUITO ("Você usou 3 de 5 mensagens hoje. Sua cápsula do plano gratuito é Sêneca. O Maestro está sempre disponível.", com medidor de uso) e PREMIUM ("Acesso ilimitado a todas as mentes. Obrigado!"). Card Premium com benefícios e botão "Assinar o Premium". Grade "Cápsula do plano gratuito" para escolher a cápsula (estado escolhido).
@@ -209,7 +210,9 @@ Pessoa de exemplo: Ana Clara Souza, 33 anos, ♐ Sagitário, designer numa agên
 ==================================================
 7. REGRAS OBRIGATÓRIAS
 ==================================================
-- Todo texto em português do Brasil, com acentuação correta.
+- Desenhe todas as telas em português do Brasil, com acentuação correta. Além disso, mostre a Landing (01), o Início (05) e a Conversa (10) também em francês — é o idioma de textos mais longos (cerca de 20–30% maiores) — para provar que nada quebra: botões, menus, chips e títulos precisam acomodar o texto maior sem cortar nem quebrar de forma feia.
+- Nenhum texto dentro de imagens ou ilustrações: todo texto é texto de verdade, para poder ser traduzido.
+- Os nomes das mentes mudam por idioma (Sêneca → Seneca → Séneca → Sénèque; Marco Aurélio → Marcus Aurelius → Marco Aurelio → Marc Aurèle); os monogramas usam as iniciais do nome no idioma.
 - O aviso de crise (CVV 188) nunca pode parecer um anúncio: é acolhedor, claro e sempre legível.
 - O selo "Inspirado em" é sempre visível nas cápsulas de pessoas vivas e figuras religiosas.
 - Nenhuma foto realista de pessoa real; nenhuma promessa de "terapia" ou "cura".

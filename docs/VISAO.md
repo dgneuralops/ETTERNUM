@@ -74,7 +74,9 @@ Mensagens encaminhadas pelo Maestro não contam duas vezes no limite diário. O 
 
 ## Roadmap
 
-**Fase 1 — MVP web (este repositório)**: tudo o que está descrito acima.
+**Fase 1 — MVP web (este repositório)**: tudo o que está descrito acima, em quatro idiomas — português do
+Brasil, inglês, espanhol e francês — para crescer além do Brasil desde o início (América Latina, Estados Unidos,
+Europa e África francófona).
 
 **Fase 2 — lançamento**
 

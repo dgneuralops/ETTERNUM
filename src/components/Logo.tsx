@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getI18n } from "@/lib/i18n/server";
 
 export function LogoMark({ className = "h-7 w-7" }: { className?: string }) {
   return (
@@ -14,12 +15,13 @@ export function LogoMark({ className = "h-7 w-7" }: { className?: string }) {
   );
 }
 
-export function Logo({ href = "/", className = "" }: { href?: string; className?: string }) {
+export async function Logo({ href = "/", className = "" }: { href?: string; className?: string }) {
+  const { t } = await getI18n();
   return (
     <Link
       href={href}
       className={`inline-flex items-center gap-2 text-gold ${className}`}
-      aria-label="Etternum — início"
+      aria-label={t.common.logoLabel}
     >
       <LogoMark />
       <span className="font-serif text-2xl font-semibold tracking-wide text-ink">Etternum</span>

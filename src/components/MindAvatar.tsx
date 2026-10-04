@@ -2,9 +2,10 @@ import type { Agent } from "@/lib/domain/agents";
 
 function initials(name: string): string {
   const words = name
-    .replace(/^(Sri|Santo|São)\s+/i, "")
+    .replace(/^(Sri|Santo|São|Saint|San|Sainte)\s+/i, "")
     .split(/\s+/)
-    .filter((w) => !/^(de|da|do|dos|das|von|van)$/i.test(w));
+    .map((w) => w.replace(/^d['’]/i, ""))
+    .filter((w) => w && !/^(de|da|do|dos|das|del|von|van|of)$/i.test(w));
   const first = words[0]?.[0] ?? "";
   const last = words.length > 1 ? words[words.length - 1][0] : "";
   return (first + last).toUpperCase();

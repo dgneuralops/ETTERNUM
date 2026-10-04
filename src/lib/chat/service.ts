@@ -1,11 +1,12 @@
 import "server-only";
 import { and, asc, count, desc, eq, gte, sql } from "drizzle-orm";
 import { completeText, type ChatTurn } from "@/lib/ai/claude";
-import { MEMORY_SYSTEM, memoryUserPrompt, type UserContext } from "@/lib/ai/prompts";
+import { memorySystem, memoryUserPrompt, type UserContext } from "@/lib/ai/prompts";
 import { db, schema } from "@/lib/db";
 import type { Conversation, Message, Profile, User } from "@/lib/db/schema";
 import { getSpeaker } from "@/lib/domain/agents";
-import { planState, startOfTodayInSaoPaulo, type PlanState } from "@/lib/domain/plans";
+import { planState, startOfTodayIn, type PlanState } from "@/lib/domain/plans";
+import type { Locale } from "@/lib/i18n/config";
 
 /** Quantas mensagens anteriores entram no contexto de cada resposta. */
 const HISTORY_LIMIT = 40;
@@ -46,8 +47,8 @@ export async function loadUser(
   return { ...row, plan: planState(row.user) };
 }
 
-/** Mensagens enviadas pela pessoa hoje (fuso de São Paulo), sem contar encaminhamentos. */
-export async function messagesToday(userId: string): Promise<number> {
+/** Mensagens enviadas pela pessoa hoje (no fuso horário dela), sem contar encaminhamentos. */
+export async function messagesToday(userId: string, timeZone: string): Promise<number> {
   const [row] = await db
     .select({ n: count() })
     .from(schema.messages)
@@ -56,7 +57,7 @@ export async function messagesToday(userId: string): Promise<number> {
         eq(schema.messages.userId, userId),
         eq(schema.messages.role, "user"),
         eq(schema.messages.forwarded, false),
-        gte(schema.messages.createdAt, startOfTodayInSaoPaulo()),
+        gte(schema.messages.createdAt, startOfTodayIn(timeZone)),
       ),
     );
   return row?.n ?? 0;
@@ -72,9 +73,9 @@ export async function getOwnedConversation(userId: string, conversationId: strin
   return conv ?? null;
 }
 
-export function titleFrom(message: string): string {
+export function titleFrom(message: string, fallback: string): string {
   const clean = message.replace(/\s+/g, " ").trim();
-  return clean.length > 70 ? `${clean.slice(0, 67)}…` : clean || "Nova conversa";
+  return clean.length > 70 ? `${clean.slice(0, 67)}…` : clean || fallback;
 }
 
 export async function createConversation(values: {
@@ -159,7 +160,11 @@ export async function searchKnowledge(agentSlug: string, query: string, limit = 
 }
 
 /** Atualiza a memória de longo prazo quando a conversa acumulou mensagens suficientes. */
-export async function maybeUpdateMemory(userId: string, conversationId: string, opts: { force?: boolean } = {}) {
+export async function maybeUpdateMemory(
+  userId: string,
+  conversationId: string,
+  opts: { force?: boolean; locale: Locale },
+) {
   const [row] = await db
     .select({ memory: schema.users.memory, turns: schema.conversations.turnsSinceMemory })
     .from(schema.conversations)
@@ -176,10 +181,11 @@ export async function maybeUpdateMemory(userId: string, conversationId: string, 
     .join("\n\n");
   try {
     const updated = await completeText({
-      system: MEMORY_SYSTEM,
+      system: memorySystem(opts.locale),
       messages: [{ role: "user", content: memoryUserPrompt(row.memory, transcript) }],
       effort: "low",
       maxTokens: 4000,
+      locale: opts.locale,
     });
     if (!updated?.trim()) return;
     await db

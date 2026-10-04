@@ -1,5 +1,7 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { messagesFor } from "@/lib/i18n/messages";
 import { mockReply } from "./mock";
 
 export const AI_MODEL = process.env.ETTERNUM_MODEL || "claude-opus-5-5";
@@ -9,9 +11,6 @@ const SUPPORTS_MODERN_PARAMS = /^claude-(opus|sonnet|fable)-5/.test(AI_MODEL);
 
 export type Effort = "low" | "medium" | "high";
 export type ChatTurn = Anthropic.Beta.BetaMessageParam;
-
-export const REFUSAL_TEXT =
-  "Não consegui responder a isso agora. Pode me contar de outro jeito o que você está vivendo?";
 
 export class AiNotConfiguredError extends Error {
   constructor() {
@@ -60,9 +59,12 @@ export async function streamReply(opts: {
   maxTokens?: number;
   onText: (delta: string) => void;
   signal?: AbortSignal;
+  /** Idioma da pessoa: usado no texto de recusa e nas respostas simuladas. */
+  locale?: Locale;
 }): Promise<StreamResult> {
+  const locale = opts.locale ?? DEFAULT_LOCALE;
   if (isMockMode()) {
-    const text = mockReply(opts.system, opts.messages);
+    const text = mockReply(opts.system, opts.messages, locale);
     for (const chunk of text.match(/.{1,24}/gs) ?? []) {
       if (opts.signal?.aborted) break;
       opts.onText(chunk);
@@ -84,7 +86,7 @@ export async function streamReply(opts: {
   );
   stream.on("text", (delta) => opts.onText(delta));
   const final = await stream.finalMessage();
-  if (final.stop_reason === "refusal") return { text: REFUSAL_TEXT, refused: true };
+  if (final.stop_reason === "refusal") return { text: messagesFor(locale).api.refusal, refused: true };
   return { text: textOf(final), refused: false };
 }
 
@@ -94,8 +96,9 @@ export async function completeText(opts: {
   messages: ChatTurn[];
   effort: Effort;
   maxTokens?: number;
+  locale?: Locale;
 }): Promise<string | null> {
-  if (isMockMode()) return mockReply(opts.system, opts.messages);
+  if (isMockMode()) return mockReply(opts.system, opts.messages, opts.locale ?? DEFAULT_LOCALE);
   const message = await getClient().beta.messages.create({
     model: AI_MODEL,
     max_tokens: opts.maxTokens ?? 16000,

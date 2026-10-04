@@ -8,7 +8,11 @@ export type ChatEvent =
   | { type: "error"; message: string; reason?: string }
   | { type: "done" };
 
-export function ndjsonResponse(run: (send: (event: ChatEvent) => void) => Promise<void>): Response {
+/** `genericError` é a mensagem (no idioma da pessoa) mostrada se a geração falhar. */
+export function ndjsonResponse(
+  genericError: string,
+  run: (send: (event: ChatEvent) => void) => Promise<void>,
+): Response {
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -25,7 +29,7 @@ export function ndjsonResponse(run: (send: (event: ChatEvent) => void) => Promis
         await run(send);
       } catch (error) {
         console.error(error);
-        send({ type: "error", message: "Algo deu errado ao gerar a resposta. Tente novamente em instantes." });
+        send({ type: "error", message: genericError });
       } finally {
         send({ type: "done" });
         open = false;

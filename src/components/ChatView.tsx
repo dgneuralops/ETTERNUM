@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { readNdjson } from "@/lib/chat/ndjson";
 import type { ClientMessage } from "@/lib/chat/queries";
+import { useI18n } from "@/lib/i18n/client";
 import { CrisisBanner } from "./CrisisBanner";
 import { Markdown } from "./Markdown";
 import { MindAvatar } from "./MindAvatar";
@@ -58,6 +59,7 @@ export function ChatView({
   placeholder,
 }: Props) {
   const router = useRouter();
+  const { t } = useI18n();
   const [messages, setMessages] = useState<ClientMessage[]>(initialMessages);
   const [conversationId, setConversationId] = useState(initialConversationId);
   const [draft, setDraft] = useState(initialDraft);
@@ -106,8 +108,8 @@ export function ChatView({
         if (!response.ok) {
           const data = (await response.json().catch(() => ({}))) as { error?: string; reason?: string };
           setMessages((prev) => prev.filter((m) => m.id !== pendingId));
-          if (response.status === 402) setLocked(data.error ?? "Recurso do plano Premium.");
-          else setError(data.error ?? "Não foi possível enviar sua mensagem.");
+          if (response.status === 402) setLocked(data.error ?? t.chat.premiumFallback);
+          else setError(data.error ?? t.chat.sendError);
           if (message) setDraft(message);
           return;
         }
@@ -144,7 +146,7 @@ export function ChatView({
           }
         });
       } catch (err) {
-        if ((err as Error).name !== "AbortError") setError("A conexão caiu. Tente enviar de novo.");
+        if ((err as Error).name !== "AbortError") setError(t.chat.connectionError);
         setMessages((prev) => prev.filter((m) => !(m.id === pendingId && !m.content)));
       } finally {
         setStreaming(false);
@@ -152,7 +154,7 @@ export function ChatView({
         if (createdConversation) router.refresh();
       }
     },
-    [areaSlug, conversationId, mind.slug, router, streaming],
+    [areaSlug, conversationId, mind.slug, router, streaming, t],
   );
 
   // Envio automático (texto vindo da página inicial) ou resposta pendente (encaminhamento).
@@ -178,7 +180,7 @@ export function ChatView({
     const data = (await response.json().catch(() => ({}))) as { conversationId?: string; error?: string };
     if (!response.ok || !data.conversationId) {
       setHandingOff(null);
-      setError(data.error ?? "Não foi possível encaminhar agora.");
+      setError(data.error ?? t.chat.handoffError);
       return;
     }
     router.push(`/mente/${slug}?c=${data.conversationId}&responder=1`);
@@ -197,7 +199,7 @@ export function ChatView({
             <div className="flex justify-center">
               <MindAvatar agent={mind} size="lg" />
             </div>
-            <p className="mt-4 font-serif text-2xl text-ink">Sobre o que você quer conversar?</p>
+            <p className="mt-4 font-serif text-2xl text-ink">{t.chat.emptyTitle}</p>
             <p className="mt-1 text-sm text-muted">{mind.focus}</p>
             {suggestions.length > 0 && !locked && (
               <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -234,7 +236,10 @@ export function ChatView({
               <div className="min-w-0 flex-1 pt-1">
                 {text ? <Markdown>{text}</Markdown> : null}
                 {m.id.startsWith("pending") && !m.content && (
-                  <span className="typing inline-flex gap-1 text-2xl leading-none text-gold" aria-label="Pensando">
+                  <span
+                    className="typing inline-flex gap-1 text-2xl leading-none text-gold"
+                    aria-label={t.chat.thinking}
+                  >
                     <span>·</span>
                     <span>·</span>
                     <span>·</span>
@@ -253,7 +258,7 @@ export function ChatView({
                         <MindAvatar agent={r} size="sm" />
                         <span>
                           <span className="block text-sm font-semibold text-ink">
-                            {handingOff === r.slug ? "Encaminhando…" : `Continuar com ${r.name}`}
+                            {handingOff === r.slug ? t.chat.forwarding : t.chat.continueWith(r.name)}
                           </span>
                           <span className="block text-xs text-muted">{r.focus}</span>
                         </span>
@@ -265,7 +270,7 @@ export function ChatView({
             </div>
           );
         })}
-        {waiting && <span className="sr-only">Gerando resposta…</span>}
+        {waiting && <span className="sr-only">{t.chat.generating}</span>}
         <div ref={endRef} />
       </div>
 
@@ -276,10 +281,10 @@ export function ChatView({
             <p>{locked}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Link href="/plano" className="btn-gold rounded-full px-4 py-2 text-sm font-semibold">
-                Conhecer o Premium
+                {t.chat.premiumCta}
               </Link>
               <Link href="/maestro" className="btn-ghost rounded-full px-4 py-2 text-sm text-ink">
-                Falar com o Maestro
+                {t.chat.talkToMaestro}
               </Link>
             </div>
           </div>
@@ -292,7 +297,7 @@ export function ChatView({
             className="glass flex items-end gap-2 rounded-3xl p-2 pl-4"
           >
             <label htmlFor="chat-input" className="sr-only">
-              Sua mensagem
+              {t.chat.inputLabel}
             </label>
             <textarea
               id="chat-input"
@@ -306,7 +311,7 @@ export function ChatView({
                 }
               }}
               rows={1}
-              placeholder={placeholder ?? `Escreva para ${mind.name}…`}
+              placeholder={placeholder ?? t.chat.placeholder(mind.name)}
               className="max-h-48 min-h-[44px] flex-1 resize-none bg-transparent py-2.5 text-[15px] leading-relaxed text-ink outline-none placeholder:text-faint"
               style={{ fieldSizing: "content" } as React.CSSProperties}
             />
@@ -315,19 +320,24 @@ export function ChatView({
                 type="button"
                 onClick={() => abortRef.current?.abort()}
                 className="btn-ghost rounded-full p-3 text-ink"
-                aria-label="Parar"
+                aria-label={t.chat.stop}
               >
                 <Square className="h-4 w-4" />
               </button>
             ) : (
-              <button type="submit" disabled={!draft.trim()} className="btn-gold rounded-full p-3" aria-label="Enviar">
+              <button
+                type="submit"
+                disabled={!draft.trim()}
+                className="btn-gold rounded-full p-3"
+                aria-label={t.chat.send}
+              >
                 <ArrowUp className="h-4 w-4" />
               </button>
             )}
           </form>
         )}
         <p className="mt-2 text-center text-[11px] text-faint">
-          Cápsulas de IA podem errar. Não substituem profissionais de saúde. Em crise, ligue 188.
+          {t.chat.footnote} {t.crisis.footer}
         </p>
       </div>
     </div>

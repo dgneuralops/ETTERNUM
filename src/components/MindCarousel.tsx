@@ -2,10 +2,12 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef } from "react";
+import { useI18n } from "@/lib/i18n/client";
 
 /** Carrossel horizontal com rolagem por arrasto/toque e setas no desktop. */
 export function MindCarousel({ children, label }: { children: React.ReactNode; label: string }) {
   const track = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
   const scroll = (dir: 1 | -1) => {
     const el = track.current;
     if (el) el.scrollBy({ left: dir * el.clientWidth * 0.85, behavior: "smooth" });
@@ -17,7 +19,7 @@ export function MindCarousel({ children, label }: { children: React.ReactNode; l
           type="button"
           onClick={() => scroll(-1)}
           className="btn-ghost rounded-full p-2 text-muted hover:text-gold"
-          aria-label="Anterior"
+          aria-label={t.common.previous}
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -25,7 +27,7 @@ export function MindCarousel({ children, label }: { children: React.ReactNode; l
           type="button"
           onClick={() => scroll(1)}
           className="btn-ghost rounded-full p-2 text-muted hover:text-gold"
-          aria-label="Próximo"
+          aria-label={t.common.next}
         >
           <ChevronRight className="h-5 w-5" />
         </button>

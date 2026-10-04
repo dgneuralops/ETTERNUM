@@ -8,6 +8,7 @@ import { db, schema } from "@/lib/db";
 import { getAgent } from "@/lib/domain/agents";
 import { fieldErrorsOf, triageSchema, waitlistSchema, type FormState } from "@/lib/domain/forms";
 import { planState } from "@/lib/domain/plans";
+import { getI18n } from "@/lib/i18n/server";
 
 async function requireUserId(): Promise<string> {
   const userId = await getSessionUserId();
@@ -29,7 +30,8 @@ export async function saveTriage(_prev: FormState, formData: FormData): Promise<
     goals: String(formData.get("goals") ?? ""),
     interestAreas: formData.getAll("interestAreas").map(String),
   };
-  const parsed = triageSchema.safeParse(raw);
+  const { t } = await getI18n();
+  const parsed = triageSchema(t.validation).safeParse(raw);
   if (!parsed.success) {
     const { interestAreas, ...rest } = raw;
     return { fieldErrors: fieldErrorsOf(parsed.error), values: { ...rest, interestAreas: interestAreas.join(",") } };
@@ -74,7 +76,11 @@ export async function deleteConversation(conversationId: string) {
 /** Exclusão definitiva da conta e de todos os dados (direito previsto na LGPD). */
 export async function deleteAccount(formData: FormData) {
   const userId = await requireUserId();
-  if (formData.get("confirm") !== "EXCLUIR") return;
+  const { t } = await getI18n();
+  const typed = String(formData.get("confirm") ?? "")
+    .trim()
+    .toUpperCase();
+  if (typed !== t.profile.confirmWord) return;
   await db.delete(schema.users).where(eq(schema.users.id, userId));
   await destroySession();
   redirect("/?conta=excluida");
@@ -92,7 +98,8 @@ export async function chooseFreeCapsule(agentSlug: string) {
 }
 
 export async function joinWaitlist(_prev: FormState, formData: FormData): Promise<FormState> {
-  const parsed = waitlistSchema.safeParse(Object.fromEntries(formData));
+  const { t } = await getI18n();
+  const parsed = waitlistSchema(t.validation).safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     return {
       fieldErrors: fieldErrorsOf(parsed.error),
@@ -100,5 +107,5 @@ export async function joinWaitlist(_prev: FormState, formData: FormData): Promis
     };
   }
   await db.insert(schema.waitlist).values(parsed.data).onConflictDoNothing();
-  return { ok: true, message: "Pronto! Você está na lista de espera do Etternum." };
+  return { ok: true, message: t.waitlist.success };
 }

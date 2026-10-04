@@ -22,11 +22,16 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
-  cpf: varchar("cpf", { length: 11 }).notNull().unique(),
+  /** Pedido apenas no Brasil (cadastro em português); nulo nos outros idiomas. */
+  cpf: varchar("cpf", { length: 11 }).unique(),
   birthDate: date("birth_date", { mode: "string" }).notNull(),
   zodiacSign: text("zodiac_sign").notNull(),
   /** "trial" (padrão, vira gratuito quando o teste acaba) ou "premium". */
   plan: text("plan").notNull().default("trial"),
+  /** Idioma da interface e das respostas: "pt-BR", "en", "es" ou "fr". */
+  locale: text("locale").notNull().default("pt-BR"),
+  /** Fuso horário IANA do navegador no cadastro — define o "dia" do limite diário e a saudação. */
+  timeZone: text("time_zone").notNull().default("America/Sao_Paulo"),
   trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }).notNull(),
   /** Cápsula liberada no plano gratuito (definida na primeira conversa após o teste). */
   freeCapsuleSlug: text("free_capsule_slug"),
