@@ -1,0 +1,48 @@
+/* Etternum */
+.ette-a1:active{transform:scale(.97) !important}
+.ette-h2:hover{transform:rotate(20deg) !important}
+.ette-h3:hover{background:#2A2A2E !important}
+/* Publico */
+.publ-a1:active{transform:scale(.97) !important}
+.publ-h2:hover{transform:translateY(-4px) !important}
+.publ-h3:hover{transform:translateY(-2px) !important}
+.publ-h4:hover{--x:1 !important}
+.publ-h5:hover{padding-left:14px !important;background:rgba(224,199,142,.04) !important}
+.publ-f6:focus{box-shadow:inset 0 0 0 2px #15130E !important}
+.publ-f7:focus{box-shadow:inset 0 0 0 2px #15130E !important}
+.publ-f8:focus{box-shadow:inset 0 0 0 2px #E0C78E !important}
+.publ-f9:focus{box-shadow:inset 0 0 0 2px #E0C78E !important}
+.publ-f10:focus{box-shadow:inset 0 0 0 2px #E0C78E !important}
+.publ-f11:focus{box-shadow:inset 0 0 0 2px #E0C78E !important}
+.publ-f12:focus{box-shadow:inset 0 0 0 2px #E0C78E !important}
+.publ-f13:focus{box-shadow:inset 0 0 0 2px #E0C78E !important}
+/* Triagem */
+.tria-a1:active{transform:scale(.98) !important}
+.tria-a2:active{transform:scale(.98) !important}
+/* Inicio */
+.inic-h1:hover{background:#EBD6A6 !important}
+.inic-h2:hover{background:rgba(255,255,255,.06) !important}
+.inic-h3:hover{transform:translateY(-3px) !important}
+.inic-a4:active{transform:scale(.88) !important}
+.inic-h5:hover{transform:translateX(3px) !important}
+/* Explorar */
+.expl-h1:hover{transform:translateY(-3px) !important}
+.expl-h2:hover{transform:translateY(-2px) !important}
+.expl-h3:hover{transform:translateY(-2px) !important}
+.expl-h4:hover{transform:translateY(-4px) !important}
+.expl-a5:active{transform:scale(.88) !important}
+/* Chat */
+.chat-a1:active{transform:scale(.9) !important}
+.chat-a2:active{transform:scale(.98) !important}
+/* Clube */
+.club-h1:hover{background:#EBD6A6 !important}
+.club-h2:hover{background:rgba(255,255,255,.12) !important}
+.club-h3:hover{background:#1F1F22 !important}
+.club-h4:hover{transform:translateY(-4px) !important}
+.club-h5:hover{background:#E0C78E !important;color:#14110A !important}
+.club-h6:hover{background:#EBD6A6 !important}
+.club-h7:hover{color:#E0C78E !important}
+.club-h8:hover{opacity:.88 !important}
+.club-h9:hover{background:#2A2A2E !important}
+.club-h10:hover{background:#2A2A2E !important}
+.club-h11:hover{background:#2A2A2E !important}

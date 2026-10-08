@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;1,400;1,500&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+body{margin:0;background:#050505;font-family:Urbanist,system-ui,sans-serif;color:#F3EFE6}
+*{box-sizing:border-box}
+a{color:#E0C78E}a:hover{color:#F3E3B8}
+.dv-turn{padding:48px 56px 40px;border-bottom:1px solid rgba(255,255,255,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#E0C78E;color:#000;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 15px/1.2 Urbanist,sans-serif;color:#F3EFE6}
+.dv-opts{display:flex;flex-direction:column;gap:72px}
+.dv-opt{display:flex;flex-direction:column;gap:16px;scroll-margin-top:16px}
+.dv-oid{font:600 11px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(255,255,255,.12);color:#F3EFE6;border-radius:5px;text-decoration:none}
+.dv-opt:target .dv-oid{background:#E0C78E;color:#000}
+.dv-next{margin:40px 0 0;font:14px/1.5 Urbanist,sans-serif;color:#8A847A}
+</style>
+</helmet>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Direções visuais · Início (desktop) + Triagem estilo quiz (celular)</span></div>
+<p style="margin:0 0 48px;max-width:860px;font-size:16px;line-height:1.6;color:#A7A197">As três direções usam a estrutura do SkillUP: barra lateral com item ativo em pílula, cards grandes e arredondados, blocos em tons pastel e retratos no topo dos cards. O que muda entre elas é o tema e o acento. Os retratos são espaços para você arrastar as imagens; o filtro sépia é aplicado automaticamente para ficarem como na sua referência.</p>
+<div class="dv-opts">
+<sc-for list="{{ dirs }}" as="d" hint-placeholder-count="3">
+<div class="dv-opt" id="{{ d.id }}">
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><a class="dv-oid" href="#{{ d.id }}">{{ d.id }}</a><span style="font:600 22px Urbanist">{{ d.label }}</span><span style="font-size:15px;color:#8A847A">{{ d.desc }}</span></div>
+<div style="display:flex;gap:40px;align-items:flex-start">
+
+<!-- DESKTOP -->
+<div style="flex:none;width:1280px;height:880px;border-radius:32px;padding:14px;background:{{ d.bg }};box-shadow:0 0 0 1px {{ d.line }},0 40px 80px -30px rgba(0,0,0,.6);display:flex;gap:14px;font-family:Urbanist,sans-serif;color:{{ d.ink }};overflow:hidden">
+<aside style="flex:none;width:220px;border-radius:24px;background:{{ d.panel }};padding:24px 14px 18px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;gap:8px;padding:0 10px"><span style="width:26px;height:26px;background:{{ d.logo }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span><span style="font:700 16px Urbanist;letter-spacing:.2em">ETTERNUM</span></div>
+<nav style="display:flex;flex-direction:column;gap:4px">
+<sc-for list="{{ d.nav }}" as="n" hint-placeholder-count="7"><div style="height:40px;padding:0 14px;border-radius:999px;display:flex;align-items:center;gap:12px;font:600 14px Urbanist;background:{{ n.bg }};color:{{ n.fg }}"><span style="width:17px;height:17px;background:{{ n.fg }};-webkit-mask:url({{ n.icon }}) center/contain no-repeat;mask:url({{ n.icon }}) center/contain no-repeat"></span>{{ n.label }}</div></sc-for>
+</nav>
+<div style="height:42px;border-radius:999px;background:{{ d.ctaAltBg }};color:{{ d.ctaAltFg }};font:700 14px Urbanist;display:flex;align-items:center;justify-content:center;gap:8px"><span style="width:16px;height:16px;background:{{ d.ctaAltFg }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span>Falar com o Maestro</div>
+<div style="flex:1"></div>
+<div style="display:flex;flex-direction:column;gap:4px;font:600 14px Urbanist;color:{{ d.muted }}"><div style="height:38px;padding:0 14px;display:flex;align-items:center;gap:12px"><span style="width:17px;height:17px;background:{{ d.muted }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/circle-help.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/circle-help.svg) center/contain no-repeat"></span>Ajuda</div><div style="height:38px;padding:0 14px;display:flex;align-items:center;gap:12px"><span style="width:17px;height:17px;background:{{ d.muted }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/log-out.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/log-out.svg) center/contain no-repeat"></span>Sair</div></div>
+</aside>
+
+<main style="flex:1;min-width:0;display:flex;flex-direction:column;gap:20px;padding:10px 6px 0 10px">
+<div style="display:flex;align-items:center;gap:16px">
+<div style="display:flex;flex-direction:column;gap:2px;flex:1"><span style="font:700 30px/1.1 Urbanist;letter-spacing:-.01em">Boa noite, <span style="font-family:{{ d.accentFont }};font-style:{{ d.accentStyle }};font-weight:{{ d.accentWeight }};color:{{ d.accentWord }}">Ana</span></span><span style="font:500 14px Urbanist;color:{{ d.muted }}"><span style="font-family:'EB Garamond',serif;color:{{ d.accentWord }}">♐︎</span> Sagitário · sábado, 4 de outubro</span></div>
+<div style="width:280px;height:42px;border-radius:999px;background:{{ d.card }};display:flex;align-items:center;gap:10px;padding:0 16px;color:{{ d.muted }};font:500 14px Urbanist"><span style="width:16px;height:16px;background:{{ d.muted }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat"></span>Mente, tema, área</div>
+</div>
+
+<!-- Maestro hero -->
+<div style="position:relative;flex:none;border-radius:28px;background:{{ d.heroBg }};padding:24px 32px;display:flex;gap:32px;align-items:center;overflow:hidden">
+<div style="position:relative;flex:none;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#F6E7BF,#E0C78E 45%,#AE8C4C);box-shadow:0 0 60px {{ d.glow }}"><span style="width:64px;height:64px;background:#14110A;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:700 32px/1.1 Urbanist;letter-spacing:-.015em;color:{{ d.heroInk }}">Como você está <span style="font-family:{{ d.accentFont }};font-style:{{ d.accentStyle }};font-weight:{{ d.accentWeight }};color:{{ d.heroAccent }}">hoje?</span></span><span style="font:500 15px Urbanist;color:{{ d.heroMuted }}">O Maestro, seu amigo pessoal eterno, está ouvindo.</span></div>
+<div style="height:54px;border-radius:999px;background:{{ d.heroInput }};display:flex;align-items:center;padding:0 6px 0 22px;gap:10px"><span style="flex:1;font:500 15px Urbanist;color:{{ d.heroMuted }}">Desabafe, pergunte, peça um conselho…</span><span style="height:42px;padding:0 22px;border-radius:999px;background:{{ d.accent }};color:{{ d.onAccent }};font:700 15px Urbanist;display:flex;align-items:center">Conversar</span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3"><span style="height:32px;padding:0 14px;border-radius:999px;border:1px solid {{ d.heroLine }};color:{{ d.heroInk }};font:500 13px Urbanist;display:flex;align-items:center">{{ s }}</span></sc-for></div>
+</div>
+</div>
+
+<!-- Area pastel tiles -->
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:700 19px Urbanist">Áreas da vida</span><span style="font:600 13px Urbanist;color:{{ d.muted }}">Ver todas →</span></div>
+<div style="flex:none;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:-6px">
+<sc-for list="{{ d.tiles }}" as="t" hint-placeholder-count="4"><div style="height:104px;border-radius:22px;background:{{ t.bg }};color:#15130E;padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between"><div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font:700 26px/1 Urbanist;letter-spacing:-.02em">{{ t.n }}</span><span style="width:22px;height:22px;background:#15130E;-webkit-mask:url({{ t.icon }}) center/contain no-repeat;mask:url({{ t.icon }}) center/contain no-repeat"></span></div><div style="display:flex;flex-direction:column"><span style="font:700 15px Urbanist">{{ t.name }}</span><span style="font:500 12px Urbanist;opacity:.7">mentes</span></div></div></sc-for>
+</div>
+
+<!-- Minds -->
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:700 19px Urbanist">Grandes mentes</span><span style="font:600 13px Urbanist;color:{{ d.muted }}">Ver todas →</span></div>
+<div style="flex:none;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:-6px">
+<sc-for list="{{ d.minds }}" as="m" hint-placeholder-count="4">
+<div style="border-radius:22px;background:{{ d.card }};padding:8px 8px 14px;display:flex;flex-direction:column;gap:10px">
+<div style="position:relative;height:136px;border-radius:16px;overflow:hidden;background:#1A1510">
+<div style="position:absolute;inset:0;filter:grayscale(1) sepia(.45) contrast(1.05) brightness(.92)"><image-slot id="{{ m.slot }}" shape="rect" placeholder="{{ m.ph }}"></image-slot></div>
+<div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 30%,transparent 50%,rgba(0,0,0,.45))"></div>
+<span style="position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.4);backdrop-filter:blur(8px);display:grid;place-items:center;pointer-events:none"><span style="width:14px;height:14px;background:{{ m.star }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/star.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/star.svg) center/contain no-repeat"></span></span>
+</div>
+<div style="padding:0 6px;display:flex;flex-direction:column;gap:8px">
+<span style="font:700 16px/1.15 Urbanist">{{ m.name }}</span>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><span style="height:22px;padding:0 10px;border-radius:999px;background:{{ d.pillBg }};color:{{ d.pillFg }};font:700 11px Urbanist;display:flex;align-items:center">{{ m.spec }}</span><span style="font:500 12px Urbanist;color:{{ d.muted }}">{{ m.period }}</span></div>
+<span style="font:600 13px Urbanist;color:{{ d.ink }};align-self:flex-end">Conversar →</span>
+</div>
+</div>
+</sc-for>
+</div>
+</main>
+
+<!-- Right column -->
+<aside style="flex:none;width:300px;display:flex;flex-direction:column;gap:14px;padding-top:4px">
+<div style="display:flex;align-items:center;gap:10px;justify-content:flex-end"><span style="height:30px;padding:0 12px;border-radius:999px;background:{{ d.pillBg }};color:{{ d.pillFg }};font:700 12px Urbanist;display:flex;align-items:center">Teste grátis · 14 dias</span><span style="width:40px;height:40px;border-radius:50%;background:{{ d.accent }};display:grid;place-items:center"><span style="width:17px;height:17px;background:{{ d.onAccent }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/bell.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/bell.svg) center/contain no-repeat"></span></span></div>
+<div style="border-radius:24px;background:{{ d.card }};padding:10px 10px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="position:relative;height:130px;border-radius:16px;overflow:hidden;background:#1A1510"><div style="position:absolute;inset:0;filter:grayscale(1) sepia(.45) contrast(1.05) brightness(.92)"><image-slot id="{{ d.contSlot }}" shape="rect" placeholder="retrato · Viktor Frankl"></image-slot></div><span style="position:absolute;left:10px;bottom:10px;height:24px;padding:0 10px;border-radius:999px;background:rgba(0,0,0,.55);color:#F3EFE6;font:600 11px Urbanist;display:flex;align-items:center;pointer-events:none">Ontem, 22:14</span></div>
+<div style="padding:0 6px;display:flex;flex-direction:column;gap:4px"><span style="font:600 12px Urbanist;color:{{ d.muted }}">Continuar de onde parei</span><span style="font:700 17px/1.2 Urbanist">Viktor Frankl · Reencontrar o porquê no trabalho</span></div>
+<div style="margin:0 6px;height:40px;border-radius:999px;background:{{ d.accent }};color:{{ d.onAccent }};font:700 14px Urbanist;display:flex;align-items:center;justify-content:center">Continuar conversa</div>
+</div>
+<div style="border-radius:24px;background:{{ d.card }};padding:18px 14px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 4px"><span style="font:700 16px Urbanist">Seu Quadro Eterno</span><span style="font:600 12px Urbanist;color:{{ d.muted }}">Ver tudo</span></div>
+<sc-for list="{{ d.favs }}" as="f" hint-placeholder-count="3"><div style="height:58px;border-radius:16px;background:{{ f.bg }};color:#15130E;padding:0 12px 0 8px;display:flex;align-items:center;gap:10px"><div style="position:relative;flex:none;width:42px;height:42px;border-radius:50%;overflow:hidden;background:#2A2118;filter:grayscale(1) sepia(.45)"><image-slot id="{{ f.slot }}" shape="circle" placeholder="foto"></image-slot></div><div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font:700 14px Urbanist">{{ f.name }}</span><span style="font:500 12px Urbanist;opacity:.7">{{ f.spec }}</span></div><span style="width:16px;height:16px;background:#15130E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-up-right.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-up-right.svg) center/contain no-repeat"></span></div></sc-for>
+</div>
+<div style="border-radius:24px;background:{{ d.card }};box-shadow:inset 0 0 0 1px {{ d.accentLine }};padding:18px;display:flex;flex-direction:column;gap:6px"><span style="font:700 11px Urbanist;letter-spacing:.12em;color:{{ d.accentText }}">EM BREVE · PREMIUM</span><span style="font:700 17px/1.2 Urbanist">Cápsula de Memória Viva</span><span style="font:500 13px/1.45 Urbanist;color:{{ d.muted }}">Eternize a sua história ou a de alguém que você ama.</span></div>
+</aside>
+</div>
+
+<!-- MOBILE TRIAGEM -->
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ d.dark }}" width="{{ 390 }}" height="{{ 820 }}" hint-size="390px,820px">
+<div style="min-height:100%;background:{{ d.bg }};color:{{ d.ink }};font-family:Urbanist,sans-serif;display:flex;flex-direction:column;padding:62px 20px 0">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><span style="width:44px;height:44px;margin-left:-10px;display:grid;place-items:center"><span style="width:22px;height:22px;background:{{ d.ink }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat"></span></span><span style="font:600 13px Urbanist;color:{{ d.muted }}">Etapa 2 de 4 · O que pesa</span><span style="width:34px"></span></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 28px"><span style="height:5px;border-radius:3px;background:{{ d.accent }}"></span><span style="height:5px;border-radius:3px;background:linear-gradient(90deg,{{ d.accent }} 40%,{{ d.track }} 40%)"></span><span style="height:5px;border-radius:3px;background:{{ d.track }}"></span><span style="height:5px;border-radius:3px;background:{{ d.track }}"></span></div>
+<span style="font:700 30px/1.1 Urbanist;letter-spacing:-.015em">O que mais <span style="font-family:{{ d.accentFont }};font-style:{{ d.accentStyle }};font-weight:{{ d.accentWeight }};color:{{ d.accentWord }}">pesa</span> em você hoje?</span>
+<span style="margin-top:8px;font:500 15px Urbanist;color:{{ d.muted }}">Escolha quantas quiser.</span>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:24px">
+<sc-for list="{{ d.quiz }}" as="q" hint-placeholder-count="6"><button onClick="{{ q.toggle }}" style="height:60px;border-radius:18px;border:0;background:{{ q.bg }};box-shadow:inset 0 0 0 {{ q.ringW }} {{ d.accent }};color:{{ q.fg }};padding:0 16px 0 12px;display:flex;align-items:center;gap:14px;font:600 16px Urbanist;cursor:pointer;text-align:left;transition:background .2s,transform .15s" style-active="transform:scale(.98)"><span style="flex:none;width:36px;height:36px;border-radius:12px;background:{{ q.iconBg }};display:grid;place-items:center"><span style="width:18px;height:18px;background:#15130E;-webkit-mask:url({{ q.icon }}) center/contain no-repeat;mask:url({{ q.icon }}) center/contain no-repeat"></span></span><span style="flex:1">{{ q.label }}</span><span style="flex:none;width:24px;height:24px;border-radius:50%;background:{{ q.checkBg }};box-shadow:inset 0 0 0 1.5px {{ q.checkRing }};display:grid;place-items:center"><span style="width:14px;height:14px;background:{{ d.onAccent }};opacity:{{ q.checkOp }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/check.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/check.svg) center/contain no-repeat"></span></span></button></sc-for>
+</div>
+<span style="margin-top:14px;font:600 14px Urbanist;color:{{ d.muted }};text-align:center">+ Escrever com as minhas palavras</span>
+<div style="flex:1"></div>
+<div style="position:sticky;bottom:0;padding:16px 0 40px;background:linear-gradient(180deg,transparent,{{ d.bg }} 30%)"><div style="height:56px;border-radius:999px;background:{{ d.accent }};color:{{ d.onAccent }};font:700 17px Urbanist;display:flex;align-items:center;justify-content:center">Continuar</div></div>
+</div>
+</x-import>
+</div>
+</div>
+</sc-for>
+</div>
+<p class="dv-next">Responda no formulário ao lado: qual direção, tema escuro/claro e como tratar os retratos.</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const I = n => `https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/${n}.svg`;
+const DIRS = [
+  { id: '1a', label: 'Noite dourada', desc: 'Escuro + ouro. Estrutura SkillUP, alma Etternum. (recomendada)', dark: true,
+    bg: '#0B0B0C', panel: '#141416', card: '#161618', card2: '#1F1F22', ink: '#F3EFE6', muted: '#A7A197', line: 'rgba(255,255,255,.08)', logo: '#E0C78E',
+    accent: '#E0C78E', onAccent: '#14110A', accentWord: '#E0C78E', accentText: '#E0C78E', accentLine: 'rgba(224,199,142,.35)', accentFont: "'EB Garamond',serif", accentStyle: 'italic', accentWeight: 400,
+    navBg: '#E0C78E', navFg: '#14110A', ctaAltBg: '#F3EFE6', ctaAltFg: '#0B0B0C', pillBg: 'rgba(224,199,142,.16)', pillFg: '#E0C78E', track: '#26262A',
+    heroBg: 'radial-gradient(500px 260px at 0% 50%,rgba(224,199,142,.16),transparent 70%),#161618', heroInk: '#F3EFE6', heroMuted: '#A7A197', heroAccent: '#E0C78E', heroInput: '#232326', heroLine: 'rgba(255,255,255,.12)', glow: 'rgba(224,199,142,.35)',
+    pastel: ['#EAD9AE', '#D9CCF5', '#F2C9D2', '#C9DDF5', '#CFE5C3'] },
+  { id: '1b', label: 'Dia de biblioteca', desc: 'Claro, papel marfim, ouro como acento. Mesma estrutura.', dark: false,
+    bg: '#F2EEE6', panel: '#FFFFFF', card: '#FFFFFF', card2: '#F2EEE6', ink: '#17150F', muted: '#6B6457', line: 'rgba(0,0,0,.08)', logo: '#A88A47',
+    accent: '#E0C78E', onAccent: '#17150F', accentWord: '#9C7C3A', accentText: '#8C6D2E', accentLine: 'rgba(168,138,71,.45)', accentFont: "'EB Garamond',serif", accentStyle: 'italic', accentWeight: 400,
+    navBg: '#17150F', navFg: '#F2EEE6', ctaAltBg: '#E0C78E', ctaAltFg: '#17150F', pillBg: '#F1E6CC', pillFg: '#6E5420', track: '#E1DACB',
+    heroBg: 'radial-gradient(500px 260px at 0% 50%,rgba(224,199,142,.25),transparent 70%),#17150F', heroInk: '#F3EFE6', heroMuted: '#B9B2A5', heroAccent: '#E0C78E', heroInput: '#2A271F', heroLine: 'rgba(255,255,255,.16)', glow: 'rgba(224,199,142,.45)',
+    pastel: ['#EFE0B9', '#E3D9F7', '#F6D6DD', '#D6E5F7', '#DCEBD2'] },
+  { id: '1c', label: 'SkillUP fiel', desc: 'Lima + pastéis, só sans-serif. Como na referência.', dark: true,
+    bg: '#0D0E0B', panel: '#161813', card: '#181A15', card2: '#20231C', ink: '#F4F6EE', muted: '#A3A898', line: 'rgba(255,255,255,.08)', logo: '#D7F58A',
+    accent: '#D7F58A', onAccent: '#11130C', accentWord: '#D7F58A', accentText: '#D7F58A', accentLine: 'rgba(215,245,138,.4)', accentFont: 'Urbanist', accentStyle: 'normal', accentWeight: 700,
+    navBg: '#D7F58A', navFg: '#11130C', ctaAltBg: '#F4F6EE', ctaAltFg: '#0D0E0B', pillBg: '#D7F58A', pillFg: '#11130C', track: '#262A21',
+    heroBg: '#181A15', heroInk: '#F4F6EE', heroMuted: '#A3A898', heroAccent: '#D7F58A', heroInput: '#23261F', heroLine: 'rgba(255,255,255,.12)', glow: 'rgba(215,245,138,.25)',
+    pastel: ['#DDF5A0', '#F8D3B4', '#BFE0F7', '#F7E6A8', '#CDEFD9'] },
+];
+const NAV = [['Início','house'],['Maestro','infinity'],['Áreas da vida','layout-grid'],['Todas as mentes','users'],['Minhas conversas','messages-square'],['Perfil','user-round'],['Plano','crown']];
+const TILES = [['Vida Interior',18,'brain'],['Relacionamentos',13,'heart'],['Negócios',11,'briefcase'],['Filosofia',21,'landmark']];
+const MINDS = [['jung','Carl Gustav Jung','Psicologia','1875–1961'],['seneca','Sêneca','Estoicismo','c. 4 a.C.–65'],['arendt','Hannah Arendt','Filosofia','1906–1975'],['rumi','Rumi','Espiritualidade','1207–1273']];
+const FAVS = [['frankl','Viktor Frankl','Sentido da vida'],['seneca','Sêneca','Filosofia estoica'],['jung','Carl Gustav Jung','Autoconhecimento']];
+const QUIZ = [['Ansiedade','wind'],['Solidão','user-round'],['Falta de rumo na carreira','compass'],['Cansaço, exaustão','battery-low'],['Relacionamentos','heart'],['Luto ou uma perda','feather']];
+
+class Component extends DCLogic {
+  state = { sel: { '1a': { 0: true, 2: true }, '1b': { 0: true, 2: true }, '1c': { 0: true, 2: true } } };
+  renderVals() {
+    const { sel } = this.state;
+    return {
+      suggestions: ['Hoje eu só preciso desabafar.', 'Estou confuso(a) e não sei por onde começar.', 'Quem pode me ajudar com meu negócio?'],
+      dirs: DIRS.map(d => ({ ...d,
+        nav: NAV.map(([label, ic], i) => ({ label, icon: I(ic), bg: i === 0 ? d.navBg : 'transparent', fg: i === 0 ? d.navFg : d.muted })),
+        tiles: TILES.map(([name, n, ic], i) => ({ name, n, icon: I(ic), bg: d.pastel[i] })),
+        minds: MINDS.map(([k, name, spec, period], i) => ({ name, spec, period, slot: `p-${d.id}-${k}`, ph: `retrato · ${name}`, star: i < 2 ? d.accent : 'rgba(255,255,255,.8)' })),
+        favs: FAVS.map(([k, name, spec], i) => ({ name, spec, slot: `f-${d.id}-${k}`, bg: d.pastel[i] })),
+        contSlot: `c-${d.id}-frankl`,
+        quiz: QUIZ.map(([label, ic], i) => { const on = !!sel[d.id][i]; return { label, icon: I(ic),
+          bg: on ? (d.dark ? d.card2 : '#FFFFFF') : d.card, fg: d.ink, ringW: on ? '2px' : '0px', iconBg: d.pastel[i % 5],
+          checkBg: on ? d.accent : 'transparent', checkRing: on ? d.accent : d.muted, checkOp: on ? 1 : 0,
+          toggle: () => this.setState(s => ({ sel: { ...s.sel, [d.id]: { ...s.sel[d.id], [i]: !s.sel[d.id][i] } } })) }; }),
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

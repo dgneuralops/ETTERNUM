@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:28px;color:{{ t.ink }};font-family:Urbanist,sans-serif">
+
+<sc-if value="{{ isAreas }}" hint-placeholder-val="{{ false }}">
+<section data-screen-label="07 Áreas" style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:8px;max-width:620px"><h1 style="margin:0;font:700 {{ h1 }}/1.05 Urbanist;letter-spacing:-.025em">Áreas da <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:{{ t.accentText }}">vida</span></h1><p style="margin:0;font:500 17px/1.5 Urbanist;color:{{ t.muted }}">Escolha a área do que você está vivendo. Em cada uma, você conversa com uma mente, abre o Conselho ou pede ao Maestro que escolha por você.</p></div>
+<div style="display:grid;grid-template-columns:{{ areaCols }};gap:12px">
+<sc-for list="{{ areas }}" as="a" hint-placeholder-count="10"><button onClick="{{ a.go }}" style="min-height:{{ areaH }};border-radius:26px;border:0;background:{{ a.bg }};color:#15130E;padding:20px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;text-align:left;cursor:pointer;transition:transform .25s cubic-bezier(.25,.1,.25,1)" style-hover="transform:translateY(-3px)"><div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start"><span style="width:48px;height:48px;border-radius:15px;background:rgba(21,19,14,.08);display:grid;place-items:center"><et-i n="{{ a.icon }}" s="23"></et-i></span><span style="font:700 13px Urbanist;opacity:.7">{{ a.n }} mentes</span></div><div style="display:flex;flex-direction:column;gap:6px"><span style="font:700 19px/1.15 Urbanist;letter-spacing:-.01em">{{ a.name }}</span><span style="font:500 14px/1.45 Urbanist;opacity:.72">{{ a.phrase }}</span></div></button></sc-for>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isArea }}" hint-placeholder-val="{{ false }}">
+<section data-screen-label="08 Área" style="display:flex;flex-direction:column;gap:22px">
+<button onClick="{{ goAreas }}" style="align-self:flex-start;height:36px;padding:0 12px 0 6px;border-radius:999px;border:0;background:transparent;color:{{ t.muted }};font:700 14px Urbanist;display:flex;align-items:center;gap:4px;cursor:pointer"><et-i n="chevron-left" s="18"></et-i>Áreas da vida</button>
+<div style="display:flex;gap:20px;align-items:{{ headAlign }};flex-direction:{{ headDir }}">
+<span style="flex:none;width:{{ bigIcon }};height:{{ bigIcon }};border-radius:28px;background:{{ area.tint }};box-shadow:inset 0 0 0 1px {{ area.ring }};display:grid;place-items:center"><et-i n="{{ area.icon }}" s="{{ bigIconInner }}" c="{{ area.color }}"></et-i></span>
+<div style="display:flex;flex-direction:column;gap:6px"><h1 style="margin:0;font:700 {{ h1 }}/1.05 Urbanist;letter-spacing:-.025em">{{ area.name }}</h1><p style="margin:0;font:500 17px/1.5 Urbanist;color:{{ t.muted }}">{{ area.phrase }} · {{ area.n }} mentes</p></div>
+</div>
+
+<sc-if value="{{ isAstro }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;border-radius:32px;overflow:hidden;background:radial-gradient(1.5px 1.5px at 12% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 27% 62%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 41% 28%,#E0C78E 50%,transparent 51%),radial-gradient(1px 1px at 58% 74%,#fff 50%,transparent 51%),radial-gradient(1.6px 1.6px at 71% 22%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 84% 58%,#E0C78E 50%,transparent 51%),radial-gradient(1px 1px at 92% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 8% 82%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 35% 90%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 66% 44%,#fff 50%,transparent 51%),radial-gradient(700px 400px at 85% 0%,rgba(185,166,242,.28),transparent 70%),radial-gradient(500px 300px at 0% 100%,rgba(224,199,142,.16),transparent 70%),#0C0B14;color:#F3EFE6;padding:{{ astroPad }};display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+<span style="flex:none;width:{{ signSize }};height:{{ signSize }};border-radius:50%;box-shadow:inset 0 0 0 1px rgba(224,199,142,.45),0 0 60px rgba(185,166,242,.3);display:grid;place-items:center;font:400 {{ signGlyph }}/1 'EB Garamond',serif;color:#E0C78E">♐︎</span>
+<div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span style="font:700 12px Urbanist;letter-spacing:.16em;color:#B9A6F2">SEU SIGNO SOLAR</span><span style="font:700 {{ h1 }}/1 Urbanist;letter-spacing:-.025em">Sagitário</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><sc-for list="{{ signTags }}" as="g" hint-placeholder-count="3"><span style="height:28px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,.08);font:600 13px Urbanist;display:flex;align-items:center">{{ g }}</span></sc-for></div></div>
+</div>
+<div style="display:grid;grid-template-columns:{{ signCols }};gap:10px">
+<sc-for list="{{ signBlocks }}" as="b" hint-placeholder-count="4"><div style="border-radius:22px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);padding:18px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;gap:8px;align-items:center"><et-i n="{{ b.icon }}" s="17" c="{{ b.color }}"></et-i><span style="font:700 15px Urbanist">{{ b.title }}</span></div><span style="font:500 14px/1.55 Urbanist;color:#C9C3B8">{{ b.text }}</span></div></sc-for>
+</div>
+<span style="font:500 12.5px/1.5 Urbanist;color:#8A847A">Uma lente simbólica para conversar sobre o seu jeito de ser. Calculado pela sua data de nascimento.</span>
+</div>
+</sc-if>
+
+<div style="display:grid;grid-template-columns:{{ actCols }};gap:12px">
+<button onClick="{{ goConselho }}" style="border-radius:26px;border:0;background:{{ t.hero }};color:{{ t.heroInk }};padding:24px;display:flex;align-items:center;gap:18px;text-align:left;cursor:pointer;transition:transform .2s" style-hover="transform:translateY(-2px)"><span style="flex:none;width:56px;height:56px;border-radius:18px;background:#E0C78E;color:#14110A;display:grid;place-items:center"><et-i n="users-round" s="26"></et-i></span><span style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:700 19px Urbanist">Abrir o Conselho</span><span style="font:500 14.5px/1.45 Urbanist;color:{{ t.heroMuted }}">Leve sua situação a várias mentes ao mesmo tempo.</span></span><et-i n="arrow-right" s="20" c="#E0C78E"></et-i></button>
+<button onClick="{{ goMaestroArea }}" style="border-radius:26px;border:0;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};color:{{ t.ink }};padding:24px;display:flex;align-items:center;gap:18px;text-align:left;cursor:pointer;transition:transform .2s" style-hover="transform:translateY(-2px)"><span role="img" aria-label="Aurelius, o Maestro" style="flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#2A2118 url(./portraits/maestro-face.png) center/cover no-repeat;filter:sepia(.2) saturate(.85) contrast(1.05) brightness(.95);box-shadow:0 0 0 1.5px rgba(224,199,142,.7)"></span><span style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:700 19px Urbanist">Não sabe com quem falar?</span><span style="font:500 14.5px/1.45 Urbanist;color:{{ t.muted }}">Conte ao Maestro, ele encaminha para a mente ideal.</span></span><et-i n="arrow-right" s="20" c="{{ t.muted }}"></et-i></button>
+</div>
+<h2 style="margin:8px 0 0;font:700 22px Urbanist">Mentes desta área</h2>
+</section>
+</sc-if>
+
+<sc-if value="{{ isMentes }}" hint-placeholder-val="{{ false }}">
+<section data-screen-label="09 Todas as mentes" style="display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:8px"><h1 style="margin:0;font:700 {{ h1 }}/1.05 Urbanist;letter-spacing:-.025em">Todas as <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:{{ t.accentText }}">mentes</span></h1><p style="margin:0;font:500 17px/1.5 Urbanist;color:{{ t.muted }}">61 cápsulas de grandes mentes da humanidade, cada uma alimentada com todos os livros e materiais do seu autor.</p></div>
+<div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:{{ chipMargin }};padding:{{ chipPad }}">
+<sc-for list="{{ filters }}" as="f" hint-placeholder-count="8"><button onClick="{{ f.go }}" style="flex:none;height:42px;padding:0 16px 0 {{ f.padL }};border-radius:999px;border:0;background:{{ f.bg }};box-shadow:inset 0 0 0 1px {{ f.ring }};color:{{ f.fg }};font:700 14px Urbanist;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background .2s,color .2s"><sc-if value="{{ f.hasIcon }}" hint-placeholder-val="{{ true }}"><et-i n="{{ f.icon }}" s="16" c="{{ f.ic }}"></et-i></sc-if>{{ f.label }}</button></sc-for>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ showGrid }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:{{ gridCols }};gap:14px">
+<sc-for list="{{ minds }}" as="m" hint-placeholder-count="8">
+<article style="border-radius:26px;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};padding:8px 8px 16px;display:flex;flex-direction:column;gap:12px;animation:etIn .45s both;animation-delay:{{ m.delay }};transition:transform .3s cubic-bezier(.25,.1,.25,1)" style-hover="transform:translateY(-4px)">
+<div style="position:relative;height:{{ imgH }};border-radius:20px;overflow:hidden;background:#1A1510">
+<div style="position:absolute;inset:0;filter:{{ m.filter }}"><image-slot id="mind-{{ m.slug }}" shape="rect" placeholder="{{ m.name }}"></image-slot></div>
+<sc-if value="{{ m.inspired }}" hint-placeholder-val="{{ false }}"><span title="Cápsula de um especialista nas ideias desta pessoa — não é uma simulação dela." style="position:absolute;left:10px;top:10px;height:26px;padding:0 10px;border-radius:999px;background:rgba(11,11,12,.72);color:#E0C78E;font:700 11px Urbanist;display:flex;align-items:center;gap:5px"><et-i n="feather" s="12"></et-i>Inspirado em</span></sc-if>
+<sc-if value="{{ m.locked }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:10px;bottom:10px;height:28px;padding:0 11px;border-radius:999px;background:rgba(11,11,12,.75);color:#F3EFE6;font:700 11.5px Urbanist;display:flex;align-items:center;gap:6px;pointer-events:none"><et-i n="lock" s="13"></et-i>Premium</span></sc-if>
+<button onClick="{{ m.fav }}" aria-label="Favoritar" style="position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;border:0;background:{{ m.starBg }};color:{{ m.starFg }};display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s,transform .2s" style-active="transform:scale(.88)"><et-i n="star" s="17"></et-i></button>
+</div>
+<div style="padding:0 8px;display:flex;flex-direction:column;gap:6px;flex:1">
+<span style="font:700 11px/1.35 Urbanist;letter-spacing:.1em;color:{{ t.accentText }};text-transform:uppercase">{{ m.spec }}</span>
+<h3 style="margin:0;font:700 20px/1.15 Urbanist;letter-spacing:-.01em">{{ m.name }}</h3>
+<span style="font:500 13px Urbanist;color:{{ t.faint }}">{{ m.period }}</span>
+<p style="margin:4px 0 0;font:italic 400 17px/1.35 'EB Garamond',serif;color:{{ t.muted }};flex:1">{{ m.quote }}</p>
+<button onClick="{{ m.go }}" style="margin-top:10px;height:44px;border-radius:999px;border:0;background:{{ m.btnBg }};box-shadow:inset 0 0 0 1px {{ m.btnRing }};color:{{ m.btnFg }};font:700 14px Urbanist;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .2s"><sc-if value="{{ m.locked }}" hint-placeholder-val="{{ false }}"><et-i n="lock" s="14"></et-i></sc-if>{{ m.cta }}</button>
+</div>
+</article>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { filter: 'todas' };
+  renderVals() {
+    const a = this.props.app || {}, E = window.ETT, t = a.t || {}, mob = !!a.mobile;
+    if (!E) return {};
+    const nav = (r, p, v) => a.nav && a.nav(r, p, v);
+    const route = a.route, slug = a.param || 'negocios';
+    const area = E.areaBySlug[slug] || E.areaBySlug.negocios;
+    const free = a.plan === 'free';
+    let list = route === 'area' ? E.minds.filter(m => m.areas.includes(area.slug)) : this.state.filter === 'todas' ? E.minds : E.minds.filter(m => m.areas.includes(this.state.filter));
+    const card = (m, i) => { const fav = !!(a.favs || {})[m.slug]; const locked = free && m.slug !== 'seneca' || (route === 'mentes' && !free && m.slug === 'dalai' && a.variant === 'bloqueado'); return { ...m, delay: Math.min(i, 12) * 40 + 'ms',
+      locked, filter: locked ? 'grayscale(1) brightness(.6)' : 'grayscale(1) sepia(.38) contrast(1.08) brightness(.88)',
+      starBg: fav ? '#E0C78E' : 'rgba(11,11,12,.5)', starFg: fav ? '#14110A' : '#F3EFE6', fav: () => a.toggleFav(m.slug),
+      cta: locked ? 'Disponível no Premium' : 'Acessar esta mente', btnBg: locked ? t.card2 : 'transparent', btnRing: locked ? t.line : t.accentLine, btnFg: locked ? t.muted : t.accentText,
+      go: () => locked ? nav('plano') : nav('mente', m.slug) }; };
+    const filters = [{ slug: 'todas', short: 'Todas' }, ...E.areas].map(f => { const on = this.state.filter === f.slug; return { label: f.short, icon: f.icon || '', hasIcon: !!f.icon, padL: f.icon ? '12px' : '16px', bg: on ? t.altBg : t.card, fg: on ? t.altFg : t.ink, ring: on ? 'transparent' : t.line, ic: on ? t.altFg : (f.color || t.ink), go: () => this.setState({ filter: f.slug }) }; });
+    return {
+      t, h1: mob ? '32px' : '44px',
+      isAreas: route === 'areas', isArea: route === 'area', isMentes: route === 'mentes', isAstro: route === 'area' && area.slug === 'astrologia', showGrid: route !== 'areas',
+      areaCols: mob ? '1fr' : 'repeat(auto-fill,minmax(230px,1fr))', areaH: mob ? '150px' : '190px',
+      areas: E.areas.map(ar => ({ ...ar, bg: t.pastel[ar.p], go: () => nav('area', ar.slug) })),
+      area: { ...area, tint: E.hexA(area.color, .14), ring: E.hexA(area.color, .35) }, bigIcon: mob ? '72px' : '96px', bigIconInner: mob ? '34' : '44', headDir: mob ? 'column' : 'row', headAlign: mob ? 'flex-start' : 'center',
+      actCols: mob ? '1fr' : '1fr 1fr', goAreas: () => nav('areas'), goConselho: () => nav('conselho', area.slug), goMaestroArea: () => nav('maestro', '', 'area:' + area.slug),
+      astroPad: mob ? '24px' : '36px', signSize: mob ? '88px' : '120px', signGlyph: mob ? '56px' : '76px', signCols: mob ? '1fr' : 'repeat(4,1fr)',
+      signTags: ['Elemento Fogo', 'Mutável', 'Regente: Júpiter'],
+      signBlocks: [['Forças', 'Otimismo, curiosidade, generosidade e um senso de aventura que contagia.', 'sun', '#E0C78E'], ['Desafios', 'Impaciência com rotinas e a tendência de prometer mais do que cabe no dia.', 'mountain', '#F3A977'], ['Sob estresse', 'Foge para o próximo plano, se dispersa e se irrita com limites.', 'cloud-lightning', '#F2A7B8'], ['O que ajuda', 'Movimento, um horizonte de sentido, conversas francas e aprender algo novo.', 'compass', '#A4DD8C']].map(([title, text, icon, color]) => ({ title, text, icon, color })),
+      chipMargin: mob ? '0 -16px' : '0', chipPad: mob ? '0 16px' : '0',
+      filters, minds: list.map(card), gridCols: mob ? '1fr 1fr' : 'repeat(auto-fill,minmax(240px,1fr))', imgH: mob ? '170px' : '230px',
+    };
+  }
+}
+</script>
+</body>
+</html>
