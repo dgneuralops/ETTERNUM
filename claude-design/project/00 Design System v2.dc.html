@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#000;color:#F3EFE6;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#E0C78E;text-decoration:none}a:hover{color:#F3E3B8;text-decoration:underline}
+::selection{background:rgba(224,199,142,.3)}
+@keyframes etPulse{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+@keyframes etShimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes etBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
+@keyframes etSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
+</style>
+</helmet>
+<div style="background:#000;min-height:100vh">
+
+<header style="position:sticky;top:0;z-index:20;height:52px;background:rgba(0,0,0,.72);backdrop-filter:saturate(1.8) blur(20px);-webkit-backdrop-filter:saturate(1.8) blur(20px);border-bottom:1px solid rgba(255,255,255,.08)">
+<div style="max-width:1200px;margin:0 auto;height:100%;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+<div style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span><span style="font:600 15px 'Inter Tight';letter-spacing:.24em">ETTERNUM</span></div>
+<nav style="display:flex;gap:28px;font-size:12px;overflow-x:auto;scrollbar-width:none"><a href="#cores" style="color:#A7A197;white-space:nowrap">Cores</a><a href="#tipo" style="color:#A7A197;white-space:nowrap">Tipografia</a><a href="#botoes" style="color:#A7A197;white-space:nowrap">Botões</a><a href="#campos" style="color:#A7A197;white-space:nowrap">Campos</a><a href="#mentes" style="color:#A7A197;white-space:nowrap">Mentes</a><a href="#areas" style="color:#A7A197;white-space:nowrap">Áreas</a><a href="#chat" style="color:#A7A197;white-space:nowrap">Chat</a><a href="#avisos" style="color:#A7A197;white-space:nowrap">Avisos</a><a href="#nav" style="color:#A7A197;white-space:nowrap">Navegação</a><a href="#feedback" style="color:#A7A197;white-space:nowrap">Feedback</a></nav>
+</div>
+</header>
+
+<!-- HERO -->
+<section data-screen-label="00 Design System v2" style="padding:160px 24px 140px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:28px">
+<span style="font:600 14px 'Inter Tight';color:#E0C78E;letter-spacing:.02em">Design System 2.0</span>
+<h1 style="margin:0;font:600 clamp(56px,10vw,136px)/.95 'Inter Tight';letter-spacing:-.045em;max-width:1100px;text-wrap:balance">Menos ruído.<br><span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;letter-spacing:-.02em;color:#E0C78E">Mais presença.</span></h1>
+<p style="margin:0;font:400 clamp(19px,2vw,24px)/1.45 Inter;color:#A7A197;max-width:640px;letter-spacing:-.01em;text-wrap:pretty">Preto absoluto, ouro suave e muito espaço. Cada componente do Etternum, reduzido ao essencial.</p>
+<div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:12px"><a href="#cores" style="height:48px;padding:0 26px;border-radius:999px;background:#E0C78E;color:#000;font:500 16px Inter;display:flex;align-items:center;text-decoration:none">Explorar o sistema</a><a href="#botoes" style="height:48px;padding:0 8px;color:#E0C78E;font:400 16px Inter;display:flex;align-items:center;gap:4px">Ver componentes ›</a></div>
+</section>
+
+<!-- PRINCÍPIOS -->
+<section style="max-width:1200px;margin:0 auto;padding:0 24px 160px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1px;background:rgba(255,255,255,.08);border-radius:28px;overflow:hidden">
+<div style="background:#000;padding:40px 32px;display:flex;flex-direction:column;gap:12px"><span style="font:600 56px/1 'Inter Tight';letter-spacing:-.04em;color:#E0C78E">01</span><span style="font:600 22px 'Inter Tight';letter-spacing:-.02em">Uma ideia por tela.</span><span style="font-size:15px;line-height:1.55;color:#A7A197">Um título, uma ação principal. O resto espera.</span></div>
+<div style="background:#000;padding:40px 32px;display:flex;flex-direction:column;gap:12px"><span style="font:600 56px/1 'Inter Tight';letter-spacing:-.04em;color:#E0C78E">02</span><span style="font:600 22px 'Inter Tight';letter-spacing:-.02em">Tipo grande, superfície plana.</span><span style="font-size:15px;line-height:1.55;color:#A7A197">Hierarquia pelo tamanho, não por bordas e sombras.</span></div>
+<div style="background:#000;padding:40px 32px;display:flex;flex-direction:column;gap:12px"><span style="font:600 56px/1 'Inter Tight';letter-spacing:-.04em;color:#E0C78E">03</span><span style="font:600 22px 'Inter Tight';letter-spacing:-.02em">Ouro com moderação.</span><span style="font-size:15px;line-height:1.55;color:#A7A197">Um toque dourado por bloco: a ação ou a palavra que importa.</span></div>
+</div>
+</section>
+
+<!-- 01 CORES -->
+<section id="cores" style="max-width:1200px;margin:0 auto;padding:0 24px 160px;scroll-margin-top:60px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Cores</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Noite. Marfim. <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:#E0C78E">Ouro.</span></h2><p style="margin:0;font-size:19px;line-height:1.5;color:#A7A197">O fundo passa a preto puro (<code style="color:#F3EFE6">bg #000</code>) para o vidro e o ouro ganharem profundidade, como numa vitrine à noite.</p></div>
+<div style="display:grid;grid-template-columns:2fr 1fr 1fr;grid-auto-rows:200px;gap:12px">
+<div style="grid-row:span 2;border-radius:28px;background:#E0C78E;color:#000;padding:28px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 28px 'Inter Tight';letter-spacing:-.02em">gold</span><span style="font:500 14px ui-monospace,Menlo,monospace">#E0C78E · 12,6:1 sobre bg</span></div>
+<div style="border-radius:28px;background:#F3EFE6;color:#000;padding:24px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 20px 'Inter Tight'">ink</span><span style="font:13px ui-monospace,Menlo,monospace">#F3EFE6</span></div>
+<div style="border-radius:28px;background:#CFAE64;color:#000;padding:24px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 20px 'Inter Tight'">gold-strong</span><span style="font:13px ui-monospace,Menlo,monospace">#CFAE64</span></div>
+<div style="border-radius:28px;background:#1C1C21;padding:24px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 20px 'Inter Tight'">graphite-2</span><span style="font:13px ui-monospace,Menlo,monospace;color:#A7A197">#1C1C21</span></div>
+<div style="border-radius:28px;background:#141417;padding:24px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 20px 'Inter Tight'">graphite</span><span style="font:13px ui-monospace,Menlo,monospace;color:#A7A197">#141417</span></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+<div style="border-radius:20px;background:#0A0A0B;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);padding:20px;height:120px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 15px 'Inter Tight'">bg-soft</span><span style="font:12px ui-monospace,Menlo,monospace;color:#A7A197">#0A0A0B</span></div>
+<div style="border-radius:20px;background:#141417;padding:20px;height:120px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 15px 'Inter Tight';color:#A7A197">muted</span><span style="font:12px ui-monospace,Menlo,monospace;color:#A7A197">#A7A197 · 8,6:1</span></div>
+<div style="border-radius:20px;background:#141417;padding:20px;height:120px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 15px 'Inter Tight';color:#8A847A">faint</span><span style="font:12px ui-monospace,Menlo,monospace;color:#8A847A">#8A847A · 5,6:1</span></div>
+<div style="border-radius:20px;background:#141417;padding:20px;height:120px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 15px 'Inter Tight';color:#F28B82">danger</span><span style="font:12px ui-monospace,Menlo,monospace;color:#A7A197">#F28B82</span></div>
+<div style="border-radius:20px;background:#141417;box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);padding:20px;height:120px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 15px 'Inter Tight'">line</span><span style="font:12px ui-monospace,Menlo,monospace;color:#A7A197">white / 9%</span></div>
+<div style="border-radius:20px;background:#141417;box-shadow:inset 0 0 0 1px rgba(224,199,142,.35);padding:20px;height:120px;display:flex;flex-direction:column;justify-content:space-between"><span style="font:600 15px 'Inter Tight'">line-strong</span><span style="font:12px ui-monospace,Menlo,monospace;color:#A7A197">gold / 35%</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<span style="font:600 22px 'Inter Tight';letter-spacing:-.02em">Áreas da vida</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px">
+<sc-for list="{{ areas }}" as="a" hint-placeholder-count="10">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="aspect-ratio:1;border-radius:24px;background:{{ a.tint }};display:grid;place-items:center"><span style="width:32px;height:32px;background:{{ a.color }};-webkit-mask:url({{ a.iconUrl }}) center/contain no-repeat;mask:url({{ a.iconUrl }}) center/contain no-repeat"></span></div>
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 13px Inter">{{ a.short }}</span><span style="font:11px ui-monospace,Menlo,monospace;color:#8A847A">{{ a.color }}</span></div>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- 02 TIPOGRAFIA -->
+<section id="tipo" style="background:#0A0A0B;padding:160px 24px;scroll-margin-top:52px">
+<div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:72px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:48px;align-items:end">
+<div style="display:flex;flex-direction:column;gap:16px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Tipografia</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Moderna na estrutura. <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:#E0C78E">Clássica na alma.</span></h2></div>
+<p style="margin:0;font-size:19px;line-height:1.5;color:#A7A197">Inter Tight assume títulos e interface, com tracking negativo, no ritmo de uma vitrine de produto. EB Garamond itálico fica para o que é humano: a palavra de ênfase, o nome da mente, a citação.</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:12px">
+<div style="border-radius:28px;background:#141417;padding:40px;display:flex;flex-direction:column;gap:20px;min-height:320px;justify-content:space-between"><span style="font:600 13px Inter;color:#8A847A">Inter Tight · 500 / 600 / 700</span><span style="font:600 140px/.9 'Inter Tight';letter-spacing:-.06em">Aa</span><span style="font-size:14px;color:#A7A197">Títulos, números, rótulos, navegação.</span></div>
+<div style="border-radius:28px;background:#141417;padding:40px;display:flex;flex-direction:column;gap:20px;min-height:320px;justify-content:space-between"><span style="font:600 13px Inter;color:#8A847A">EB Garamond · itálico</span><span style="font:italic 400 140px/.9 'EB Garamond',serif;color:#E0C78E;letter-spacing:-.03em">Aê</span><span style="font-size:14px;color:#A7A197">Acentos testados: ê ã ç õ í — circunflexo alinhado.</span></div>
+<div style="border-radius:28px;background:#141417;padding:40px;display:flex;flex-direction:column;gap:20px;min-height:320px;justify-content:space-between"><span style="font:600 13px Inter;color:#8A847A">Inter · 400 / 500</span><span style="font:400 140px/.9 Inter;letter-spacing:-.05em">Aa</span><span style="font-size:14px;color:#A7A197">Texto corrido, chat, formulários.</span></div>
+</div>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="10">
+<div style="display:grid;grid-template-columns:minmax(0,160px) minmax(0,1fr);gap:24px;align-items:baseline;padding:28px 0;border-top:1px solid rgba(255,255,255,.08)">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 14px 'Inter Tight'">{{ t.token }}</span><span style="font:12px ui-monospace,Menlo,monospace;color:#8A847A">{{ t.spec }}</span></div>
+<span style="font-family:{{ t.family }};font-size:{{ t.size }};line-height:{{ t.lh }};font-weight:{{ t.weight }};letter-spacing:{{ t.ls }};font-style:{{ t.style }};color:{{ t.color }};min-width:0;overflow-wrap:anywhere">{{ t.sample }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- 03 BASE -->
+<section style="max-width:1200px;margin:0 auto;padding:160px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px">
+<div style="border-radius:28px;background:#141417;padding:36px;display:flex;flex-direction:column;gap:20px"><span style="font:600 22px 'Inter Tight';letter-spacing:-.02em">Espaço</span><span style="font-size:14px;color:#A7A197;margin-top:-12px">Base 4. Seções respiram 160px.</span>
+<sc-for list="{{ spaces }}" as="sp" hint-placeholder-count="9"><div style="display:flex;align-items:center;gap:14px"><span style="width:36px;font:12px ui-monospace,Menlo,monospace;color:#8A847A">{{ sp.px }}</span><span style="height:6px;border-radius:3px;background:#E0C78E;width:{{ sp.w }}"></span></div></sc-for>
+</div>
+<div style="border-radius:28px;background:#141417;padding:36px;display:flex;flex-direction:column;gap:20px"><span style="font:600 22px 'Inter Tight';letter-spacing:-.02em">Raios</span><span style="font-size:14px;color:#A7A197;margin-top:-12px">Grandes e contínuos.</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div style="height:80px;border-radius:12px;background:#1C1C21;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">12 · chips</div>
+<div style="height:80px;border-radius:20px;background:#1C1C21;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">20 · inputs</div>
+<div style="height:80px;border-radius:28px;background:#1C1C21;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">28 · cards</div>
+<div style="height:80px;border-radius:36px;background:#1C1C21;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">36 · heros</div>
+<div style="grid-column:span 2;height:48px;border-radius:999px;background:#1C1C21;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">999 · botões</div>
+</div>
+</div>
+<div style="border-radius:28px;background:#141417;padding:36px;display:flex;flex-direction:column;gap:18px"><span style="font:600 22px 'Inter Tight';letter-spacing:-.02em">Movimento</span><span style="font-size:14px;color:#A7A197;margin-top:-10px">Curto, firme, sem quique.</span>
+<sc-for list="{{ motion }}" as="m" hint-placeholder-count="5"><div style="display:flex;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)"><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:500 14px Inter">{{ m.token }}</span><span style="font-size:12px;color:#8A847A">{{ m.use }}</span></div><span style="flex:none;font:12px ui-monospace,Menlo,monospace;color:#E0C78E">{{ m.dur }}</span></div></sc-for>
+<span style="font:11px ui-monospace,Menlo,monospace;color:#8A847A">curva cubic-bezier(.25,.1,.25,1)</span>
+</div>
+</section>
+
+<!-- 04 BOTÕES -->
+<section id="botoes" style="background:#0A0A0B;padding:160px 24px;scroll-margin-top:52px">
+<div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Botões</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Uma ação. Clara.</h2><p style="margin:0;font-size:19px;line-height:1.5;color:#A7A197">Primário em ouro sólido, sem gradiente. Secundário em grafite. Link com “›”.</p></div>
+<div style="border-radius:36px;background:#000;padding:64px 32px;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;align-items:center">
+<button style="height:56px;padding:0 32px;border:0;border-radius:999px;background:#E0C78E;color:#000;font:500 17px Inter;cursor:pointer;transition:background .2s,transform .2s" style-hover="background:#EBD6A6" style-active="transform:scale(.97)">Testar grátis por 14 dias</button>
+<button style="height:56px;padding:0 32px;border:0;border-radius:999px;background:#1C1C21;color:#F3EFE6;font:500 17px Inter;cursor:pointer;transition:background .2s,transform .2s" style-hover="background:#26262C" style-active="transform:scale(.97)">Entrar na lista de espera</button>
+<a href="#botoes" style="height:56px;padding:0 8px;display:flex;align-items:center;color:#E0C78E;font:400 17px Inter">Como funciona ›</a>
+</div>
+<div style="overflow-x:auto;border-radius:28px;background:#141417">
+<div style="min-width:900px;display:grid;grid-template-columns:130px repeat(6,minmax(0,1fr))">
+<span></span>
+<sc-for list="{{ states }}" as="st" hint-placeholder-count="6"><span style="padding:24px 8px 8px;font:500 12px Inter;color:#8A847A;text-align:center">{{ st }}</span></sc-for>
+
+<span style="padding:20px 24px;font:500 14px Inter;display:flex;align-items:center">Primário</span>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#E0C78E;color:#000;font:500 15px Inter">Conversar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#EBD6A6;color:#000;font:500 15px Inter">Conversar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#E0C78E;color:#000;font:500 15px Inter;box-shadow:0 0 0 3px #141417,0 0 0 5px #F3EFE6">Conversar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#CFAE64;color:#000;font:500 15px Inter;transform:scale(.97)">Conversar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button disabled style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#2A2822;color:#6F6A62;font:500 15px Inter">Conversar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#E0C78E;color:#000;font:500 15px Inter;display:flex;align-items:center;gap:10px">{{ spinnerDark }}Enviando</button></div>
+
+<span style="padding:20px 24px;font:500 14px Inter;display:flex;align-items:center">Secundário</span>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#26262C;color:#F3EFE6;font:500 15px Inter">Entrar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#303037;color:#F3EFE6;font:500 15px Inter">Entrar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#26262C;color:#F3EFE6;font:500 15px Inter;box-shadow:0 0 0 3px #141417,0 0 0 5px #F3EFE6">Entrar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#1C1C21;color:#F3EFE6;font:500 15px Inter;transform:scale(.97)">Entrar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button disabled style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#1C1C21;color:#6F6A62;font:500 15px Inter">Entrar</button></div>
+<div style="padding:20px 6px;display:grid;place-items:center"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#26262C;color:#F3EFE6;font:500 15px Inter;display:flex;align-items:center;gap:10px">{{ spinnerLight }}Aguarde</button></div>
+
+<span style="padding:20px 24px;font:500 14px Inter;display:flex;align-items:center">Ícone</span>
+<sc-for list="{{ iconStates }}" as="is" hint-placeholder-count="6"><div style="padding:20px 6px;display:grid;place-items:center"><span style="width:44px;height:44px;border-radius:999px;background:{{ is.bg }};box-shadow:{{ is.ring }};transform:{{ is.tf }};display:grid;place-items:center"><span style="width:18px;height:18px;background:{{ is.fg }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat"></span></span></div></sc-for>
+
+<span style="padding:20px 24px 28px;font:500 14px Inter;display:flex;align-items:center">Link</span>
+<div style="padding:20px 6px 28px;display:grid;place-items:center"><span style="font:400 15px Inter;color:#E0C78E">Ver todas ›</span></div>
+<div style="padding:20px 6px 28px;display:grid;place-items:center"><span style="font:400 15px Inter;color:#E0C78E;text-decoration:underline;text-underline-offset:4px">Ver todas ›</span></div>
+<div style="padding:20px 6px 28px;display:grid;place-items:center"><span style="font:400 15px Inter;color:#E0C78E;border-radius:6px;padding:2px 6px;box-shadow:0 0 0 2px #F3EFE6">Ver todas ›</span></div>
+<div style="padding:20px 6px 28px;display:grid;place-items:center"><span style="font:400 15px Inter;color:#CFAE64">Ver todas ›</span></div>
+<div style="padding:20px 6px 28px;display:grid;place-items:center"><span style="font:400 15px Inter;color:#6F6A62">Ver todas ›</span></div>
+<div style="padding:20px 6px 28px;display:grid;place-items:center"><span style="font:400 15px Inter;color:#8A847A">—</span></div>
+</div>
+</div>
+<span style="font-size:14px;color:#8A847A">Alturas: 36 · 44 · 56 (CTA). Foco: anel marfim de 2px com afastamento de 3px.</span>
+</div>
+</section>
+
+<!-- 05 CAMPOS -->
+<section id="campos" style="max-width:1200px;margin:0 auto;padding:160px 24px;scroll-margin-top:52px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Campos</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Simples de preencher.</h2><p style="margin:0;font-size:19px;line-height:1.5;color:#A7A197">Campos preenchidos em grafite, sem borda até o foco. Rótulo acima, dica abaixo.</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:32px 20px">
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 14px Inter">Nome</span><input value="Ana Clara Souza" style="height:56px;padding:0 20px;border-radius:16px;border:0;background:#1C1C21;color:#F3EFE6;font:17px Inter;outline:none;box-shadow:inset 0 0 0 1px transparent;transition:box-shadow .2s" style-focus="box-shadow:inset 0 0 0 2px #E0C78E"><span style="font-size:13px;color:#8A847A">Padrão · clique para foco</span></label>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 14px Inter">E-mail</span><input value="ana@exemplo.com" style="height:56px;padding:0 20px;border-radius:16px;border:0;background:#1C1C21;color:#F3EFE6;font:17px Inter;outline:none;box-shadow:inset 0 0 0 2px #E0C78E"><span style="font-size:13px;color:#8A847A">Foco</span></label>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 14px Inter">Senha</span><div style="position:relative;display:flex"><input type="{{ pwType }}" value="etternum2026" style="flex:1;min-width:0;height:56px;padding:0 56px 0 20px;border-radius:16px;border:0;background:#1C1C21;color:#F3EFE6;font:17px Inter;outline:none" style-focus="box-shadow:inset 0 0 0 2px #E0C78E"><button onClick="{{ togglePw }}" aria-label="Mostrar senha" style="position:absolute;right:6px;top:6px;width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer"><span style="width:20px;height:20px;background:#A7A197;-webkit-mask:url({{ pwIcon }}) center/contain no-repeat;mask:url({{ pwIcon }}) center/contain no-repeat"></span></button></div><span style="font-size:13px;color:#8A847A">Pelo menos 8 caracteres.</span></label>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 14px Inter">CPF</span><input value="{{ cpf }}" onChange="{{ onCpf }}" inputmode="numeric" placeholder="000.000.000-00" style="height:56px;padding:0 20px;border-radius:16px;border:0;background:rgba(242,139,130,.08);color:#F3EFE6;font:17px Inter;outline:none;box-shadow:inset 0 0 0 2px #F28B82;font-variant-numeric:tabular-nums"><span style="font-size:13px;color:#F28B82">CPF inválido. Confira os números.</span></label>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label style="display:flex;flex-direction:column;gap:8px;min-width:0"><span style="font:500 14px Inter">Nascimento</span><input value="12/12/1992" style="min-width:0;height:56px;padding:0 20px;border-radius:16px;border:0;background:#1C1C21;color:#F3EFE6;font:17px Inter;outline:none;font-variant-numeric:tabular-nums"></label><label style="display:flex;flex-direction:column;gap:8px;min-width:0"><span style="font:500 14px Inter">Signo</span><div style="height:56px;padding:0 18px;border-radius:16px;background:#1C1C21;font:17px Inter;display:flex;align-items:center;justify-content:space-between"><span><span style="color:#E0C78E">♐</span> Sagitário</span><span style="width:16px;height:16px;background:#8A847A;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-down.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-down.svg) center/contain no-repeat"></span></div></label></div><span style="font-size:13px;color:#8A847A">O signo é preenchido pela data de nascimento; ajuste se preferir.</span></div>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 14px Inter;color:#6F6A62">Desabilitado</span><input disabled value="ana@exemplo.com" style="height:56px;padding:0 20px;border-radius:16px;border:0;background:#111113;color:#6F6A62;font:17px Inter"><span style="font-size:13px;color:#8A847A">Somente leitura</span></label>
+<label style="display:flex;flex-direction:column;gap:8px;grid-column:1 / -1"><span style="font:500 14px Inter">Com o que você trabalha?</span><textarea rows="3" style="padding:18px 20px;border-radius:20px;border:0;background:#1C1C21;color:#F3EFE6;font:17px/1.55 Inter;outline:none;resize:vertical" style-focus="box-shadow:inset 0 0 0 2px #E0C78E">Sou designer numa agência e faço freelas à noite.</textarea></label>
+<div style="display:flex;flex-direction:column;gap:10px">
+<button onClick="{{ toggleCheck }}" style="display:flex;gap:14px;align-items:flex-start;text-align:left;border:0;background:transparent;padding:0;cursor:pointer;color:#A7A197;font:15px/1.55 Inter">
+<span style="flex:none;width:24px;height:24px;border-radius:8px;background:{{ checkBg }};box-shadow:{{ checkRing }};display:grid;place-items:center;transition:background .2s"><sc-if value="{{ checked }}" hint-placeholder-val="{{ true }}"><span style="width:15px;height:15px;background:#000;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/check.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/check.svg) center/contain no-repeat"></span></sc-if></span>
+<span>Tenho 18 anos ou mais, li e aceito os <span style="color:#F3EFE6;text-decoration:underline">Termos de Uso</span> e a <span style="color:#F3EFE6;text-decoration:underline">Política de Privacidade</span>…</span></button>
+<span style="font-size:13px;color:#F28B82;padding-left:38px">Para continuar, aceite os termos e a política de privacidade.</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 14px Inter">Chips</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.toggle }}" style="height:44px;padding:0 18px 0 14px;border-radius:999px;border:0;background:{{ c.bg }};color:{{ c.fg }};font:500 14px Inter;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background .2s,color .2s"><span style="width:16px;height:16px;background:{{ c.ic }};-webkit-mask:url({{ c.iconUrl }}) center/contain no-repeat;mask:url({{ c.iconUrl }}) center/contain no-repeat"></span>{{ c.short }}</button></sc-for>
+</div></div>
+</div>
+</section>
+
+<!-- 06 MENTES -->
+<section id="mentes" style="background:#0A0A0B;padding:160px 24px;scroll-margin-top:52px">
+<div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Mentes</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Cada mente, <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:#E0C78E">um medalhão.</span></h2><p style="margin:0;font-size:19px;line-height:1.5;color:#A7A197">Monograma em bronze, sem foto. O Maestro é o único em ouro.</p></div>
+<div style="border-radius:36px;background:#000;padding:64px 32px;display:flex;flex-wrap:wrap;gap:48px;justify-content:center;align-items:flex-end">
+<sc-for list="{{ avatarSizes }}" as="z" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;align-items:center;gap:14px"><span style="width:{{ z.px }}px;height:{{ z.px }}px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#5C4730,#2E2318 60%,#17120D);box-shadow:inset 0 0 0 1px rgba(224,199,142,.3);font-family:'EB Garamond',serif;font-size:{{ z.font }}px;color:#E8D3A0">CJ</span><span style="font:12px ui-monospace,Menlo,monospace;color:#8A847A">{{ z.px }}</span></div></sc-for>
+<span style="width:1px;height:112px;background:rgba(255,255,255,.1)"></span>
+<sc-for list="{{ avatarSizes }}" as="z" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;align-items:center;gap:14px"><span style="width:{{ z.px }}px;height:{{ z.px }}px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#F4E3B9,#E0C78E 45%,#B4924F)"><span style="width:{{ z.icon }}px;height:{{ z.icon }}px;background:#000;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span></span><span style="font:12px ui-monospace,Menlo,monospace;color:#8A847A">{{ z.px }}</span></div></sc-for>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px">
+<sc-for list="{{ minds }}" as="m" hint-placeholder-count="4">
+<article style="position:relative;border-radius:28px;background:#141417;padding:28px;display:flex;flex-direction:column;gap:28px;transition:transform .3s cubic-bezier(.25,.1,.25,1),background .3s" style-hover="transform:scale(1.015);background:#18181C">
+<div style="display:flex;justify-content:space-between;align-items:flex-start">
+<span style="width:80px;height:80px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#5C4730,#2E2318 60%,#17120D);box-shadow:inset 0 0 0 1px rgba(224,199,142,.3);font-family:'EB Garamond',serif;font-size:30px;color:#E8D3A0;filter:{{ m.filter }}">{{ m.ini }}</span>
+<button onClick="{{ m.fav }}" aria-label="Favoritar" style="width:44px;height:44px;margin:-8px -8px 0 0;border-radius:999px;border:0;background:{{ m.starBg }};display:grid;place-items:center;cursor:pointer;transition:background .2s"><span style="width:18px;height:18px;background:{{ m.starColor }};-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/star.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/star.svg) center/contain no-repeat"></span></button>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;flex:1">
+<sc-if value="{{ m.inspired }}" hint-placeholder-val="{{ false }}"><span title="Cápsula de um especialista nas ideias desta pessoa — não é uma simulação dela." style="align-self:flex-start;height:24px;padding:0 10px;border-radius:999px;background:rgba(224,199,142,.12);color:#E0C78E;font:500 11px Inter;display:flex;align-items:center;margin-bottom:4px">Inspirado em</span></sc-if>
+<h3 style="margin:0;font:600 26px/1.1 'Inter Tight';letter-spacing:-.025em">{{ m.name }}</h3>
+<span style="font-size:14px;color:#8A847A">{{ m.spec }} · {{ m.period }}</span>
+<p style="margin:8px 0 0;font:italic 400 19px/1.4 'EB Garamond',serif;color:#A7A197;text-wrap:pretty">{{ m.quote }}</p>
+</div>
+<button style="height:44px;border-radius:999px;border:0;background:{{ m.btnBg }};color:{{ m.btnColor }};font:500 15px Inter;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">{{ m.cta }}</button>
+</article>
+</sc-for>
+</div>
+<div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+<div style="position:relative" onMouseEnter="{{ tipOn }}" onMouseLeave="{{ tipOff }}">
+<button style="height:28px;padding:0 12px;border-radius:999px;border:0;background:rgba(224,199,142,.12);color:#E0C78E;font:500 12px Inter;cursor:help">Inspirado em</button>
+<sc-if value="{{ tip }}" hint-placeholder-val="{{ false }}"><div role="tooltip" style="position:absolute;bottom:calc(100% + 10px);left:0;width:260px;padding:14px 16px;border-radius:16px;background:rgba(40,40,46,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);font:13px/1.5 Inter;color:#F3EFE6;z-index:5">Cápsula de um especialista nas ideias desta pessoa — não é uma simulação dela.</div></sc-if>
+</div>
+<span style="font-size:14px;color:#8A847A">KindBadge · passe o mouse para ver o tooltip. Sempre visível em pessoas vivas e figuras religiosas.</span>
+</div>
+</div>
+</section>
+
+<!-- 07 ÁREAS -->
+<section id="areas" style="max-width:1200px;margin:0 auto;padding:160px 24px;scroll-margin-top:52px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Áreas e carrossel</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Dez caminhos.</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px">
+<sc-for list="{{ areasFew }}" as="a" hint-placeholder-count="4">
+<a href="#areas" style="aspect-ratio:4/5;border-radius:28px;padding:28px;background:radial-gradient(120% 70% at 50% 110%,{{ a.tint }},transparent 70%),#141417;color:#F3EFE6;text-decoration:none;display:flex;flex-direction:column;justify-content:space-between;transition:transform .3s cubic-bezier(.25,.1,.25,1)" style-hover="transform:scale(1.015);text-decoration:none">
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:{{ a.color }}">{{ a.n }} mentes</span><h3 style="margin:0;font:600 28px/1.08 'Inter Tight';letter-spacing:-.03em">{{ a.name }}</h3><p style="margin:0;font-size:15px;line-height:1.5;color:#A7A197">{{ a.phrase }}</p></div>
+<span style="width:56px;height:56px;background:{{ a.color }};-webkit-mask:url({{ a.iconUrl }}) center/contain no-repeat;mask:url({{ a.iconUrl }}) center/contain no-repeat;align-self:flex-end;opacity:.9"></span>
+</a>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;justify-content:space-between;align-items:end;gap:16px"><h3 style="margin:0;font:600 32px 'Inter Tight';letter-spacing:-.03em">Grandes mentes.</h3>
+<div style="display:flex;gap:10px"><button onClick="{{ scrollPrev }}" aria-label="Anterior" style="width:44px;height:44px;border-radius:999px;border:0;background:#1C1C21;display:grid;place-items:center;cursor:pointer" style-hover="background:#26262C"><span style="width:18px;height:18px;background:#F3EFE6;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat"></span></button><button onClick="{{ scrollNext }}" aria-label="Próximo" style="width:44px;height:44px;border-radius:999px;border:0;background:#1C1C21;display:grid;place-items:center;cursor:pointer" style-hover="background:#26262C"><span style="width:18px;height:18px;background:#F3EFE6;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat"></span></button></div></div>
+<div ref="{{ carRef }}" style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none">
+<sc-for list="{{ carousel }}" as="c" hint-placeholder-count="8">
+<div style="flex:none;width:220px;aspect-ratio:3/4;scroll-snap-align:start;padding:24px;border-radius:28px;background:#141417;display:flex;flex-direction:column;justify-content:space-between">
+<span style="width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#5C4730,#2E2318 60%,#17120D);box-shadow:inset 0 0 0 1px rgba(224,199,142,.3);font-family:'EB Garamond',serif;font-size:24px;color:#E8D3A0">{{ c.ini }}</span>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 20px/1.1 'Inter Tight';letter-spacing:-.02em">{{ c.name }}</span><span style="font-size:13px;color:#8A847A">{{ c.spec }}</span></div>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- 08 CHAT -->
+<section id="chat" style="background:#0A0A0B;padding:160px 24px;scroll-margin-top:52px">
+<div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Chat</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Uma conversa, <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:#E0C78E">sem pressa.</span></h2><p style="margin:0;font-size:19px;line-height:1.5;color:#A7A197">A resposta da mente não tem balão: é texto livre, como uma página. Só a pessoa fala dentro de uma bolha.</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:12px">
+<div style="border-radius:36px;background:#000;padding:40px;display:flex;flex-direction:column;gap:32px">
+<div style="align-self:flex-end;max-width:78%;padding:14px 20px;border-radius:24px;background:#E0C78E;color:#000;font-size:16px;line-height:1.5">Estou exausta e sem saber se continuo no meu emprego.</div>
+<div style="display:flex;flex-direction:column;gap:16px;font-size:17px;line-height:1.65;color:#E9E4DA">
+<div style="display:flex;align-items:center;gap:10px"><span style="width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#F4E3B9,#E0C78E 45%,#B4924F)"><span style="width:15px;height:15px;background:#000;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span></span><span style="font:600 14px 'Inter Tight'">Maestro</span></div>
+<p style="margin:0">Ana, obrigado por me contar. Exaustão assim costuma ser um sinal, não um defeito seu. Antes de decidir, vale olhar para <b style="color:#E0C78E;font-weight:600">o que está te esvaziando</b>:</p>
+<ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px"><li>o ritmo dobrado com os freelas à noite;</li><li>não saber para onde a carreira vai;</li><li>carregar isso sozinha.</li></ul>
+<blockquote style="margin:0;font:italic 400 24px/1.35 'EB Garamond',serif;color:#F3EFE6">“Quem tem um porquê enfrenta qualquer como.”</blockquote>
+<button style="align-self:stretch;display:flex;align-items:center;gap:16px;padding:14px 20px 14px 14px;border-radius:24px;border:0;background:#1C1C21;color:#F3EFE6;cursor:pointer;text-align:left;transition:background .2s" style-hover="background:#26262C">
+<span style="flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#5C4730,#2E2318 60%,#17120D);box-shadow:inset 0 0 0 1px rgba(224,199,142,.3);font-family:'EB Garamond',serif;font-size:18px;color:#E8D3A0">VF</span>
+<span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:600 16px 'Inter Tight'">Continuar com Viktor Frankl</span><span style="font-size:13px;color:#8A847A">Sentido da vida · Psicologia</span></span>
+<span style="width:20px;height:20px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat"></span>
+</button>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="border-radius:28px;background:#141417;padding:32px;display:flex;flex-direction:column;gap:16px"><span style="font:500 13px Inter;color:#8A847A">Pensando</span><div style="display:flex;gap:12px;align-items:center"><span style="width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#5C4730,#2E2318 60%,#17120D);font-family:'EB Garamond',serif;font-size:12px;color:#E8D3A0">VF</span>{{ dots }}</div></div>
+<div style="border-radius:28px;background:#141417;padding:32px;display:flex;flex-direction:column;gap:16px;flex:1"><span style="font:500 13px Inter;color:#8A847A">Resposta chegando</span><p style="margin:0;font-size:17px;line-height:1.65;color:#E9E4DA;min-height:112px">{{ streamText }}{{ cursor }}</p></div>
+<div style="border-radius:32px;background:#1C1C21;padding:8px 8px 8px 22px;display:flex;align-items:center;gap:8px"><input placeholder="Conte o que você está vivendo…" style="flex:1;min-width:0;height:48px;border:0;background:transparent;color:#F3EFE6;font:17px Inter;outline:none"><button aria-label="Enviar" style="flex:none;width:48px;height:48px;border-radius:999px;border:0;background:#E0C78E;display:grid;place-items:center;cursor:pointer"><span style="width:20px;height:20px;background:#000;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-up.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-up.svg) center/contain no-repeat"></span></button></div>
+<span style="font-size:12px;color:#8A847A;text-align:center">Cápsulas de IA podem errar. Não substituem profissionais de saúde. Em crise, ligue 188.</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 09 AVISOS -->
+<section id="avisos" style="max-width:1200px;margin:0 auto;padding:160px 24px;scroll-margin-top:52px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Avisos e plano</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Cuidado em primeiro lugar.</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:12px">
+<div role="alert" style="border-radius:28px;background:#1E1312;padding:36px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:6px"><span style="width:28px;height:28px;background:#F28B82;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/heart-handshake.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/heart-handshake.svg) center/contain no-repeat;margin-bottom:12px"></span><span style="font:600 28px/1.15 'Inter Tight';letter-spacing:-.02em">Você não está sozinho(a).</span><span style="font-size:17px;color:#E9E4DA">Se precisar de ajuda agora:</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<a href="tel:188" style="grid-column:span 2;border-radius:20px;background:#2A1918;padding:20px;display:flex;align-items:baseline;gap:16px;color:#F3EFE6;text-decoration:none"><span style="font:600 40px/1 'Inter Tight';letter-spacing:-.03em;color:#F6B1AA">188</span><span style="font-size:15px;line-height:1.45">CVV — gratuito, 24 horas, ou chat em cvv.org.br</span></a>
+<a href="tel:192" style="border-radius:20px;background:#2A1918;padding:18px 20px;display:flex;flex-direction:column;gap:4px;color:#F3EFE6;text-decoration:none"><span style="font:600 26px/1 'Inter Tight';color:#F6B1AA">192</span><span style="font-size:14px">SAMU</span></a>
+<a href="tel:190" style="border-radius:20px;background:#2A1918;padding:18px 20px;display:flex;flex-direction:column;gap:4px;color:#F3EFE6;text-decoration:none"><span style="font:600 26px/1 'Inter Tight';color:#F6B1AA">190</span><span style="font-size:14px">Polícia</span></a>
+<a href="tel:180" style="grid-column:span 2;border-radius:20px;background:#2A1918;padding:18px 20px;display:flex;align-items:baseline;gap:16px;color:#F3EFE6;text-decoration:none"><span style="font:600 26px/1 'Inter Tight';color:#F6B1AA">180</span><span style="font-size:14px">Central de Atendimento à Mulher</span></a>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="border-radius:28px;background:#141417;padding:36px;display:flex;flex-direction:column;gap:20px;flex:1;justify-content:center">
+<span style="font:500 13px Inter;color:#E0C78E">Plano gratuito</span>
+<p style="margin:0;font:600 26px/1.2 'Inter Tight';letter-spacing:-.02em">No plano gratuito você conversa com uma cápsula. Faça upgrade para acessar todas as mentes.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button style="height:44px;padding:0 22px;border:0;border-radius:999px;background:#E0C78E;color:#000;font:500 15px Inter;cursor:pointer">Conhecer o Premium</button><button style="height:44px;padding:0 22px;border:0;border-radius:999px;background:#26262C;color:#F3EFE6;font:500 15px Inter;cursor:pointer">Falar com o Maestro</button></div>
+</div>
+<div style="border-radius:28px;background:#141417;padding:28px 36px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+<span style="height:32px;padding:0 14px;border-radius:999px;background:rgba(224,199,142,.12);color:#E0C78E;font:500 13px Inter;display:flex;align-items:center">Teste grátis · 14 dias</span>
+<span style="height:32px;padding:0 14px;border-radius:999px;background:#26262C;color:#A7A197;font:500 13px Inter;display:flex;align-items:center">Gratuito</span>
+<span style="height:32px;padding:0 14px;border-radius:999px;background:#E0C78E;color:#000;font:500 13px Inter;display:flex;align-items:center">Premium</span>
+<span style="flex:1"></span>
+<button style="height:36px;padding:0 16px;border:0;border-radius:999px;background:#E0C78E;color:#000;font:500 14px Inter;cursor:pointer">Fazer upgrade</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 10 NAV -->
+<section id="nav" style="background:#0A0A0B;padding:160px 24px;scroll-margin-top:52px">
+<div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Navegação</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Sempre à mão.</h2></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start">
+<aside style="flex:none;width:248px;border-radius:28px;background:#000;padding:28px 14px 16px;display:flex;flex-direction:column;gap:28px;min-height:540px">
+<div style="display:flex;align-items:center;gap:8px;padding:0 12px"><span style="width:22px;height:22px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span><span style="font:600 14px 'Inter Tight';letter-spacing:.24em">ETTERNUM</span></div>
+<nav style="display:flex;flex-direction:column;gap:2px;flex:1"><sc-for list="{{ sideItems }}" as="i" hint-placeholder-count="7"><a href="#nav" style="height:44px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:12px;font:500 15px Inter;color:{{ i.fg }};background:{{ i.bg }};text-decoration:none" style-hover="color:#F3EFE6;text-decoration:none"><span style="width:18px;height:18px;background:{{ i.fg }};-webkit-mask:url({{ i.iconUrl }}) center/contain no-repeat;mask:url({{ i.iconUrl }}) center/contain no-repeat"></span>{{ i.label }}</a></sc-for></nav>
+<a href="#nav" style="height:44px;padding:0 12px;display:flex;align-items:center;gap:12px;font:500 15px Inter;color:#8A847A"><span style="width:18px;height:18px;background:#8A847A;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/log-out.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/log-out.svg) center/contain no-repeat"></span>Sair</a>
+</aside>
+<div style="flex:1;min-width:min(100%,420px);display:flex;flex-direction:column;gap:12px">
+<div style="height:64px;padding:0 12px 0 28px;border-radius:999px;background:#000;display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font:600 18px 'Inter Tight';letter-spacing:-.02em">Olá, Ana</span><div style="display:flex;gap:8px;align-items:center"><span style="height:32px;padding:0 14px;border-radius:999px;background:rgba(224,199,142,.12);color:#E0C78E;font:500 13px Inter;display:flex;align-items:center">Teste grátis · 14 dias</span><button style="height:40px;padding:0 18px;border:0;border-radius:999px;background:#E0C78E;color:#000;font:500 14px Inter;cursor:pointer">Fazer upgrade</button></div></div>
+<div style="border-radius:28px;background:#000;padding:8px">
+<sc-for list="{{ convs }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:16px;padding:14px 12px;border-radius:20px;cursor:pointer" style-hover="background:#141417"><span style="flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:{{ c.avBg }};font-family:'EB Garamond',serif;font-size:18px;color:{{ c.avFg }}">{{ c.ini }}</span><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:600 15px 'Inter Tight'">{{ c.label }}</span><span style="font-size:14px;color:#A7A197;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.title }}</span></div><span style="flex:none;font-size:13px;color:#8A847A">{{ c.when }}</span><button aria-label="Apagar conversa" style="flex:none;width:44px;height:44px;border-radius:999px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer"><span style="width:16px;height:16px;background:#8A847A;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/trash-2.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/trash-2.svg) center/contain no-repeat"></span></button></div></sc-for>
+</div>
+<div style="display:inline-flex;align-self:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none;padding:4px;border-radius:999px;background:#000"><sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.pick }}" style="flex:none;height:40px;padding:0 18px;border-radius:999px;border:0;background:{{ t.bg }};color:{{ t.fg }};font:500 14px Inter;cursor:pointer;transition:background .2s,color .2s">{{ t.label }}</button></sc-for></div>
+</div>
+<div style="flex:none;width:390px;max-width:100%;border-radius:40px;background:#000;overflow:hidden;display:flex;flex-direction:column;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">
+<div style="height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between"><span style="width:22px;height:22px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span><span style="height:28px;padding:0 12px;border-radius:999px;background:rgba(224,199,142,.12);color:#E0C78E;font:500 12px Inter;display:flex;align-items:center">Teste grátis · 14 dias</span></div>
+<div style="height:220px;display:grid;place-items:center;font:11px ui-monospace,Menlo,monospace;color:#6F6A62">conteúdo</div>
+<nav style="padding:6px 8px 30px;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(20,20,23,.85);backdrop-filter:blur(24px)"><sc-for list="{{ bottomItems }}" as="b" hint-placeholder-count="5"><button onClick="{{ b.pick }}" style="height:54px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:{{ b.fg }};font:500 10.5px Inter"><span style="width:24px;height:24px;background:{{ b.fg }};-webkit-mask:url({{ b.iconUrl }}) center/contain no-repeat;mask:url({{ b.iconUrl }}) center/contain no-repeat"></span>{{ b.label }}</button></sc-for></nav>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 11 FEEDBACK -->
+<section id="feedback" style="max-width:1200px;margin:0 auto;padding:160px 24px;scroll-margin-top:52px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:760px"><span style="font:600 14px 'Inter Tight';color:#E0C78E">Feedback</span><h2 style="margin:0;font:600 clamp(40px,6vw,72px)/1 'Inter Tight';letter-spacing:-.04em">Discreto. Imediato.</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px">
+<div style="border-radius:28px;background:#141417;padding:32px;display:flex;flex-direction:column;gap:12px">
+<span style="font:500 13px Inter;color:#8A847A">Toast</span>
+<div style="display:flex;gap:12px;align-items:center;padding:14px 18px;border-radius:999px;background:rgba(48,48,55,.9);backdrop-filter:blur(20px)"><span style="width:18px;height:18px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/circle-check.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/circle-check.svg) center/contain no-repeat"></span><span style="font-size:14px">Viktor Frankl entrou no seu Quadro Eterno.</span></div>
+<div style="display:flex;gap:12px;align-items:center;padding:8px 8px 8px 18px;border-radius:999px;background:rgba(48,48,55,.9)"><span style="width:18px;height:18px;background:#F28B82;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/wifi-off.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/wifi-off.svg) center/contain no-repeat"></span><span style="font-size:14px;flex:1">A conexão caiu. Tente enviar de novo.</span><button style="height:32px;padding:0 14px;border:0;border-radius:999px;background:#F3EFE6;color:#000;font:500 13px Inter;cursor:pointer">Tentar</button></div>
+<button onClick="{{ openModal }}" style="margin-top:12px;align-self:flex-start;height:44px;padding:0 22px;border:0;border-radius:999px;background:#26262C;color:#F3EFE6;font:500 15px Inter;cursor:pointer">Abrir modal</button>
+</div>
+<div style="border-radius:28px;background:#141417;padding:32px;display:flex;flex-direction:column;gap:16px"><span style="font:500 13px Inter;color:#8A847A">Skeleton</span><div style="display:flex;gap:14px;align-items:center">{{ skAvatar }}<div style="flex:1;display:flex;flex-direction:column;gap:8px">{{ skLine1 }}{{ skLine2 }}</div></div>{{ skBlock }}{{ skLine3 }}</div>
+<div style="border-radius:28px;background:#141417;padding:40px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center">
+<span style="width:40px;height:40px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/star.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/star.svg) center/contain no-repeat"></span>
+<span style="font:600 24px/1.2 'Inter Tight';letter-spacing:-.02em">Seu Quadro Eterno está vazio.</span>
+<span style="font-size:15px;line-height:1.5;color:#A7A197;max-width:280px">Toque na estrela de qualquer mente para mantê-la sempre aqui.</span>
+<a href="#mentes" style="font-size:15px;color:#E0C78E">Explorar mentes ›</a>
+</div>
+</div>
+</section>
+
+<footer style="max-width:1200px;margin:0 auto;padding:32px 24px 64px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:12px;color:#8A847A"><span>Etternum · Design System 2.0</span><span>Próxima etapa: Landing, Cadastro, Entrar e Triagem</span></footer>
+
+<sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:grid;place-items:center;padding:24px">
+<div role="dialog" aria-modal="true" onClick="{{ stop }}" style="width:100%;max-width:400px;padding:32px;border-radius:32px;background:#1C1C21;display:flex;flex-direction:column;gap:12px;text-align:center">
+<span style="font:600 24px/1.2 'Inter Tight';letter-spacing:-.02em">Apagar esta conversa?</span>
+<span style="font-size:15px;line-height:1.55;color:#A7A197">Ela será removida do seu histórico. Essa ação não pode ser desfeita.</span>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px"><button onClick="{{ closeModal }}" style="height:48px;border:0;border-radius:999px;background:#F28B82;color:#000;font:500 16px Inter;cursor:pointer">Apagar</button><button onClick="{{ closeModal }}" style="height:48px;border:0;border-radius:999px;background:transparent;color:#F3EFE6;font:500 16px Inter;cursor:pointer">Cancelar</button></div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const I = n => `https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/${n}.svg`;
+const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const AREAS = [
+  ['Vida Interior & Autoconhecimento','Vida Interior','Ansiedade, propósito, identidade e equilíbrio emocional.','brain','#C9A7FF',18],
+  ['Luto, Memória & Legado','Luto & Legado','Perdas, finitude e o que permanece de nós.','infinity','#E0C78E',8],
+  ['Relacionamentos & Conexões','Relacionamentos','Amor, família, solidão e perdão.','heart','#F2A7B8',13],
+  ['Negócios & Liderança','Negócios','Decidir, liderar, empreender e inovar.','briefcase','#F0C36D',11],
+  ['Filosofia & Sabedoria','Filosofia','Propósito, escolhas e como viver bem.','landmark','#9EC5F5',21],
+  ['Espiritualidade & Fé','Espiritualidade','Fé, silêncio, perdão e paz interior.','sparkles','#D8C4FF',13],
+  ['Conhecimento & Educação','Conhecimento','Aprender, estudar, criar e ensinar.','book-open','#8FD9B6',12],
+  ['Sociedade & História','Sociedade','O mundo, o poder e as lições do passado.','scroll-text','#F3A977',10],
+  ['Astrologia & Cosmos','Astrologia','Seu signo, os astros e o seu modo de ser.','moon','#B9A6F2',4],
+  ['Corpo & Bem-estar','Corpo','Alimentação, sono, hábitos e vitalidade.','leaf','#A4DD8C',4],
+].map(([name, short, phrase, icon, color, n]) => ({ name, short, phrase, icon, color, n, iconUrl: I(icon), tint: hexA(color, .14) }));
+const CAROUSEL = [['Carl Gustav Jung','CJ','Psicologia · Autoconhecimento'],['Peter Drucker','PD','Gestão · Negócios'],['Sêneca','S','Filosofia estoica'],['Hannah Arendt','HA','Filosofia política'],['Rumi','R','Espiritualidade'],['Clayton Christensen','CC','Inovação disruptiva'],['Steve Jobs','SJ','Criatividade · Produto'],['Friedrich Nietzsche','FN','Filosofia existencial'],['Simone de Beauvoir','SB','Existencialismo'],['Viktor Frankl','VF','Sentido da vida']].map(([name, ini, spec]) => ({ name, ini, spec }));
+const STREAM = 'O sofrimento, por si só, não tem sentido. Mas a atitude que escolhemos diante dele pode ter. Me conte: quando você ainda gostava do seu trabalho, o que fazia você levantar de manhã?';
+
+class Component extends DCLogic {
+  state = { pw: false, cpf: '123.456.789-00', checked: false, chips: { 0: true, 2: true }, favs: { 1: true }, tip: false, tab: 0, bottom: 0, modal: false, n: 0 };
+  carRef = React.createRef();
+  componentDidMount() { this.t = setInterval(() => this.setState(s => ({ n: s.n >= STREAM.length + 40 ? 0 : s.n + 1 })), 35); }
+  componentWillUnmount() { clearInterval(this.t); }
+  mask(v) { const d = v.replace(/\D/g, '').slice(0, 11); return d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2'); }
+  spinner(c) { return React.createElement('span', { style: { width: 16, height: 16, borderRadius: '50%', border: `2px solid ${c}`, borderTopColor: 'transparent', display: 'inline-block', animation: 'etSpin .8s linear infinite' } }); }
+  sk(w, h, r) { return React.createElement('div', { style: { position: 'relative', overflow: 'hidden', width: w, height: h, borderRadius: r, background: '#1C1C21', flex: 'none' } }, React.createElement('div', { style: { position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent)', animation: 'etShimmer 1.6s ease-in-out infinite' } })); }
+  renderVals() {
+    const s = this.state;
+    const dot = d => React.createElement('span', { key: d, style: { width: 7, height: 7, borderRadius: '50%', background: '#E0C78E', display: 'inline-block', animation: `etPulse 1.2s ${d}s infinite ease-in-out` } });
+    const minds = [
+      { name: 'Carl Gustav Jung', ini: 'CJ', spec: 'Psicologia', period: '1875–1961', quote: 'Conhecer a própria sombra para se tornar inteiro.' },
+      { name: 'Viktor Frankl', ini: 'VF', spec: 'Sentido da vida', period: '1905–1997', quote: 'Encontrar sentido mesmo no sofrimento.' },
+      { name: 'Gabor Maté', ini: 'GM', spec: 'Trauma', period: 'nascido em 1944', quote: 'Não ‘por que o vício’, mas ‘por que a dor’.', inspired: true },
+      { name: 'Dalai Lama', ini: 'DL', spec: 'Compaixão', period: 'nascido em 1935', quote: 'Compaixão como caminho para a felicidade.', inspired: true, locked: true },
+    ].map((m, i) => ({ ...m, inspired: !!m.inspired, filter: m.locked ? 'grayscale(.8) brightness(.7)' : 'none',
+      starColor: s.favs[i] ? '#000' : '#8A847A', starBg: s.favs[i] ? '#E0C78E' : 'transparent',
+      fav: () => this.setState(st => ({ favs: { ...st.favs, [i]: !st.favs[i] } })),
+      cta: m.locked ? 'Disponível no Premium' : 'Acessar esta mente', btnBg: m.locked ? '#1C1C21' : '#F3EFE6', btnColor: m.locked ? '#8A847A' : '#000' }));
+    const side = [['Início','house'],['Maestro','infinity'],['Áreas da vida','layout-grid'],['Todas as mentes','users'],['Minhas conversas','messages-square'],['Perfil','user-round'],['Plano','crown']];
+    const bottom = [['Início','house'],['Maestro','infinity'],['Áreas','layout-grid'],['Conversas','messages-square'],['Perfil','user-round']];
+    const tabs = ['Todas', 'Vida Interior', 'Filosofia', 'Negócios', 'Espiritualidade'];
+    return {
+      areas: AREAS, areasFew: [AREAS[0], AREAS[3], AREAS[1], AREAS[8]],
+      typeScale: [
+        ['display', "'Inter Tight'", '96px', '.95', 600, '-0.045em', 'normal', '#F3EFE6', 'Grandes Mentes.'],
+        ['display-accent', "'EB Garamond',serif", '96px', '.95', 400, '-0.02em', 'italic', '#E0C78E', 'Sabedoria.'],
+        ['h1', "'Inter Tight'", '56px', '1', 600, '-0.04em', 'normal', '#F3EFE6', 'Como você está hoje?'],
+        ['h2', "'Inter Tight'", '32px', '1.1', 600, '-0.03em', 'normal', '#F3EFE6', 'Seu Quadro Eterno.'],
+        ['h3', "'Inter Tight'", '22px', '1.2', 600, '-0.02em', 'normal', '#F3EFE6', 'Viktor Frankl'],
+        ['quote', "'EB Garamond',serif", '24px', '1.35', 400, '0', 'italic', '#A7A197', 'Encontrar sentido mesmo no sofrimento.'],
+        ['body-lg', 'Inter', '19px', '1.5', 400, '-0.01em', 'normal', '#A7A197', 'O Maestro lembra de tudo o que você já contou.'],
+        ['body', 'Inter', '17px', '1.55', 400, '0', 'normal', '#F3EFE6', 'Desabafe, pergunte, peça um conselho…'],
+        ['label', "'Inter Tight'", '14px', '1.3', 600, '0', 'normal', '#E0C78E', 'Psicologia · Autoconhecimento'],
+        ['caption', 'Inter', '13px', '1.45', 400, '0', 'normal', '#8A847A', 'Pelo menos 8 caracteres.'],
+      ].map(([token, family, size, lh, weight, ls, style, color, sample]) => ({ token, family, size, lh, weight, ls, style, color, sample, spec: `${size.replace('px','')}/${lh} · ${weight}` })),
+      spaces: [4, 8, 12, 16, 24, 32, 56, 96, 160].map(px => ({ px, w: Math.min(100, px / 1.6) + '%' })),
+      motion: [
+        { token: 'dur-fast', dur: '150ms', use: 'Hover, cor, pressionado' },
+        { token: 'dur-base', dur: '300ms', use: 'Cards (scale 1.015), abas' },
+        { token: 'dur-enter', dur: '600ms', use: 'Entrada: fade + y 24px, stagger 80ms' },
+        { token: 'pulse', dur: '1200ms', use: 'Pontos “pensando”' },
+      ],
+      states: ['Padrão', 'Hover', 'Foco', 'Pressionado', 'Desabilitado', 'Carregando'],
+      iconStates: [
+        { bg: '#26262C', fg: '#F3EFE6', ring: 'none', tf: 'none' }, { bg: '#303037', fg: '#F3EFE6', ring: 'none', tf: 'none' },
+        { bg: '#26262C', fg: '#F3EFE6', ring: '0 0 0 3px #141417,0 0 0 5px #F3EFE6', tf: 'none' }, { bg: '#1C1C21', fg: '#F3EFE6', ring: 'none', tf: 'scale(.94)' },
+        { bg: '#1C1C21', fg: '#6F6A62', ring: 'none', tf: 'none' }, { bg: '#E0C78E', fg: '#000', ring: 'none', tf: 'none' },
+      ],
+      spinnerDark: this.spinner('#000'), spinnerLight: this.spinner('#F3EFE6'),
+      pwType: s.pw ? 'text' : 'password', pwIcon: I(s.pw ? 'eye-off' : 'eye'), togglePw: () => this.setState({ pw: !s.pw }),
+      cpf: s.cpf, onCpf: e => this.setState({ cpf: this.mask(e.target.value) }),
+      checked: s.checked, checkBg: s.checked ? '#E0C78E' : '#1C1C21', checkRing: s.checked ? 'none' : 'inset 0 0 0 2px #F28B82',
+      toggleCheck: () => this.setState({ checked: !s.checked }),
+      chips: AREAS.slice(0, 5).map((a, i) => { const on = !!s.chips[i]; return { ...a, bg: on ? '#F3EFE6' : '#1C1C21', fg: on ? '#000' : '#A7A197', ic: on ? '#000' : a.color, toggle: () => this.setState(st => ({ chips: { ...st.chips, [i]: !st.chips[i] } })) }; }),
+      avatarSizes: [{ px: 112, font: 42, icon: 52 }, { px: 80, font: 30, icon: 38 }, { px: 48, font: 18, icon: 24 }, { px: 36, font: 14, icon: 18 }],
+      tip: s.tip, tipOn: () => this.setState({ tip: true }), tipOff: () => this.setState({ tip: false }),
+      minds, carousel: CAROUSEL, carRef: this.carRef,
+      scrollPrev: () => this.carRef.current?.scrollBy({ left: -232 }), scrollNext: () => this.carRef.current?.scrollBy({ left: 232 }),
+      dots: React.createElement('span', { style: { display: 'inline-flex', gap: 6, padding: '12px 16px', borderRadius: 999, background: '#1C1C21' } }, [0, .16, .32].map(dot)),
+      streamText: STREAM.slice(0, s.n),
+      cursor: React.createElement('span', { style: { display: s.n < STREAM.length ? 'inline-block' : 'none', width: 2, height: '1.1em', marginLeft: 2, verticalAlign: 'text-bottom', background: '#E0C78E', animation: 'etBlink 1s steps(1) infinite' } }),
+      sideItems: side.map(([label, ic], i) => ({ label, iconUrl: I(ic), fg: i === 1 ? '#F3EFE6' : '#8A847A', bg: i === 1 ? '#1C1C21' : 'transparent' })),
+      bottomItems: bottom.map(([label, ic], i) => ({ label, iconUrl: I(ic), fg: s.bottom === i ? '#E0C78E' : '#8A847A', pick: () => this.setState({ bottom: i }) })),
+      convs: [
+        { ini: 'VF', label: 'Viktor Frankl', title: 'Reencontrar o porquê no trabalho', when: '22:14', avBg: 'radial-gradient(circle at 35% 25%,#5C4730,#2E2318 60%,#17120D)', avFg: '#E8D3A0' },
+        { ini: '∞', label: 'Maestro', title: 'Estou exausta e sem saber se continuo no meu emprego.', when: '21:58', avBg: 'radial-gradient(circle at 35% 25%,#F4E3B9,#E0C78E 45%,#B4924F)', avFg: '#000' },
+        { ini: 'C', label: 'Conselho · Negócios & Liderança', title: 'Largar a agência e viver de freelas?', when: 'Ontem', avBg: '#26262C', avFg: '#F0C36D' },
+      ],
+      tabs: tabs.map((label, i) => ({ label, bg: s.tab === i ? '#F3EFE6' : 'transparent', fg: s.tab === i ? '#000' : '#A7A197', pick: () => this.setState({ tab: i }) })),
+      skAvatar: this.sk(48, 48, 999), skLine1: this.sk('60%', 12, 6), skLine2: this.sk('85%', 12, 6), skBlock: this.sk('100%', 120, 20), skLine3: this.sk('70%', 10, 6),
+      modal: s.modal, openModal: () => this.setState({ modal: true }), closeModal: () => this.setState({ modal: false }), stop: e => e.stopPropagation(),
+    };
+  }
+}
+</script>
+</body>
+</html>

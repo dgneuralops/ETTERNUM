@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div data-screen-label="05 Início" style="display:grid;grid-template-columns:{{ cols }};gap:20px;align-items:start;color:{{ t.ink }};font-family:Urbanist,sans-serif">
+<div style="min-width:0;display:flex;flex-direction:column;gap:22px">
+
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h1 style="margin:0;font:700 {{ h1 }}/1.05 Urbanist;letter-spacing:-.025em">Boa noite, <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:{{ t.accentText }}">Ana</span></h1><span style="height:30px;padding:0 12px;border-radius:999px;background:{{ t.pillBg }};color:{{ t.pillFg }};font:700 13px Urbanist;display:flex;align-items:center;gap:5px"><span style="font-family:'EB Garamond',serif;font-size:15px">♐︎</span>Sagitário</span></div>
+
+<section style="border-radius:30px;background:{{ t.hero }};color:{{ t.heroInk }};padding:{{ heroPad }};display:flex;flex-direction:{{ heroDir }};gap:{{ heroGap }};align-items:{{ heroAlign }}">
+<div role="img" aria-label="Aurelius, o Maestro" style="flex:none;width:{{ medal }};height:{{ medal }};border-radius:50%;display:grid;place-items:center;background:#2A2118 url(./portraits/maestro-face.png) center/cover no-repeat;animation:etGlow 4s ease-in-out infinite;filter:sepia(.2) saturate(.85) contrast(1.05) brightness(.95);box-shadow:0 0 0 1.5px rgba(224,199,142,.7)"></div>
+<div style="flex:1;min-width:0;width:100%;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;flex-direction:column;gap:4px"><h2 style="margin:0;font:700 {{ h2 }}/1.1 Urbanist;letter-spacing:-.02em">Como você está <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:#E0C78E">hoje?</span></h2><span style="font:500 15px/1.45 Urbanist;color:{{ t.heroMuted }}">Aurelius, o Maestro, seu amigo pessoal eterno, está ouvindo.</span></div>
+<form onSubmit="{{ send }}" style="min-height:56px;border-radius:28px;background:{{ t.heroInput }};display:flex;align-items:center;padding:6px 6px 6px 20px;gap:8px">
+<input value="{{ msg }}" onChange="{{ onMsg }}" placeholder="Desabafe, pergunte, peça um conselho…" style="flex:1;min-width:0;height:44px;border:0;background:transparent;color:#F3EFE6;font:500 16px Urbanist;outline:none">
+<button type="submit" style="flex:none;height:44px;padding:0 {{ sendPad }};border-radius:999px;border:0;background:#E0C78E;color:#14110A;font:700 15px Urbanist;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .2s" style-hover="background:#EBD6A6"><sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">Conversar</sc-if><sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}"><et-i n="arrow-up" s="18"></et-i></sc-if></button>
+</form>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.go }}" style="min-height:34px;padding:6px 14px;border-radius:999px;border:0;background:transparent;box-shadow:inset 0 0 0 1px {{ t.heroLine }};color:{{ t.heroInk }};font:600 13px Urbanist;cursor:pointer;text-align:left;transition:background .2s" style-hover="background:rgba(255,255,255,.06)">{{ s.label }}</button></sc-for></div>
+</div>
+</section>
+
+<sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ goCont }}" style="display:flex;align-items:center;gap:14px;padding:10px 16px 10px 10px;border-radius:24px;border:0;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};color:{{ t.ink }};cursor:pointer;text-align:left"><div style="position:relative;flex:none;width:60px;height:60px;border-radius:18px;overflow:hidden;background:#1A1510;filter:grayscale(1) sepia(.38) contrast(1.08) brightness(.88)"><image-slot id="mind-frankl" shape="rect" placeholder="VF"></image-slot></div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:600 12px Urbanist;color:{{ t.muted }}">Continuar de onde parei</span><span style="font:700 15.5px/1.25 Urbanist">Viktor Frankl · Reencontrar o porquê no trabalho</span></div><et-i n="chevron-right" s="20" c="{{ t.muted }}"></et-i></button>
+</sc-if>
+
+<sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+<section style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h3 style="margin:0;font:700 20px Urbanist">Seu Quadro Eterno</h3></div>
+<sc-if value="{{ hasFavs }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px"><sc-for list="{{ favs }}" as="f" hint-placeholder-count="3"><button onClick="{{ f.go }}" style="flex:none;width:84px;border:0;background:transparent;color:{{ t.ink }};display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:0"><div style="position:relative;width:80px;height:80px;border-radius:50%;overflow:hidden;background:#2A2118;box-shadow:0 0 0 2px {{ t.bg }},0 0 0 3.5px #E0C78E;filter:grayscale(1) sepia(.38) contrast(1.08) brightness(.88)"><image-slot id="mind-{{ f.slug }}" shape="circle" compact placeholder="{{ f.ini }}"></image-slot></div><span style="font:700 12.5px/1.2 Urbanist;text-align:center">{{ f.first }}</span></button></sc-for></div></sc-if>
+<sc-if value="{{ noFavs }}" hint-placeholder-val="{{ false }}"><div style="border-radius:22px;padding:22px;box-shadow:inset 0 0 0 1.5px {{ t.line2 }};display:flex;gap:14px;align-items:center"><et-i n="star" s="24" c="{{ t.accentText }}"></et-i><span style="font:500 14.5px/1.5 Urbanist;color:{{ t.muted }}">Toque na estrela de qualquer mente para mantê-la sempre à mão aqui.</span></div></sc-if>
+</section>
+</sc-if>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h3 style="margin:0;font:700 20px Urbanist">Áreas da vida</h3><button onClick="{{ goAreas }}" style="border:0;background:transparent;color:{{ t.muted }};font:700 14px Urbanist;cursor:pointer;display:flex;align-items:center;gap:4px">Ver todas<et-i n="arrow-right" s="15"></et-i></button></div>
+<div style="display:grid;grid-template-columns:{{ areaCols }};gap:12px">
+<sc-for list="{{ areas }}" as="a" hint-placeholder-count="6"><button onClick="{{ a.go }}" style="min-height:{{ tileH }};border-radius:24px;border:0;background:{{ a.bg }};color:#15130E;padding:18px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;cursor:pointer;text-align:left;transition:transform .25s cubic-bezier(.25,.1,.25,1)" style-hover="transform:translateY(-3px)"><div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start"><span style="font:800 28px/1 Urbanist;letter-spacing:-.03em">{{ a.n }}</span><span style="width:40px;height:40px;border-radius:12px;background:rgba(21,19,14,.08);display:grid;place-items:center"><et-i n="{{ a.icon }}" s="20"></et-i></span></div><div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 15.5px/1.2 Urbanist">{{ a.short }}</span><span style="font:500 12.5px Urbanist;opacity:.7">{{ a.tag }}</span></div></button></sc-for>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h3 style="margin:0;font:700 20px Urbanist">Grandes mentes</h3><div style="display:flex;gap:6px;align-items:center"><button onClick="{{ goMentes }}" style="border:0;background:transparent;color:{{ t.muted }};font:700 14px Urbanist;cursor:pointer;margin-right:6px">Ver todas</button><sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}"><button onClick="{{ prev }}" aria-label="Anterior" style="width:38px;height:38px;border-radius:50%;border:0;background:{{ t.card2 }};color:{{ t.ink }};display:grid;place-items:center;cursor:pointer"><et-i n="chevron-left" s="18"></et-i></button><button onClick="{{ next }}" aria-label="Próximo" style="width:38px;height:38px;border-radius:50%;border:0;background:{{ t.accent }};color:{{ t.onAccent }};display:grid;place-items:center;cursor:pointer"><et-i n="chevron-right" s="18"></et-i></button></sc-if></div></div>
+<div ref="{{ carRef }}" style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;margin:{{ carMargin }};padding:{{ carPadding }}">
+<sc-for list="{{ minds }}" as="m" hint-placeholder-count="5">
+<div style="flex:none;width:212px;scroll-snap-align:start;border-radius:24px;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};padding:8px 8px 14px;display:flex;flex-direction:column;gap:10px">
+<div style="position:relative;height:200px;border-radius:18px;overflow:hidden;background:#1A1510">
+<div style="position:absolute;inset:0;filter:grayscale(1) sepia(.38) contrast(1.08) brightness(.88)"><image-slot id="mind-{{ m.slug }}" shape="rect" placeholder="{{ m.name }}"></image-slot></div>
+<sc-if value="{{ m.inspired }}" hint-placeholder-val="{{ false }}"><span title="Cápsula de um especialista nas ideias desta pessoa — não é uma simulação dela." style="position:absolute;left:8px;top:8px;height:24px;padding:0 9px;border-radius:999px;background:rgba(11,11,12,.7);color:#E0C78E;font:700 10.5px Urbanist;display:flex;align-items:center;gap:4px"><et-i n="feather" s="11"></et-i>Inspirado em</span></sc-if>
+<button onClick="{{ m.fav }}" aria-label="Favoritar" style="position:absolute;top:6px;right:6px;width:36px;height:36px;border-radius:50%;border:0;background:{{ m.starBg }};color:{{ m.starFg }};display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s,transform .2s" style-active="transform:scale(.88)"><et-i n="star" s="16"></et-i></button>
+</div>
+<div style="padding:0 6px;display:flex;flex-direction:column;gap:8px">
+<span style="font:700 16px/1.15 Urbanist">{{ m.name }}</span>
+<span style="align-self:flex-start;height:22px;padding:0 10px;border-radius:999px;background:{{ t.pillBg }};color:{{ t.pillFg }};font:700 11px Urbanist;display:flex;align-items:center">{{ m.short }}</span>
+<button onClick="{{ m.go }}" style="align-self:flex-end;border:0;background:transparent;color:{{ t.ink }};font:700 13.5px Urbanist;cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 0">Conversar<et-i n="arrow-right" s="14"></et-i></button>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ goMemoria }}" style="border-radius:24px;border:0;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.accentLine }};padding:20px;display:flex;flex-direction:column;gap:6px;text-align:left;color:{{ t.ink }};cursor:pointer"><span style="font:700 11px Urbanist;letter-spacing:.12em;color:{{ t.accentText }}">EM BREVE · PREMIUM</span><span style="font:700 18px/1.2 Urbanist">Cápsula de Memória Viva</span><span style="font:500 14px/1.45 Urbanist;color:{{ t.muted }}">Eternize a sua história ou a de alguém que você ama.</span></button>
+</sc-if>
+</div>
+
+<sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+<aside style="display:flex;flex-direction:column;gap:14px;position:sticky;top:0">
+<div style="border-radius:26px;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};padding:10px 10px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="position:relative;height:150px;border-radius:18px;overflow:hidden;background:#1A1510"><div style="position:absolute;inset:0;filter:grayscale(1) sepia(.38) contrast(1.08) brightness(.88)"><image-slot id="mind-frankl" shape="rect" placeholder="Viktor Frankl"></image-slot></div><span style="position:absolute;left:10px;bottom:10px;height:26px;padding:0 10px;border-radius:999px;background:rgba(0,0,0,.6);color:#F3EFE6;font:600 11.5px Urbanist;display:flex;align-items:center;pointer-events:none">Ontem, 22:14</span></div>
+<div style="padding:0 6px;display:flex;flex-direction:column;gap:4px"><span style="font:600 12.5px Urbanist;color:{{ t.muted }}">Continuar de onde parei</span><span style="font:700 17px/1.25 Urbanist">Viktor Frankl · Reencontrar o porquê no trabalho</span></div>
+<button onClick="{{ goCont }}" style="margin:0 6px;height:44px;border-radius:999px;border:0;background:{{ t.accent }};color:{{ t.onAccent }};font:700 14.5px Urbanist;cursor:pointer">Continuar conversa</button>
+</div>
+<div style="border-radius:26px;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};padding:18px 14px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 4px"><span style="font:700 17px Urbanist">Seu Quadro Eterno</span><button onClick="{{ goPerfil }}" style="border:0;background:transparent;color:{{ t.muted }};font:700 12.5px Urbanist;cursor:pointer">Ver tudo</button></div>
+<sc-if value="{{ hasFavs }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:8px"><sc-for list="{{ favs }}" as="f" hint-placeholder-count="3"><button onClick="{{ f.go }}" style="height:62px;border-radius:18px;border:0;background:{{ f.bg }};color:#15130E;padding:0 14px 0 9px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:transform .2s" style-hover="transform:translateX(3px)"><div style="position:relative;flex:none;width:44px;height:44px;border-radius:50%;overflow:hidden;background:#2A2118;filter:grayscale(1) sepia(.38) contrast(1.08) brightness(.88)"><image-slot id="mind-{{ f.slug }}" shape="circle" compact placeholder="{{ f.ini }}"></image-slot></div><div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font:700 14.5px Urbanist">{{ f.name }}</span><span style="font:500 12.5px Urbanist;opacity:.7">{{ f.short }}</span></div><et-i n="arrow-up-right" s="16"></et-i></button></sc-for></div></sc-if>
+<sc-if value="{{ noFavs }}" hint-placeholder-val="{{ false }}"><div style="border-radius:18px;padding:22px 16px;box-shadow:inset 0 0 0 1.5px {{ t.line2 }};display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center"><et-i n="star" s="26" c="{{ t.accentText }}"></et-i><span style="font:700 15px Urbanist">Seu Quadro Eterno está vazio</span><span style="font:500 13.5px/1.5 Urbanist;color:{{ t.muted }}">Toque na estrela de qualquer mente para mantê-la sempre à mão aqui.</span></div></sc-if>
+</div>
+<button onClick="{{ goMemoria }}" style="border-radius:26px;border:0;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.accentLine }};padding:20px;display:flex;flex-direction:column;gap:6px;text-align:left;color:{{ t.ink }};cursor:pointer"><span style="font:700 11px Urbanist;letter-spacing:.12em;color:{{ t.accentText }}">EM BREVE · PREMIUM</span><span style="font:700 18px/1.2 Urbanist">Cápsula de Memória Viva</span><span style="font:500 13.5px/1.45 Urbanist;color:{{ t.muted }}">Eternize a sua história ou a de alguém que você ama.</span><span style="margin-top:6px;font:700 13.5px Urbanist;color:{{ t.accentText }};display:flex;align-items:center;gap:4px">Conhecer<et-i n="arrow-right" s="14"></et-i></span></button>
+</aside>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { msg: '' };
+  carRef = React.createRef();
+  renderVals() {
+    const a = this.props.app || {}, E = window.ETT, t = a.t || {}, mob = !!a.mobile;
+    if (!E) return {};
+    const nav = (r, p, v) => a.nav && a.nav(r, p, v);
+    const favs = Object.keys(a.favs || {}).filter(k => a.favs[k] && E.bySlug[k]);
+    const prio = ['vida-interior', 'relacionamentos', 'negocios', 'filosofia', 'luto', 'espiritualidade'];
+    return {
+      t, mobile: mob, desktop: !mob, cols: mob || (a.w || 1440) < 1180 ? 'minmax(0,1fr)' : 'minmax(0,1fr) 310px',
+      h1: mob ? '30px' : '34px', h2: mob ? '26px' : '32px', heroPad: mob ? '22px' : '28px 32px', heroDir: mob ? 'column' : 'row', heroGap: mob ? '18px' : '30px', heroAlign: mob ? 'flex-start' : 'center',
+      medal: mob ? '64px' : '120px', medalIcon: mob ? '32' : '60', sendPad: mob ? '12px' : '22px',
+      areaCols: mob ? '1fr 1fr' : 'repeat(3,1fr)', tileH: mob ? '128px' : '132px',
+      carMargin: mob ? '0 -16px' : '0', carPadding: mob ? '0 16px' : '0',
+      msg: this.state.msg, onMsg: e => this.setState({ msg: e.target.value }),
+      send: e => { e.preventDefault(); nav('maestro', '', 'msg:' + (this.state.msg || 'Estou exausta e sem saber se continuo no meu emprego.')); },
+      suggestions: ['Hoje eu só preciso desabafar.', 'Estou confuso(a) e não sei por onde começar.', 'Quem pode me ajudar com meu negócio?'].map(label => ({ label, go: () => nav('maestro', '', 'msg:' + label) })),
+      areas: prio.map((slug, i) => { const ar = E.areaBySlug[slug]; return { ...ar, bg: t.pastel[ar.p], tag: i < 3 ? 'Do seu interesse' : `${ar.n} mentes`, go: () => nav('area', slug) }; }),
+      minds: E.carousel.slice(0, 12).map(m => { const on = !!(a.favs || {})[m.slug]; return { ...m, short: m.spec.split(' · ')[0], starBg: on ? '#E0C78E' : 'rgba(11,11,12,.5)', starFg: on ? '#14110A' : '#F3EFE6', fav: () => a.toggleFav(m.slug), go: () => nav('mente', m.slug) }; }),
+      carRef: this.carRef, prev: () => this.carRef.current?.scrollBy({ left: -224 }), next: () => this.carRef.current?.scrollBy({ left: 224 }),
+      favs: favs.map((k, i) => { const m = E.bySlug[k]; return { ...m, ini: E.initials(m.name), first: m.name.split(' ').slice(-1)[0], short: m.spec.split(' · ')[0], bg: t.pastel[i % 6], go: () => nav('mente', k) }; }),
+      hasFavs: favs.length > 0, noFavs: favs.length === 0,
+      goCont: () => nav('mente', 'frankl', 'conversa'), goAreas: () => nav('areas'), goMentes: () => nav('mentes'), goMemoria: () => nav('memoria'), goPerfil: () => nav('perfil'),
+    };
+  }
+}
+</script>
+</body>
+</html>

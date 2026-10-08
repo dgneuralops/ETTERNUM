@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#0A0A0B;color:#F3EFE6;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#E0C78E;text-decoration:none}a:hover{color:#F3E3B8;text-decoration:underline}
+::selection{background:rgba(224,199,142,.3)}
+@keyframes etPulse{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+@keyframes etShimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes etBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
+@keyframes etSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;background:radial-gradient(1200px 600px at 80% -10%,rgba(224,199,142,.07),transparent 60%),radial-gradient(900px 500px at -10% 30%,rgba(201,167,255,.04),transparent 60%),#0A0A0B;overflow:hidden">
+<sc-if value="{{ grain }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;pointer-events:none;opacity:.06;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;)"></div></sc-if>
+
+<div style="position:relative;max-width:1280px;margin:0 auto;padding:48px 32px 120px;display:flex;flex-direction:column;gap:112px">
+
+<!-- HEADER -->
+<header data-screen-label="00 Design System" style="display:flex;flex-direction:column;gap:40px;padding-top:24px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:12px">
+<span style="width:34px;height:34px;display:inline-block;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span>
+<span style="font-family:'EB Garamond',serif;font-size:22px;letter-spacing:.32em;color:#F3EFE6">ETTERNUM</span>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="font:500 11px/1 Inter;letter-spacing:.14em;color:#A7A197;border:1px solid rgba(255,255,255,.09);border-radius:999px;padding:8px 12px">V 1.0 · OUT 2026</span>
+<span style="font:500 11px/1 Inter;letter-spacing:.14em;color:#E0C78E;border:1px solid rgba(224,199,142,.35);border-radius:999px;padding:8px 12px">NEXT.JS · TAILWIND 4 · LUCIDE</span>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:48px;align-items:end">
+<div style="display:flex;flex-direction:column;gap:20px">
+<span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">00 — DESIGN SYSTEM</span>
+<h1 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:clamp(48px,7vw,88px);line-height:1.02;letter-spacing:-.01em;text-wrap:balance">Um museu silencioso <em style="color:#E0C78E">à noite.</em></h1>
+</div>
+<p style="margin:0;font-size:17px;line-height:1.65;color:#A7A197;max-width:520px;text-wrap:pretty">Tokens, tipografia e componentes do Etternum. Os nomes seguem o código atual; tokens novos estão marcados com <span style="color:#E0C78E">novo</span>. Cada componente aparece com seus estados para implementação direta.</p>
+</div>
+<div style="height:1px;background:linear-gradient(90deg,rgba(224,199,142,.5),rgba(224,199,142,.08) 60%,transparent)"></div>
+<nav style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px;color:#A7A197">
+<a href="#cores">01 Cores</a><a href="#tipo">02 Tipografia</a><a href="#base">03 Espaço, raio, sombra, movimento</a><a href="#botoes">04 Botões</a><a href="#campos">05 Campos</a><a href="#mentes">06 Mentes</a><a href="#areas">07 Áreas</a><a href="#chat">08 Chat</a><a href="#avisos">09 Avisos e plano</a><a href="#nav">10 Navegação</a><a href="#feedback">11 Feedback</a>
+</nav>
+</header>
+
+<!-- 01 CORES -->
+<section id="cores" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">01 — CORES</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">Grafite, marfim e ouro suave</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px">
+<sc-for list="{{ swatches }}" as="s" hint-placeholder-count="10">
+<div style="display:flex;flex-direction:column;gap:12px;padding:12px;border-radius:20px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02)">
+<div style="height:96px;border-radius:12px;border:1px solid rgba(255,255,255,.09);background:{{ s.value }}"></div>
+<div style="display:flex;flex-direction:column;gap:4px;padding:0 4px 4px">
+<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><span style="font:600 13px Inter;color:#F3EFE6">{{ s.name }}</span><span style="font:500 10px Inter;letter-spacing:.1em;color:#E0C78E">{{ s.tag }}</span></div>
+<span style="font:12px ui-monospace,Menlo,monospace;color:#A7A197">{{ s.value }}</span>
+<span style="font-size:12px;line-height:1.45;color:#8A847A">{{ s.note }}</span>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<h3 style="margin:0;font:600 13px Inter;letter-spacing:.14em;color:#A7A197">CORES DAS ÁREAS — área-[slug] · ícone e detalhes, nunca texto corrido</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+<sc-for list="{{ areas }}" as="a" hint-placeholder-count="10">
+<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02)">
+<span style="flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:{{ a.tint }};border:1px solid {{ a.ring }}"><span style="width:20px;height:20px;display:block;background:{{ a.color }};-webkit-mask:url({{ a.iconUrl }}) center/contain no-repeat;mask:url({{ a.iconUrl }}) center/contain no-repeat"></span></span>
+<div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:13px;color:#F3EFE6">{{ a.short }}</span><span style="font:11px ui-monospace,Menlo,monospace;color:#8A847A">{{ a.color }} · {{ a.icon }}</span></div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;gap:16px;padding:20px 24px;border-radius:16px;border:1px solid rgba(224,199,142,.35);background:rgba(224,199,142,.05);font-size:14px;line-height:1.6;color:#A7A197">
+<span style="flex:none;width:18px;height:18px;margin-top:2px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/contrast.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/contrast.svg) center/contain no-repeat"></span>
+<span><b style="color:#F3EFE6;font-weight:600">Ajuste de acessibilidade:</b> o <code style="color:#E0C78E">faint</code> original (#6F6A62) tem 3,7:1 sobre o bg e reprova AA para texto. Proposta: <code style="color:#E0C78E">faint</code> passa a #8A847A (5,3:1) e o valor antigo vira <code style="color:#E0C78E">faint-deco</code>, só para divisórias e ícones decorativos. Dourado sobre bg: 11,9:1. Muted: 7,9:1. Texto escuro sobre botão dourado: 10,4:1.</span>
+</div>
+</section>
+
+<!-- 02 TIPOGRAFIA -->
+<section id="tipo" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">02 — TIPOGRAFIA</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">EB Garamond &amp; Inter</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px">
+<div style="padding:32px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));display:flex;flex-direction:column;gap:16px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">TÍTULOS · font-serif</span>
+<span style="font-family:'EB Garamond',serif;font-size:96px;line-height:1;color:#F3EFE6">Aa <em style="color:#E0C78E">Ee</em></span>
+<span style="font-family:'EB Garamond',serif;font-size:30px;line-height:1.3">Consciência, coração, ação, você, sabedoria, emoções, ímpeto, pôr do sol</span>
+<span style="font-size:13px;color:#A7A197">Teste de acentos: ê ã ç õ í é à ô ú — alinhamento correto do circunflexo (motivo da troca da Cormorant).</span>
+</div>
+<div style="padding:32px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));display:flex;flex-direction:column;gap:16px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">TEXTOS · font-sans</span>
+<span style="font-family:Inter;font-size:96px;line-height:1;font-weight:400;letter-spacing:-.03em">Aa <span style="font-weight:600">Aa</span></span>
+<span style="font-size:17px;line-height:1.65;color:#A7A197">O Maestro, seu amigo pessoal eterno, está ouvindo. Ele lembra do que você contou e, quando faz sentido, encaminha você para a grande mente ideal.</span>
+<span style="font-size:13px;color:#A7A197">Pesos: 400 texto · 500 botões e rótulos · 600 ênfase.</span>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;border-top:1px solid rgba(255,255,255,.09)">
+<sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="10">
+<div style="display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr);gap:24px;align-items:baseline;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.09)">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 13px Inter;color:#F3EFE6">{{ t.token }}</span><span style="font:12px ui-monospace,Menlo,monospace;color:#8A847A">{{ t.spec }}</span></div>
+<span style="font-family:{{ t.family }};font-size:{{ t.size }};line-height:{{ t.lh }};font-weight:{{ t.weight }};letter-spacing:{{ t.ls }};font-style:{{ t.style }};color:{{ t.color }};text-transform:{{ t.tt }};min-width:0;overflow-wrap:anywhere">{{ t.sample }}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<!-- 03 BASE -->
+<section id="base" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">03 — ESPAÇO, RAIO, SOMBRA, MOVIMENTO</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">A matéria do vidro</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px">
+<div style="padding:28px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:16px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">ESPAÇAMENTO · base 4px</span>
+<sc-for list="{{ spaces }}" as="sp" hint-placeholder-count="8">
+<div style="display:flex;align-items:center;gap:12px"><span style="width:32px;font:12px ui-monospace,Menlo,monospace;color:#A7A197">{{ sp.n }}</span><span style="height:8px;border-radius:2px;background:linear-gradient(90deg,#CFAE64,#E0C78E);width:{{ sp.px }}px"></span><span style="font:12px ui-monospace,Menlo,monospace;color:#8A847A">{{ sp.px }}px</span></div>
+</sc-for>
+</div>
+<div style="padding:28px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:16px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">RAIOS</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="height:72px;border:1px solid rgba(224,199,142,.35);border-radius:12px;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">r-sm 12</div>
+<div style="height:72px;border:1px solid rgba(224,199,142,.35);border-radius:16px;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">r-md 16</div>
+<div style="height:72px;border:1px solid rgba(224,199,142,.35);border-radius:24px;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">r-lg 24</div>
+<div style="height:72px;border:1px solid rgba(224,199,142,.35);border-radius:32px;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">r-xl 32</div>
+<div style="grid-column:span 2;height:44px;border:1px solid rgba(224,199,142,.35);border-radius:999px;display:grid;place-items:center;font:12px ui-monospace,Menlo,monospace;color:#A7A197">r-full 999 · botões, chips</div>
+</div>
+</div>
+<div style="padding:28px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:14px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">MOVIMENTO <span style="color:#E0C78E">novo</span></span>
+<sc-for list="{{ motion }}" as="m" hint-placeholder-count="6">
+<div style="display:flex;flex-direction:column;gap:2px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)"><div style="display:flex;justify-content:space-between;gap:8px"><span style="font:600 13px Inter">{{ m.token }}</span><span style="font:12px ui-monospace,Menlo,monospace;color:#E0C78E">{{ m.dur }}</span></div><span style="font:11px ui-monospace,Menlo,monospace;color:#8A847A">{{ m.curve }}</span><span style="font-size:12px;color:#A7A197">{{ m.use }}</span></div>
+</sc-for>
+<span style="font-size:12px;line-height:1.5;color:#A7A197">prefers-reduced-motion: tudo vira fade de 120ms, sem deslocamento.</span>
+</div>
+</div>
+<div style="position:relative;padding:48px;border-radius:32px;overflow:hidden;background:radial-gradient(400px 260px at 20% 30%,rgba(201,167,255,.22),transparent 70%),radial-gradient(380px 260px at 85% 70%,rgba(224,199,142,.22),transparent 70%),#111114;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px">
+<div style="padding:28px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 24px 48px -24px rgba(0,0,0,.7);display:flex;flex-direction:column;gap:8px"><span style="font:600 13px Inter">glass</span><span style="font:12px/1.6 ui-monospace,Menlo,monospace;color:#A7A197">bg white/4.5→1.5% · border line · blur 18 · shadow-card</span><span style="font-size:13px;color:#A7A197">Base de todos os cards.</span></div>
+<div style="padding:28px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid rgba(224,199,142,.35);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(224,199,142,.05),0 30px 60px -30px rgba(224,199,142,.25);display:flex;flex-direction:column;gap:8px"><span style="font:600 13px Inter;color:#E0C78E">glass-gold</span><span style="font:12px/1.6 ui-monospace,Menlo,monospace;color:#A7A197">border line-strong · blur 24 · shadow-glow</span><span style="font-size:13px;color:#A7A197">Destaques: Maestro, Síntese, Premium.</span></div>
+<div style="padding:28px;border-radius:24px;background:rgba(10,10,11,.72);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(28px) saturate(1.2);-webkit-backdrop-filter:blur(28px) saturate(1.2);box-shadow:0 40px 80px -20px rgba(0,0,0,.8);display:flex;flex-direction:column;gap:8px"><span style="font:600 13px Inter">glass-overlay</span><span style="font:12px/1.6 ui-monospace,Menlo,monospace;color:#A7A197">bg #0A0A0B/72% · blur 28 · shadow-pop</span><span style="font-size:13px;color:#A7A197">Barras, modais, toasts, tooltip.</span></div>
+</div>
+</section>
+
+<!-- 04 BOTÕES -->
+<section id="botoes" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">04 — BOTÕES</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">Button · IconButton · Link</h2></div>
+<div style="overflow-x:auto;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02)">
+<div style="min-width:920px;display:grid;grid-template-columns:140px repeat(6,minmax(0,1fr));">
+<span style="padding:16px 20px;font:500 11px Inter;letter-spacing:.14em;color:#8A847A;border-bottom:1px solid rgba(255,255,255,.09)"></span>
+<sc-for list="{{ states }}" as="st" hint-placeholder-count="6"><span style="padding:16px 12px;font:500 11px Inter;letter-spacing:.14em;color:#8A847A;border-bottom:1px solid rgba(255,255,255,.09);text-align:center">{{ st }}</span></sc-for>
+
+<span style="padding:24px 20px;font:600 13px Inter;display:flex;align-items:center">Primário</span>
+<div style="padding:24px 8px;display:grid;place-items:center"><button style="height:48px;padding:0 22px;border:0;border-radius:999px;background:linear-gradient(180deg,#EAD6A4,#CFAE64);color:#1A1408;font:500 15px Inter;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 24px -10px rgba(224,199,142,.55);cursor:pointer;transition:transform .14s cubic-bezier(.2,.7,.2,1),filter .14s" style-hover="filter:brightness(1.06);transform:translateY(-1px)" style-active="transform:scale(.98)">Conversar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center"><button style="height:48px;padding:0 22px;border:0;border-radius:999px;background:linear-gradient(180deg,#F1DFB2,#D7B872);color:#1A1408;font:500 15px Inter;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 12px 28px -10px rgba(224,199,142,.7);transform:translateY(-1px)">Conversar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center"><button style="height:48px;padding:0 22px;border:0;border-radius:999px;background:linear-gradient(180deg,#EAD6A4,#CFAE64);color:#1A1408;font:500 15px Inter;box-shadow:0 0 0 2px #0A0A0B,0 0 0 4px #E0C78E">Conversar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center"><button style="height:48px;padding:0 22px;border:0;border-radius:999px;background:linear-gradient(180deg,#D9C190,#BE9F5A);color:#1A1408;font:500 15px Inter;transform:scale(.98);box-shadow:inset 0 2px 6px rgba(0,0,0,.2)">Conversar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center"><button disabled style="height:48px;padding:0 22px;border:0;border-radius:999px;background:rgba(224,199,142,.18);color:rgba(243,239,230,.45);font:500 15px Inter;cursor:not-allowed">Conversar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center"><button style="height:48px;padding:0 22px;border:0;border-radius:999px;background:linear-gradient(180deg,#EAD6A4,#CFAE64);color:#1A1408;font:500 15px Inter;display:flex;align-items:center;gap:10px">{{ spinnerDark }}Enviando</button></div>
+
+<span style="padding:24px 20px;font:600 13px Inter;display:flex;align-items:center;border-top:1px solid rgba(255,255,255,.06)">Secundário</span>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="height:48px;padding:0 22px;border:1px solid rgba(224,199,142,.35);border-radius:999px;background:transparent;color:#E0C78E;font:500 15px Inter;cursor:pointer;transition:background .14s,border-color .14s" style-hover="background:rgba(224,199,142,.08);border-color:rgba(224,199,142,.6)">Entrar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="height:48px;padding:0 22px;border:1px solid rgba(224,199,142,.6);border-radius:999px;background:rgba(224,199,142,.08);color:#F3E3B8;font:500 15px Inter">Entrar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="height:48px;padding:0 22px;border:1px solid rgba(224,199,142,.35);border-radius:999px;background:transparent;color:#E0C78E;font:500 15px Inter;box-shadow:0 0 0 2px #0A0A0B,0 0 0 4px #E0C78E">Entrar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="height:48px;padding:0 22px;border:1px solid rgba(224,199,142,.6);border-radius:999px;background:rgba(224,199,142,.14);color:#F3E3B8;font:500 15px Inter;transform:scale(.98)">Entrar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button disabled style="height:48px;padding:0 22px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:transparent;color:rgba(243,239,230,.35);font:500 15px Inter">Entrar</button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="height:48px;padding:0 22px;border:1px solid rgba(224,199,142,.35);border-radius:999px;background:transparent;color:#E0C78E;font:500 15px Inter;display:flex;align-items:center;gap:10px">{{ spinnerGold }}Aguarde</button></div>
+
+<span style="padding:24px 20px;font:600 13px Inter;display:flex;align-items:center;border-top:1px solid rgba(255,255,255,.06)">Ícone redondo</span>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button aria-label="Nova conversa" style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);display:grid;place-items:center;cursor:pointer;transition:background .14s,border-color .14s" style-hover="background:rgba(224,199,142,.08);border-color:rgba(224,199,142,.35)"><span style="width:18px;height:18px;background:#F3EFE6;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat"></span></button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(224,199,142,.35);background:rgba(224,199,142,.08);display:grid;place-items:center"><span style="width:18px;height:18px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat"></span></button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);display:grid;place-items:center;box-shadow:0 0 0 2px #0A0A0B,0 0 0 4px #E0C78E"><span style="width:18px;height:18px;background:#F3EFE6;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat"></span></button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(224,199,142,.5);background:rgba(224,199,142,.14);display:grid;place-items:center;transform:scale(.95)"><span style="width:18px;height:18px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat"></span></button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button disabled style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.06);background:transparent;display:grid;place-items:center"><span style="width:18px;height:18px;background:rgba(243,239,230,.3);-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat"></span></button></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><button style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);display:grid;place-items:center">{{ spinnerGold }}</button></div>
+
+<span style="padding:24px 20px;font:600 13px Inter;display:flex;align-items:center;border-top:1px solid rgba(255,255,255,.06)">Link</span>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><a href="#botoes" style="font:500 15px Inter;color:#E0C78E;text-decoration:none;display:inline-flex;gap:6px;align-items:center" style-hover="color:#F3E3B8;text-decoration:underline">Ver todas →</a></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><span style="font:500 15px Inter;color:#F3E3B8;text-decoration:underline;text-underline-offset:4px">Ver todas →</span></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><span style="font:500 15px Inter;color:#E0C78E;border-radius:6px;padding:2px 4px;box-shadow:0 0 0 2px #E0C78E">Ver todas →</span></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><span style="font:500 15px Inter;color:#CFAE64;text-decoration:underline;text-underline-offset:4px">Ver todas →</span></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><span style="font:500 15px Inter;color:rgba(243,239,230,.35)">Ver todas →</span></div>
+<div style="padding:24px 8px;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06)"><span style="font:500 15px Inter;color:#8A847A">—</span></div>
+</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:24px;font-size:13px;color:#A7A197">
+<span>Tamanhos: <b style="color:#F3EFE6;font-weight:500">sm 36</b> · <b style="color:#F3EFE6;font-weight:500">md 44</b> · <b style="color:#F3EFE6;font-weight:500">lg 48</b> (padrão) · <b style="color:#F3EFE6;font-weight:500">xl 56</b> (CTA da landing)</span>
+<span>Foco: anel duplo 2px bg + 2px gold (ring-focus).</span>
+</div>
+</section>
+
+<!-- 05 CAMPOS -->
+<section id="campos" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">05 — CAMPOS</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">Formulários que acolhem</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:28px 24px;padding:40px;border-radius:32px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01))">
+
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:#F3EFE6">Nome</span><input value="Ana Clara Souza" style="height:52px;padding:0 16px;border-radius:14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);color:#F3EFE6;font:15px Inter;outline:none;transition:border-color .14s,box-shadow .14s" style-hover="border-color:rgba(255,255,255,.18)" style-focus="border-color:rgba(224,199,142,.6);box-shadow:0 0 0 4px rgba(224,199,142,.12)"><span style="font-size:12px;color:#8A847A">Padrão · hover · clique para foco</span></label>
+
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:#F3EFE6">E-mail</span><input value="ana@exemplo.com" style="height:52px;padding:0 16px;border-radius:14px;border:1px solid rgba(224,199,142,.6);background:rgba(255,255,255,.04);color:#F3EFE6;font:15px Inter;outline:none;box-shadow:0 0 0 4px rgba(224,199,142,.12)"><span style="font-size:12px;color:#8A847A">Foco</span></label>
+
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:#F3EFE6">Senha</span>
+<div style="position:relative;display:flex"><input type="{{ pwType }}" value="etternum2026" style="flex:1;height:52px;padding:0 52px 0 16px;border-radius:14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);color:#F3EFE6;font:15px Inter;outline:none" style-focus="border-color:rgba(224,199,142,.6);box-shadow:0 0 0 4px rgba(224,199,142,.12)"><button onClick="{{ togglePw }}" aria-label="Mostrar senha" style="position:absolute;right:4px;top:4px;width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer"><span style="width:18px;height:18px;background:#A7A197;-webkit-mask:url({{ pwIcon }}) center/contain no-repeat;mask:url({{ pwIcon }}) center/contain no-repeat"></span></button></div>
+<span style="font-size:12px;color:#8A847A">Pelo menos 8 caracteres.</span></label>
+
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:#F3EFE6">CPF</span><input value="{{ cpf }}" onChange="{{ onCpf }}" inputmode="numeric" placeholder="000.000.000-00" style="height:52px;padding:0 16px;border-radius:14px;border:1px solid rgba(242,139,130,.55);background:rgba(242,139,130,.04);color:#F3EFE6;font:15px Inter;letter-spacing:.04em;outline:none;font-variant-numeric:tabular-nums"><span style="display:flex;gap:6px;align-items:center;font-size:12px;color:#F28B82"><span style="width:14px;height:14px;background:#F28B82;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/circle-alert.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/circle-alert.svg) center/contain no-repeat"></span>CPF inválido. Confira os números.</span></label>
+
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:#F3EFE6">Data de nascimento</span><input value="12/12/1992" style="height:52px;padding:0 16px;border-radius:14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);color:#F3EFE6;font:15px Inter;outline:none;font-variant-numeric:tabular-nums;min-width:0"></label>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:#F3EFE6">Signo</span><div style="height:52px;padding:0 14px;border-radius:14px;border:1px solid rgba(224,199,142,.35);background:rgba(224,199,142,.06);color:#F3EFE6;font:15px Inter;display:flex;align-items:center;justify-content:space-between;gap:8px"><span><span style="color:#E0C78E;margin-right:6px">♐</span>Sagitário</span><span style="width:16px;height:16px;background:#A7A197;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-down.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-down.svg) center/contain no-repeat"></span></div></label>
+</div>
+<span style="font-size:12px;color:#8A847A">O signo é preenchido pela data de nascimento; ajuste se preferir.</span>
+</div>
+
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:#F3EFE6">Select</span><div style="height:52px;padding:0 16px;border-radius:14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);color:#A7A197;font:15px Inter;display:flex;align-items:center;justify-content:space-between">Escolha uma área<span style="width:16px;height:16px;background:#A7A197;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-down.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/chevron-down.svg) center/contain no-repeat"></span></div><span style="font-size:12px;color:#8A847A">Placeholder em muted</span></label>
+
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font:500 13px Inter;color:#F3EFE6">Desabilitado</span><input disabled value="ana@exemplo.com" style="height:52px;padding:0 16px;border-radius:14px;border:1px dashed rgba(255,255,255,.09);background:transparent;color:rgba(243,239,230,.4);font:15px Inter;cursor:not-allowed"><span style="font-size:12px;color:#8A847A">Somente leitura</span></label>
+
+<label style="display:flex;flex-direction:column;gap:8px;grid-column:1 / -1"><span style="font:500 13px Inter;color:#F3EFE6">Com o que você trabalha?</span><textarea rows="3" style="padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);color:#F3EFE6;font:15px/1.6 Inter;outline:none;resize:vertical" style-focus="border-color:rgba(224,199,142,.6);box-shadow:0 0 0 4px rgba(224,199,142,.12)">Sou designer numa agência e faço freelas à noite.</textarea><span style="font-size:12px;color:#8A847A">Textarea · cresce com o conteúdo até 6 linhas</span></label>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<button onClick="{{ toggleCheck }}" style="display:flex;gap:12px;align-items:flex-start;text-align:left;border:0;background:transparent;padding:0;cursor:pointer;color:#A7A197;font:14px/1.55 Inter">
+<span style="flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;border:1px solid {{ checkBorder }};background:{{ checkBg }};display:grid;place-items:center;transition:background .14s"><sc-if value="{{ checked }}" hint-placeholder-val="{{ true }}"><span style="width:14px;height:14px;background:#1A1408;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/check.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/check.svg) center/contain no-repeat"></span></sc-if></span>
+<span>Tenho 18 anos ou mais, li e aceito os <span style="color:#E0C78E">Termos de Uso</span> e a <span style="color:#E0C78E">Política de Privacidade</span>…</span>
+</button>
+<span style="display:flex;gap:6px;align-items:center;font-size:12px;color:#F28B82;padding-left:34px">Para continuar, aceite os termos e a política de privacidade.</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font:500 13px Inter;color:#F3EFE6">Chips selecionáveis</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="5">
+<button onClick="{{ c.toggle }}" style="height:40px;padding:0 14px 0 12px;border-radius:999px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }};font:500 13px Inter;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .14s"><span style="width:16px;height:16px;background:{{ c.color }};-webkit-mask:url({{ c.iconUrl }}) center/contain no-repeat;mask:url({{ c.iconUrl }}) center/contain no-repeat"></span>{{ c.short }}</button>
+</sc-for>
+</div>
+<span style="font-size:12px;color:#8A847A">Toque para alternar · min 40px (44px de área com o gap)</span>
+</div>
+</div>
+</section>
+
+<!-- 06 MENTES -->
+<section id="mentes" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">06 — MENTES</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">MindAvatar · KindBadge · MindCard</h2></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px">
+<div style="padding:32px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:24px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">MINDAVATAR · monograma em medalhão sépia</span>
+<div style="display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap">
+<sc-for list="{{ avatarSizes }}" as="z" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<span style="width:{{ z.px }}px;height:{{ z.px }}px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,#6A5236 0%,#3F2F20 42%,#1C1510 100%);box-shadow:inset 0 0 0 1px rgba(224,199,142,.4),inset 0 0 {{ z.vig }}px rgba(0,0,0,.65),0 0 0 3px #0A0A0B,0 0 0 4px rgba(224,199,142,.16);font-family:'EB Garamond',serif;font-size:{{ z.font }}px;color:#E8D3A0;letter-spacing:.02em;line-height:1">CJ</span>
+<span style="font:12px ui-monospace,Menlo,monospace;color:#8A847A">{{ z.px }}</span>
+</div>
+</sc-for>
+</div>
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A;margin-top:8px">MAESTRO · ouro com ∞</span>
+<div style="display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap">
+<sc-for list="{{ avatarSizes }}" as="z" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<span style="width:{{ z.px }}px;height:{{ z.px }}px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 26%,#F6E7BF 0%,#E0C78E 40%,#A9874A 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),inset 0 -6px 14px rgba(90,60,20,.35),0 0 0 3px #0A0A0B,0 0 0 4px rgba(224,199,142,.35),0 0 {{ z.vig }}px rgba(224,199,142,.35)"><span style="width:{{ z.icon }}px;height:{{ z.icon }}px;background:#2A1E0C;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span></span>
+<span style="font:12px ui-monospace,Menlo,monospace;color:#8A847A">{{ z.px }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="padding:32px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:24px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">KINDBADGE · “Inspirado em” · passe o mouse</span>
+<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding-top:96px">
+<div style="position:relative" onMouseEnter="{{ tipOn }}" onMouseLeave="{{ tipOff }}" onFocus="{{ tipOn }}" onBlur="{{ tipOff }}">
+<button aria-describedby="tip-kind" style="height:26px;padding:0 10px 0 8px;border-radius:999px;border:1px solid rgba(224,199,142,.35);background:rgba(224,199,142,.08);color:#E0C78E;font:500 10.5px Inter;letter-spacing:.12em;display:flex;align-items:center;gap:6px;cursor:help"><span style="width:12px;height:12px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/feather.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/feather.svg) center/contain no-repeat"></span>INSPIRADO EM</button>
+<sc-if value="{{ tip }}" hint-placeholder-val="{{ true }}">
+<div id="tip-kind" role="tooltip" style="position:absolute;bottom:calc(100% + 10px);left:0;width:260px;padding:12px 14px;border-radius:12px;background:rgba(20,20,23,.92);border:1px solid rgba(224,199,142,.35);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 40px -12px rgba(0,0,0,.8);font:13px/1.5 Inter;color:#F3EFE6;z-index:5">Cápsula de um especialista nas ideias desta pessoa — não é uma simulação dela.</div>
+</sc-if>
+</div>
+<span style="font-size:13px;color:#A7A197">Sempre visível em pessoas vivas e figuras religiosas. Nunca escondido em celular: toque abre o tooltip.</span>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px">
+<sc-for list="{{ minds }}" as="m" hint-placeholder-count="4">
+<article style="position:relative;display:flex;flex-direction:column;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);transition:transform .24s cubic-bezier(.2,.7,.2,1),border-color .24s" style-hover="transform:translateY(-4px);border-color:rgba(224,199,142,.35)">
+<div style="position:relative;height:150px;display:grid;place-items:center;background:radial-gradient(160px 120px at 50% 60%,{{ m.glow }},transparent 70%),repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 1px,transparent 1px 10px);border-bottom:1px solid rgba(255,255,255,.06)">
+<span style="width:80px;height:80px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,#6A5236 0%,#3F2F20 42%,#1C1510 100%);box-shadow:inset 0 0 0 1px rgba(224,199,142,.4),inset 0 0 18px rgba(0,0,0,.65),0 0 0 3px #0A0A0B,0 0 0 4px rgba(224,199,142,.16);font-family:'EB Garamond',serif;font-size:30px;color:#E8D3A0;filter:{{ m.filter }}">{{ m.ini }}</span>
+<button onClick="{{ m.fav }}" aria-label="Favoritar" style="position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:999px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer"><span style="width:18px;height:18px;background:{{ m.starColor }};-webkit-mask:url({{ m.starIcon }}) center/contain no-repeat;mask:url({{ m.starIcon }}) center/contain no-repeat;transition:transform .24s" style-hover="transform:scale(1.15)"></span></button>
+<sc-if value="{{ m.inspired }}" hint-placeholder-val="{{ false }}"><span title="Cápsula de um especialista nas ideias desta pessoa — não é uma simulação dela." style="position:absolute;top:20px;left:16px;height:24px;padding:0 9px 0 7px;border-radius:999px;border:1px solid rgba(224,199,142,.35);background:rgba(10,10,11,.6);color:#E0C78E;font:500 10px Inter;letter-spacing:.12em;display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/feather.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/feather.svg) center/contain no-repeat"></span>INSPIRADO EM</span></sc-if>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:20px 22px 22px;flex:1">
+<span style="font:500 10.5px/1.4 Inter;letter-spacing:.14em;color:#E0C78E">{{ m.spec }}</span>
+<div style="display:flex;flex-direction:column;gap:2px"><h3 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:26px;line-height:1.15">{{ m.name }}</h3><span style="font-size:12.5px;color:#8A847A">{{ m.period }}</span></div>
+<p style="margin:0;font-family:'EB Garamond',serif;font-style:italic;font-size:17px;line-height:1.4;color:#A7A197;flex:1;text-wrap:pretty">{{ m.quote }}</p>
+<button style="margin-top:8px;height:44px;border-radius:999px;border:1px solid {{ m.btnBorder }};background:transparent;color:{{ m.btnColor }};font:500 14px Inter;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer" style-hover="background:rgba(224,199,142,.08)"><sc-if value="{{ m.locked }}" hint-placeholder-val="{{ false }}"><span style="width:14px;height:14px;background:#A7A197;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/lock.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/lock.svg) center/contain no-repeat"></span></sc-if>{{ m.cta }}</button>
+</div>
+</article>
+</sc-for>
+</div>
+<span style="font-size:13px;color:#A7A197">Variantes: padrão · Inspirado em · favoritado (estrela dourada preenchida) · bloqueado (medalhão dessaturado, CTA “Disponível no Premium”). Hover: sobe 4px, borda dourada.</span>
+</section>
+
+<!-- 07 ÁREAS + CARROSSEL -->
+<section id="areas" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">07 — ÁREAS E CARROSSEL</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">AreaCard · MindCarousel</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">
+<sc-for list="{{ areasFew }}" as="a" hint-placeholder-count="4">
+<a href="#areas" style="position:relative;display:flex;flex-direction:column;gap:20px;padding:24px;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,.09);background:radial-gradient(220px 140px at 100% 0%,{{ a.tint }},transparent 70%),linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));color:#F3EFE6;text-decoration:none;transition:transform .24s cubic-bezier(.2,.7,.2,1),border-color .24s" style-hover="transform:translateY(-3px);border-color:{{ a.ring }}">
+<div style="display:flex;justify-content:space-between;align-items:flex-start">
+<span style="width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:{{ a.tint }};border:1px solid {{ a.ring }}"><span style="width:22px;height:22px;background:{{ a.color }};-webkit-mask:url({{ a.iconUrl }}) center/contain no-repeat;mask:url({{ a.iconUrl }}) center/contain no-repeat"></span></span>
+<span style="width:18px;height:18px;background:#8A847A;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-up-right.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-up-right.svg) center/contain no-repeat"></span>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><h3 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:24px;line-height:1.15">{{ a.name }}</h3><p style="margin:0;font-size:14px;line-height:1.5;color:#A7A197">{{ a.phrase }}</p></div>
+<span style="font:500 12px Inter;color:{{ a.color }}">{{ a.n }} mentes</span>
+</a>
+</sc-for>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;align-items:end;gap:16px">
+<h3 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:30px">Grandes mentes</h3>
+<div style="display:flex;gap:8px">
+<button onClick="{{ scrollPrev }}" aria-label="Anterior" style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);display:grid;place-items:center;cursor:pointer" style-hover="border-color:rgba(224,199,142,.35)"><span style="width:18px;height:18px;background:#F3EFE6;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-left.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-left.svg) center/contain no-repeat"></span></button>
+<button onClick="{{ scrollNext }}" aria-label="Próximo" style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);display:grid;place-items:center;cursor:pointer" style-hover="border-color:rgba(224,199,142,.35)"><span style="width:18px;height:18px;background:#F3EFE6;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-right.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-right.svg) center/contain no-repeat"></span></button>
+</div>
+</div>
+<div ref="{{ carRef }}" style="display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding-bottom:8px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent)">
+<sc-for list="{{ carousel }}" as="c" hint-placeholder-count="8">
+<div style="flex:none;width:200px;scroll-snap-align:start;padding:20px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));display:flex;flex-direction:column;gap:14px">
+<span style="width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,#6A5236 0%,#3F2F20 42%,#1C1510 100%);box-shadow:inset 0 0 0 1px rgba(224,199,142,.4),inset 0 0 14px rgba(0,0,0,.65);font-family:'EB Garamond',serif;font-size:21px;color:#E8D3A0">{{ c.ini }}</span>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-family:'EB Garamond',serif;font-size:20px;line-height:1.15">{{ c.name }}</span><span style="font:500 10px/1.4 Inter;letter-spacing:.12em;color:#E0C78E">{{ c.spec }}</span></div>
+</div>
+</sc-for>
+</div>
+<span style="font-size:13px;color:#A7A197">Desktop: setas avançam um card · Celular: arraste com scroll-snap, sem setas · Borda direita esmaece para indicar continuidade.</span>
+</div>
+</section>
+
+<!-- 08 CHAT -->
+<section id="chat" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">08 — CHAT</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">ChatView</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px">
+<div style="padding:28px;border-radius:32px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));display:flex;flex-direction:column;gap:22px">
+<div style="align-self:flex-end;max-width:80%;padding:14px 18px;border-radius:22px 22px 6px 22px;background:rgba(224,199,142,.12);border:1px solid rgba(224,199,142,.22);font-size:15px;line-height:1.6;color:#F3EFE6">Estou exausta e sem saber se continuo no meu emprego.</div>
+<div style="display:flex;gap:12px;align-items:flex-start;max-width:92%">
+<span style="flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 26%,#F6E7BF 0%,#E0C78E 40%,#A9874A 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)"><span style="width:18px;height:18px;background:#2A1E0C;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span></span>
+<div style="display:flex;flex-direction:column;gap:14px;font-size:15.5px;line-height:1.7;color:#E9E4DA;padding-top:6px">
+<span style="font:500 12px Inter;color:#A7A197">Maestro</span>
+<p style="margin:0">Ana, obrigado por me contar. Exaustão assim costuma ser um sinal, não um defeito seu. Antes de decidir sobre o emprego, vale olhar para <b style="color:#E0C78E;font-weight:600">o que está te esvaziando</b>:</p>
+<ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px"><li>o ritmo dobrado com os freelas à noite;</li><li>a sensação de não saber para onde a carreira vai;</li><li>a solidão de carregar isso sozinha.</li></ul>
+<blockquote style="margin:0;padding:4px 0 4px 16px;border-left:1px solid rgba(224,199,142,.5);font-family:'EB Garamond',serif;font-style:italic;font-size:19px;line-height:1.45;color:#F3EFE6">“Quem tem um porquê enfrenta qualquer como.”</blockquote>
+<p style="margin:0">Acho que uma conversa com Viktor Frankl pode te ajudar a reencontrar esse porquê.</p>
+<button style="align-self:flex-start;display:flex;align-items:center;gap:14px;padding:10px 16px 10px 10px;border-radius:20px;border:1px solid rgba(224,199,142,.35);background:linear-gradient(180deg,rgba(224,199,142,.1),rgba(224,199,142,.03));color:#F3EFE6;cursor:pointer;text-align:left;transition:transform .24s cubic-bezier(.2,.7,.2,1),background .24s" style-hover="transform:translateY(-2px);background:rgba(224,199,142,.14)">
+<span style="flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,#6A5236 0%,#3F2F20 42%,#1C1510 100%);box-shadow:inset 0 0 0 1px rgba(224,199,142,.4),inset 0 0 12px rgba(0,0,0,.65);font-family:'EB Garamond',serif;font-size:18px;color:#E8D3A0">VF</span>
+<span style="display:flex;flex-direction:column;gap:3px"><span style="font:500 15px Inter">Continuar com Viktor Frankl</span><span style="font:500 10.5px Inter;letter-spacing:.12em;color:#E0C78E">SENTIDO DA VIDA · PSICOLOGIA</span></span>
+<span style="width:18px;height:18px;margin-left:8px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-right.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-right.svg) center/contain no-repeat"></span>
+</button>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="padding:24px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:16px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">PENSANDO · três pontos dourados, 1.2s</span>
+<div style="display:flex;gap:12px;align-items:center"><span style="width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,#6A5236 0%,#3F2F20 42%,#1C1510 100%);box-shadow:inset 0 0 0 1px rgba(224,199,142,.4);font-family:'EB Garamond',serif;font-size:14px;color:#E8D3A0">VF</span>{{ dots }}</div>
+</div>
+<div style="padding:24px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:16px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">STREAMING · cursor dourado no fim do texto</span>
+<div style="display:flex;gap:12px;align-items:flex-start"><span style="flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,#6A5236 0%,#3F2F20 42%,#1C1510 100%);box-shadow:inset 0 0 0 1px rgba(224,199,142,.4);font-family:'EB Garamond',serif;font-size:14px;color:#E8D3A0">VF</span><p style="margin:0;padding-top:6px;font-size:15.5px;line-height:1.7;color:#E9E4DA;min-height:80px">{{ streamText }}{{ cursor }}</p></div>
+</div>
+<div style="padding:12px;border-radius:28px;border:1px solid rgba(255,255,255,.09);background:rgba(20,20,23,.7);display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:flex-end;gap:8px"><textarea rows="1" placeholder="Conte o que você está vivendo…" style="flex:1;min-height:44px;padding:11px 12px;border:0;background:transparent;color:#F3EFE6;font:15px/1.5 Inter;outline:none;resize:none"></textarea><button aria-label="Enviar" style="flex:none;width:44px;height:44px;border-radius:999px;border:0;background:linear-gradient(180deg,#EAD6A4,#CFAE64);display:grid;place-items:center;cursor:pointer"><span style="width:18px;height:18px;background:#1A1408;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-up.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/arrow-up.svg) center/contain no-repeat"></span></button></div>
+<span style="padding:0 12px 4px;font-size:11.5px;color:#8A847A">Cápsulas de IA podem errar. Não substituem profissionais de saúde. Em crise, ligue 188.</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 09 AVISOS E PLANO -->
+<section id="avisos" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">09 — AVISOS E PLANO</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">CrisisBanner · PlanGate · PlanChip</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:16px">
+<div role="alert" style="padding:28px;border-radius:24px;border:1px solid rgba(242,139,130,.35);background:linear-gradient(180deg,rgba(242,139,130,.1),rgba(242,139,130,.04));display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;gap:14px;align-items:flex-start">
+<span style="flex:none;width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:rgba(242,139,130,.14)"><span style="width:20px;height:20px;background:#F28B82;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/heart-handshake.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/heart-handshake.svg) center/contain no-repeat"></span></span>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-family:'EB Garamond',serif;font-size:24px;line-height:1.2;color:#F3EFE6">Você não está sozinho(a).</span><span style="font-size:15px;color:#E9E4DA">Se precisar de ajuda agora:</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="display:grid;grid-template-columns:64px 1fr;gap:12px;padding:12px 0;border-top:1px solid rgba(242,139,130,.18);align-items:baseline"><span style="font:600 22px Inter;color:#F6B1AA;font-variant-numeric:tabular-nums">188</span><span style="font-size:14.5px;line-height:1.5;color:#F3EFE6">CVV — gratuito, 24 horas, ou chat em <a href="https://cvv.org.br" style="color:#F6B1AA;text-decoration:underline">cvv.org.br</a></span></div>
+<div style="display:grid;grid-template-columns:64px 1fr;gap:12px;padding:12px 0;border-top:1px solid rgba(242,139,130,.18);align-items:baseline"><span style="font:600 22px Inter;color:#F6B1AA">192</span><span style="font-size:14.5px;color:#F3EFE6">SAMU</span></div>
+<div style="display:grid;grid-template-columns:64px 1fr;gap:12px;padding:12px 0;border-top:1px solid rgba(242,139,130,.18);align-items:baseline"><span style="font:600 22px Inter;color:#F6B1AA">190</span><span style="font-size:14.5px;color:#F3EFE6">Polícia</span></div>
+<div style="display:grid;grid-template-columns:64px 1fr;gap:12px;padding:12px 0;border-top:1px solid rgba(242,139,130,.18);align-items:baseline"><span style="font:600 22px Inter;color:#F6B1AA">180</span><span style="font-size:14.5px;color:#F3EFE6">Central de Atendimento à Mulher</span></div>
+</div>
+<span style="font-size:12.5px;color:#A7A197">No celular, cada número é um link tel: com alvo de 44px.</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="padding:28px;border-radius:24px;border:1px solid rgba(224,199,142,.35);background:radial-gradient(300px 160px at 90% 0%,rgba(224,199,142,.14),transparent 70%),linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:12px;align-items:center"><span style="width:36px;height:36px;border-radius:999px;display:grid;place-items:center;border:1px solid rgba(224,199,142,.35)"><span style="width:16px;height:16px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/lock-keyhole.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/lock-keyhole.svg) center/contain no-repeat"></span></span><span style="font:500 11px Inter;letter-spacing:.14em;color:#E0C78E">PLANO GRATUITO</span></div>
+<p style="margin:0;font-family:'EB Garamond',serif;font-size:22px;line-height:1.35">No plano gratuito você conversa com uma cápsula. Faça upgrade para acessar todas as mentes.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button style="height:44px;padding:0 20px;border:0;border-radius:999px;background:linear-gradient(180deg,#EAD6A4,#CFAE64);color:#1A1408;font:500 14px Inter;cursor:pointer">Conhecer o Premium</button><button style="height:44px;padding:0 20px;border:1px solid rgba(224,199,142,.35);border-radius:999px;background:transparent;color:#E0C78E;font:500 14px Inter;cursor:pointer">Falar com o Maestro</button></div>
+</div>
+<div style="padding:24px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:16px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">PLANCHIP · UPGRADE</span>
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+<span style="height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(224,199,142,.35);background:rgba(224,199,142,.08);color:#E0C78E;font:500 12.5px Inter;display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#E0C78E;box-shadow:0 0 8px #E0C78E"></span>Teste grátis · 14 dias</span>
+<span style="height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#A7A197;font:500 12.5px Inter;display:flex;align-items:center">Gratuito</span>
+<span style="height:32px;padding:0 12px;border-radius:999px;background:linear-gradient(180deg,rgba(234,214,164,.22),rgba(207,174,100,.12));border:1px solid rgba(224,199,142,.5);color:#F3E3B8;font:500 12.5px Inter;display:flex;align-items:center;gap:6px"><span style="width:13px;height:13px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/crown.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/crown.svg) center/contain no-repeat"></span>Premium</span>
+<button style="height:36px;padding:0 14px;border:0;border-radius:999px;background:linear-gradient(180deg,#EAD6A4,#CFAE64);color:#1A1408;font:500 13px Inter;display:flex;align-items:center;gap:6px;cursor:pointer"><span style="width:14px;height:14px;background:#1A1408;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/sparkles.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/sparkles.svg) center/contain no-repeat"></span>Fazer upgrade</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 10 NAVEGAÇÃO -->
+<section id="nav" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">10 — NAVEGAÇÃO</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">SideNav · TopBar · BottomNav · ConversationList · Tabs</h2></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start">
+<aside style="flex:none;width:256px;padding:24px 16px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:#0E0E10;display:flex;flex-direction:column;gap:28px;min-height:560px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><span style="width:26px;height:26px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span><span style="font-family:'EB Garamond',serif;font-size:17px;letter-spacing:.3em">ETTERNUM</span></div>
+<nav style="display:flex;flex-direction:column;gap:2px;flex:1">
+<sc-for list="{{ sideItems }}" as="i" hint-placeholder-count="7">
+<a href="#nav" style="height:44px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:12px;font:500 14px Inter;color:{{ i.fg }};background:{{ i.bg }};text-decoration:none;position:relative" style-hover="background:rgba(255,255,255,.04);color:#F3EFE6"><span style="width:18px;height:18px;background:{{ i.ic }};-webkit-mask:url({{ i.iconUrl }}) center/contain no-repeat;mask:url({{ i.iconUrl }}) center/contain no-repeat"></span>{{ i.label }}</a>
+</sc-for>
+</nav>
+<a href="#nav" style="height:44px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:12px;font:500 14px Inter;color:#8A847A;text-decoration:none;border-top:1px solid rgba(255,255,255,.06);border-radius:0;padding-top:4px"><span style="width:18px;height:18px;background:#8A847A;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/log-out.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/log-out.svg) center/contain no-repeat"></span>Sair</a>
+</aside>
+
+<div style="flex:1;min-width:min(100%,420px);display:flex;flex-direction:column;gap:16px">
+<div style="height:72px;padding:0 20px 0 28px;border-radius:20px;border:1px solid rgba(255,255,255,.09);background:rgba(10,10,11,.72);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);display:flex;align-items:center;justify-content:space-between;gap:12px">
+<span style="font-family:'EB Garamond',serif;font-size:20px">Olá, <em style="color:#E0C78E">Ana</em></span>
+<div style="display:flex;gap:10px;align-items:center"><span style="height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(224,199,142,.35);background:rgba(224,199,142,.08);color:#E0C78E;font:500 12.5px Inter;display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#E0C78E"></span>Teste grátis · 14 dias</span><button style="height:36px;padding:0 14px;border:0;border-radius:999px;background:linear-gradient(180deg,#EAD6A4,#CFAE64);color:#1A1408;font:500 13px Inter;cursor:pointer">Fazer upgrade</button></div>
+</div>
+
+<div style="padding:8px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column">
+<sc-for list="{{ convs }}" as="c" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:16px;cursor:pointer" style-hover="background:rgba(255,255,255,.035)">
+<span style="flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:{{ c.avBg }};box-shadow:inset 0 0 0 1px rgba(224,199,142,.4);font-family:'EB Garamond',serif;font-size:18px;color:{{ c.avFg }}">{{ c.ini }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:500 10.5px Inter;letter-spacing:.12em;color:#E0C78E">{{ c.label }}</span><span style="font-size:15px;color:#F3EFE6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.title }}</span></div>
+<span style="flex:none;font-size:12px;color:#8A847A">{{ c.when }}</span>
+<button aria-label="Apagar conversa" style="flex:none;width:44px;height:44px;border-radius:999px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:rgba(242,139,130,.1)"><span style="width:16px;height:16px;background:#8A847A;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/trash-2.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/trash-2.svg) center/contain no-repeat"></span></button>
+</div>
+</sc-for>
+</div>
+
+<div style="display:flex;gap:8px;overflow-x:auto;padding:4px;scrollbar-width:none">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+<button onClick="{{ t.pick }}" style="flex:none;height:40px;padding:0 16px;border-radius:999px;border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.fg }};font:500 13px Inter;cursor:pointer;transition:all .14s">{{ t.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="flex:none;width:390px;max-width:100%;border-radius:32px;border:1px solid rgba(255,255,255,.09);background:#0A0A0B;overflow:hidden;display:flex;flex-direction:column">
+<div style="height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)"><span style="width:26px;height:26px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/infinity.svg) center/contain no-repeat"></span><span style="height:28px;padding:0 10px;border-radius:999px;border:1px solid rgba(224,199,142,.35);color:#E0C78E;font:500 11.5px Inter;display:flex;align-items:center">Teste grátis · 14 dias</span></div>
+<div style="height:200px;display:grid;place-items:center;font:11px ui-monospace,Menlo,monospace;color:#6F6A62;background:repeating-linear-gradient(135deg,rgba(255,255,255,.02) 0 1px,transparent 1px 12px)">conteúdo</div>
+<nav style="padding:8px 8px 28px;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(10,10,11,.85);backdrop-filter:blur(28px);border-top:1px solid rgba(255,255,255,.08)">
+<sc-for list="{{ bottomItems }}" as="b" hint-placeholder-count="5">
+<button onClick="{{ b.pick }}" style="height:56px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:{{ b.fg }};font:500 11px Inter;position:relative">
+<span style="width:22px;height:22px;background:{{ b.fg }};-webkit-mask:url({{ b.iconUrl }}) center/contain no-repeat;mask:url({{ b.iconUrl }}) center/contain no-repeat"></span>{{ b.label }}
+<span style="position:absolute;top:0;width:{{ b.bar }};height:2px;border-radius:2px;background:#E0C78E;transition:width .24s"></span>
+</button>
+</sc-for>
+</nav>
+</div>
+</div>
+<span style="font-size:13px;color:#A7A197">SideNav 256px fixa ≥1024px · TopBar 72px · BottomNav 64px + safe-area-inset-bottom; o item Maestro pode ganhar o medalhão dourado de 28px como âncora central.</span>
+</section>
+
+<!-- 11 FEEDBACK -->
+<section id="feedback" style="display:flex;flex-direction:column;gap:40px;scroll-margin-top:24px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 12px/1 Inter;letter-spacing:.18em;color:#E0C78E">11 — FEEDBACK</span><h2 style="margin:0;font-family:'EB Garamond',serif;font-weight:400;font-size:44px;line-height:1.1">Toast · Modal · Skeleton · Vazio</h2></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px">
+<div style="padding:28px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:12px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">TOAST</span>
+<div style="display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:rgba(20,20,23,.92);border:1px solid rgba(224,199,142,.35);box-shadow:0 20px 40px -12px rgba(0,0,0,.8)"><span style="width:18px;height:18px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/circle-check.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/circle-check.svg) center/contain no-repeat"></span><span style="font-size:14px;flex:1">Viktor Frankl entrou no seu Quadro Eterno.</span></div>
+<div style="display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:rgba(20,20,23,.92);border:1px solid rgba(242,139,130,.4);box-shadow:0 20px 40px -12px rgba(0,0,0,.8)"><span style="width:18px;height:18px;background:#F28B82;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/wifi-off.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/wifi-off.svg) center/contain no-repeat"></span><span style="font-size:14px;flex:1">A conexão caiu. Tente enviar de novo.</span><button style="height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(242,139,130,.4);background:transparent;color:#F6B1AA;font:500 12.5px Inter;cursor:pointer">Tentar</button></div>
+<button onClick="{{ openModal }}" style="margin-top:8px;align-self:flex-start;height:44px;padding:0 20px;border:1px solid rgba(224,199,142,.35);border-radius:999px;background:transparent;color:#E0C78E;font:500 14px Inter;cursor:pointer">Abrir modal de confirmação</button>
+</div>
+<div style="padding:28px;border-radius:24px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:16px">
+<span style="font:500 11px Inter;letter-spacing:.14em;color:#8A847A">SKELETON · shimmer 1.6s</span>
+<div style="display:flex;gap:14px;align-items:center">{{ skAvatar }}<div style="flex:1;display:flex;flex-direction:column;gap:8px">{{ skLine1 }}{{ skLine2 }}</div></div>
+{{ skBlock }}
+<div style="display:flex;flex-direction:column;gap:8px">{{ skLine3 }}{{ skLine4 }}</div>
+</div>
+<div style="padding:36px 28px;border-radius:24px;border:1px dashed rgba(224,199,142,.3);background:radial-gradient(240px 160px at 50% 0%,rgba(224,199,142,.08),transparent 70%);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+<span style="width:56px;height:56px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(224,199,142,.35)"><span style="width:22px;height:22px;background:#E0C78E;-webkit-mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/star.svg) center/contain no-repeat;mask:url(https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/star.svg) center/contain no-repeat"></span></span>
+<span style="font-family:'EB Garamond',serif;font-size:24px;line-height:1.2">Seu Quadro Eterno está vazio</span>
+<span style="font-size:14px;line-height:1.55;color:#A7A197;max-width:280px">Toque na estrela de qualquer mente para mantê-la sempre à mão aqui.</span>
+<button style="height:44px;padding:0 20px;border:1px solid rgba(224,199,142,.35);border-radius:999px;background:transparent;color:#E0C78E;font:500 14px Inter;cursor:pointer">Explorar mentes</button>
+</div>
+</div>
+</section>
+
+<footer style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-top:32px;border-top:1px solid rgba(255,255,255,.09);font-size:13px;color:#8A847A"><span>Etternum · 00 Design System</span><span>Próxima etapa: Landing, Cadastro, Entrar e Triagem</span></footer>
+</div>
+
+<sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,5,6,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:24px">
+<div role="dialog" aria-modal="true" onClick="{{ stop }}" style="width:100%;max-width:440px;padding:32px;border-radius:28px;background:rgba(20,20,23,.95);border:1px solid rgba(255,255,255,.09);box-shadow:0 40px 80px -20px rgba(0,0,0,.9);display:flex;flex-direction:column;gap:16px">
+<span style="font-family:'EB Garamond',serif;font-size:28px;line-height:1.2">Apagar esta conversa?</span>
+<span style="font-size:15px;line-height:1.6;color:#A7A197">“Estou exausta e sem saber se continuo no meu emprego.” será removida do seu histórico. Essa ação não pode ser desfeita.</span>
+<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;flex-wrap:wrap"><button onClick="{{ closeModal }}" style="height:44px;padding:0 20px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:transparent;color:#F3EFE6;font:500 14px Inter;cursor:pointer">Cancelar</button><button onClick="{{ closeModal }}" style="height:44px;padding:0 20px;border:0;border-radius:999px;background:#F28B82;color:#2A0E0B;font:500 14px Inter;cursor:pointer">Apagar</button></div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;grain&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const I = n => `https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/${n}.svg`;
+const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const AREAS = [
+  ['Vida Interior & Autoconhecimento','Vida Interior','Ansiedade, propósito, identidade e equilíbrio emocional.','brain','#C9A7FF',18],
+  ['Luto, Memória & Legado','Luto & Legado','Perdas, finitude e o que permanece de nós.','infinity','#E0C78E',8],
+  ['Relacionamentos & Conexões','Relacionamentos','Amor, família, solidão e perdão.','heart','#F2A7B8',13],
+  ['Negócios & Liderança','Negócios','Decidir, liderar, empreender e inovar.','briefcase','#F0C36D',11],
+  ['Filosofia & Sabedoria','Filosofia','Propósito, escolhas e como viver bem.','landmark','#9EC5F5',21],
+  ['Espiritualidade & Fé','Espiritualidade','Fé, silêncio, perdão e paz interior.','sparkles','#D8C4FF',13],
+  ['Conhecimento & Educação','Conhecimento','Aprender, estudar, criar e ensinar.','book-open','#8FD9B6',12],
+  ['Sociedade & História','Sociedade','O mundo, o poder e as lições do passado.','scroll-text','#F3A977',10],
+  ['Astrologia & Cosmos','Astrologia','Seu signo, os astros e o seu modo de ser.','moon','#B9A6F2',4],
+  ['Corpo & Bem-estar','Corpo','Alimentação, sono, hábitos e vitalidade.','leaf','#A4DD8C',4],
+].map(([name, short, phrase, icon, color, n]) => ({ name, short, phrase, icon, color, n, iconUrl: I(icon), tint: hexA(color, .1), ring: hexA(color, .3) }));
+const CAROUSEL = [['Carl Gustav Jung','PSICOLOGIA · AUTOCONHECIMENTO'],['Peter Drucker','GESTÃO · NEGÓCIOS'],['Sêneca','FILOSOFIA ESTOICA'],['Hannah Arendt','FILOSOFIA POLÍTICA'],['Rumi','ESPIRITUALIDADE'],['Clayton Christensen','INOVAÇÃO DISRUPTIVA'],['Steve Jobs','CRIATIVIDADE · PRODUTO'],['Friedrich Nietzsche','FILOSOFIA EXISTENCIAL'],['Simone de Beauvoir','EXISTENCIALISMO'],['Viktor Frankl','SENTIDO DA VIDA']]
+  .map(([name, spec]) => ({ name, spec, ini: name === 'Sêneca' ? 'S' : name === 'Rumi' ? 'R' : name.split(' ').filter(w => w.length > 2 || w === 'de').filter(w => w !== 'de').map(w => w[0]).slice(0, 2).join('') }));
+const STREAM = 'O sofrimento, por si só, não tem sentido. Mas a atitude que escolhemos diante dele pode ter. Me conte: quando você ainda gostava do seu trabalho, o que fazia você levantar de manhã?';
+
+class Component extends DCLogic {
+  state = { pw: false, cpf: '123.456.789-00', checked: false, chips: { 0: true, 2: true }, favs: { 0: true }, tip: false, tab: 0, bottom: 1, modal: false, n: 0 };
+  carRef = React.createRef();
+  componentDidMount() {
+    this.t = setInterval(() => this.setState(s => ({ n: s.n >= STREAM.length + 40 ? 0 : s.n + 1 })), 35);
+  }
+  componentWillUnmount() { clearInterval(this.t); }
+  mask(v) { const d = v.replace(/\D/g, '').slice(0, 11); return d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2'); }
+  spinner(c) { return React.createElement('span', { style: { width: 16, height: 16, borderRadius: '50%', border: `2px solid ${c}`, borderTopColor: 'transparent', display: 'inline-block', animation: 'etSpin .8s linear infinite' } }); }
+  sk(w, h, r) { return React.createElement('div', { style: { position: 'relative', overflow: 'hidden', width: w, height: h, borderRadius: r, background: 'rgba(255,255,255,.05)', flex: 'none' } }, React.createElement('div', { style: { position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(224,199,142,.08),transparent)', animation: 'etShimmer 1.6s ease-in-out infinite' } })); }
+  renderVals() {
+    const s = this.state;
+    const P = this.props;
+    const dot = d => React.createElement('span', { key: d, style: { width: 7, height: 7, borderRadius: '50%', background: '#E0C78E', display: 'inline-block', animation: `etPulse 1.2s ${d}s infinite ease-in-out` } });
+    const minds = [
+      { name: 'Carl Gustav Jung', ini: 'CJ', spec: 'PSICOLOGIA · AUTOCONHECIMENTO', period: '1875–1961', quote: 'Conhecer a própria sombra para se tornar inteiro.', glow: 'rgba(201,167,255,.18)' },
+      { name: 'Viktor Frankl', ini: 'VF', spec: 'SENTIDO DA VIDA · PSICOLOGIA', period: '1905–1997', quote: 'Encontrar sentido mesmo no sofrimento.', glow: 'rgba(224,199,142,.18)' },
+      { name: 'Gabor Maté', ini: 'GM', spec: 'TRAUMA · SAÚDE MENTAL', period: 'nascido em 1944', quote: 'Não ‘por que o vício’, mas ‘por que a dor’.', glow: 'rgba(242,167,184,.16)', inspired: true },
+      { name: 'Dalai Lama', ini: 'DL', spec: 'COMPAIXÃO · SABEDORIA INTERIOR', period: 'Tenzin Gyatso, nascido em 1935', quote: 'Compaixão como caminho para a felicidade.', glow: 'rgba(216,196,255,.14)', inspired: true, locked: true },
+    ].map((m, i) => ({ ...m, inspired: !!m.inspired, locked: !!m.locked, filter: m.locked ? 'grayscale(.7) brightness(.75)' : 'none',
+      starIcon: I('star'), starColor: s.favs[i] ? '#E0C78E' : 'rgba(243,239,230,.45)',
+      fav: () => this.setState(st => ({ favs: { ...st.favs, [i]: !st.favs[i] } })),
+      cta: m.locked ? 'Disponível no Premium' : 'Acessar esta mente', btnBorder: m.locked ? 'rgba(255,255,255,.12)' : 'rgba(224,199,142,.35)', btnColor: m.locked ? '#A7A197' : '#E0C78E' }));
+    // star fill: use filled look via second mask isn't possible; favorited uses gold color
+    const side = [['Início','house'],['Maestro','infinity'],['Áreas da vida','layout-grid'],['Todas as mentes','users'],['Minhas conversas','messages-square'],['Perfil','user-round'],['Plano','crown']];
+    const bottom = [['Início','house'],['Maestro','infinity'],['Áreas','layout-grid'],['Conversas','messages-square'],['Perfil','user-round']];
+    const tabs = ['Todas', 'Vida Interior', 'Filosofia', 'Negócios', 'Espiritualidade', 'Relacionamentos'];
+    return {
+      grain: P.grain ?? true,
+      swatches: [
+        { name: 'bg', value: '#0A0A0B', note: 'Fundo base', tag: '' },
+        { name: 'graphite', value: '#141417', note: 'Superfícies, barras', tag: '' },
+        { name: 'graphite-2', value: '#1C1C21', note: 'Elevação, inputs', tag: '' },
+        { name: 'ink', value: '#F3EFE6', note: 'Texto principal · 17,6:1', tag: '' },
+        { name: 'muted', value: '#A7A197', note: 'Texto secundário · 7,9:1', tag: '' },
+        { name: 'faint', value: '#8A847A', note: 'Terciário · 5,3:1 (AA)', tag: 'AJUSTADO' },
+        { name: 'faint-deco', value: '#6F6A62', note: 'Só decorativo', tag: 'NOVO' },
+        { name: 'gold', value: '#E0C78E', note: 'Destaques · 11,9:1', tag: '' },
+        { name: 'gold-strong', value: '#CFAE64', note: 'Fim do gradiente, pressionado', tag: '' },
+        { name: 'danger', value: '#F28B82', note: 'Erro, crise', tag: '' },
+        { name: 'line', value: 'rgba(255,255,255,0.09)', note: 'Bordas de vidro', tag: '' },
+        { name: 'line-strong', value: 'rgba(224,199,142,0.35)', note: 'Bordas douradas', tag: '' },
+      ],
+      areas: AREAS, areasFew: [AREAS[0], AREAS[3], AREAS[1], AREAS[8]],
+      typeScale: [
+        ['display', "'EB Garamond',serif", '72px', '1.02', 400, '-0.01em', 'normal', '#F3EFE6', 'none', 'Converse com Grandes Mentes.'],
+        ['display-italic', "'EB Garamond',serif", '72px', '1.02', 400, '-0.01em', 'italic', '#E0C78E', 'none', 'Cultive sua sabedoria.'],
+        ['h1', "'EB Garamond',serif", '48px', '1.1', 400, '0', 'normal', '#F3EFE6', 'none', 'Como você está hoje?'],
+        ['h2', "'EB Garamond',serif", '36px', '1.15', 400, '0', 'normal', '#F3EFE6', 'none', 'Seu Quadro Eterno'],
+        ['h3', "'EB Garamond',serif", '26px', '1.2', 400, '0', 'normal', '#F3EFE6', 'none', 'Viktor Frankl'],
+        ['quote', "'EB Garamond',serif", '20px', '1.45', 400, '0', 'italic', '#A7A197', 'none', 'Encontrar sentido mesmo no sofrimento.'],
+        ['body-lg', 'Inter', '17px', '1.65', 400, '0', 'normal', '#F3EFE6', 'none', 'O Maestro lembra de tudo o que você já contou.'],
+        ['body', 'Inter', '15px', '1.6', 400, '0', 'normal', '#F3EFE6', 'none', 'Desabafe, pergunte, peça um conselho…'],
+        ['small', 'Inter', '13px', '1.5', 400, '0', 'normal', '#A7A197', 'none', 'Pelo menos 8 caracteres.'],
+        ['eyebrow', 'Inter', '11px', '1.4', 500, '0.14em', 'normal', '#E0C78E', 'uppercase', 'Psicologia · Autoconhecimento'],
+      ].map(([token, family, size, lh, weight, ls, style, color, tt, sample]) => ({ token, family, size, lh, weight, ls, style, color, tt, sample, spec: `${size.replace('px','')}/${lh} · ${weight}${ls !== '0' ? ' · ' + ls : ''}` })),
+      spaces: [1, 2, 3, 4, 6, 8, 12, 16, 24].map(n => ({ n, px: n * 4 })),
+      motion: [
+        { token: 'ease-out-soft', dur: '—', curve: 'cubic-bezier(.2,.7,.2,1)', use: 'Curva padrão de tudo' },
+        { token: 'dur-fast', dur: '140ms', curve: 'ease-out-soft', use: 'Hover, pressionado, cor' },
+        { token: 'dur-base', dur: '240ms', curve: 'ease-out-soft', use: 'Cards, tooltip, abas' },
+        { token: 'dur-enter', dur: '420ms', curve: 'ease-out-soft · y 8px→0, opacidade 0→1', use: 'Entrada de seções; stagger 60ms' },
+        { token: 'pulse', dur: '1200ms', curve: 'ease-in-out · infinito', use: 'Pontos “pensando”' },
+      ],
+      states: ['PADRÃO', 'HOVER', 'FOCO', 'PRESSIONADO', 'DESABILITADO', 'CARREGANDO'],
+      spinnerDark: this.spinner('#1A1408'), spinnerGold: this.spinner('#E0C78E'),
+      pwType: s.pw ? 'text' : 'password', pwIcon: I(s.pw ? 'eye-off' : 'eye'), togglePw: () => this.setState({ pw: !s.pw }),
+      cpf: s.cpf, onCpf: e => this.setState({ cpf: this.mask(e.target.value) }),
+      checked: s.checked, checkBg: s.checked ? 'linear-gradient(180deg,#EAD6A4,#CFAE64)' : 'transparent', checkBorder: s.checked ? '#E0C78E' : 'rgba(242,139,130,.6)',
+      toggleCheck: () => this.setState({ checked: !s.checked }),
+      chips: AREAS.slice(0, 5).map((a, i) => { const on = !!s.chips[i]; return { ...a, border: on ? a.ring.replace('.3)', '.6)') : 'rgba(255,255,255,.09)', bg: on ? a.tint : 'transparent', fg: on ? '#F3EFE6' : '#A7A197', toggle: () => this.setState(st => ({ chips: { ...st.chips, [i]: !st.chips[i] } })) }; }),
+      avatarSizes: [{ px: 112, font: 42, vig: 26, icon: 52 }, { px: 80, font: 30, vig: 18, icon: 38 }, { px: 48, font: 18, vig: 12, icon: 24 }, { px: 36, font: 14, vig: 8, icon: 18 }],
+      tip: s.tip, tipOn: () => this.setState({ tip: true }), tipOff: () => this.setState({ tip: false }),
+      minds, carousel: CAROUSEL, carRef: this.carRef,
+      scrollPrev: () => this.carRef.current?.scrollBy({ left: -214 }), scrollNext: () => this.carRef.current?.scrollBy({ left: 214 }),
+      dots: React.createElement('span', { style: { display: 'inline-flex', gap: 6, padding: '12px 16px', borderRadius: 999, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.09)' } }, [0, .16, .32].map(dot)),
+      streamText: STREAM.slice(0, s.n),
+      cursor: React.createElement('span', { style: { display: s.n < STREAM.length ? 'inline-block' : 'none', width: 2, height: '1.1em', marginLeft: 2, verticalAlign: 'text-bottom', background: '#E0C78E', animation: 'etBlink 1s steps(1) infinite' } }),
+      sideItems: side.map(([label, ic], i) => ({ label, iconUrl: I(ic), fg: i === 1 ? '#F3EFE6' : '#A7A197', bg: i === 1 ? 'linear-gradient(90deg,rgba(224,199,142,.14),rgba(224,199,142,.02))' : 'transparent', ic: i === 1 ? '#E0C78E' : '#A7A197' })),
+      bottomItems: bottom.map(([label, ic], i) => ({ label, iconUrl: I(ic), fg: s.bottom === i ? '#E0C78E' : '#A7A197', bar: s.bottom === i ? '24px' : '0px', pick: () => this.setState({ bottom: i }) })),
+      convs: [
+        { ini: 'VF', label: 'VIKTOR FRANKL', title: 'Reencontrar o porquê no trabalho', when: 'Hoje, 22:14', avBg: 'radial-gradient(circle at 34% 28%,#6A5236,#3F2F20 42%,#1C1510)', avFg: '#E8D3A0' },
+        { ini: '∞', label: 'MAESTRO', title: 'Estou exausta e sem saber se continuo no meu emprego.', when: 'Hoje, 21:58', avBg: 'radial-gradient(circle at 34% 26%,#F6E7BF,#E0C78E 40%,#A9874A)', avFg: '#2A1E0C' },
+        { ini: 'C', label: 'CONSELHO · NEGÓCIOS & LIDERANÇA', title: 'Largar a agência e viver de freelas?', when: 'Ontem', avBg: 'radial-gradient(circle at 34% 28%,#5E4A2A,#3A2B18 42%,#1C1510)', avFg: '#F0C36D' },
+      ],
+      tabs: tabs.map((label, i) => ({ label, border: s.tab === i ? 'rgba(224,199,142,.6)' : 'rgba(255,255,255,.09)', bg: s.tab === i ? 'rgba(224,199,142,.12)' : 'transparent', fg: s.tab === i ? '#F3EFE6' : '#A7A197', pick: () => this.setState({ tab: i }) })),
+      skAvatar: this.sk(48, 48, 999), skLine1: this.sk('60%', 12, 6), skLine2: this.sk('85%', 12, 6), skBlock: this.sk('100%', 120, 20), skLine3: this.sk('100%', 10, 6), skLine4: this.sk('70%', 10, 6),
+      modal: s.modal, openModal: () => this.setState({ modal: true }), closeModal: () => this.setState({ modal: false }), stop: e => e.stopPropagation(),
+    };
+  }
+}
+</script>
+</body>
+</html>

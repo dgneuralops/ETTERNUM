@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div data-screen-label="11 Conselho" style="display:grid;grid-template-columns:{{ cols }};gap:20px;align-items:start;color:{{ t.ink }};font-family:Urbanist,sans-serif">
+<div style="min-width:0;display:flex;flex-direction:column;gap:22px">
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:800 12.5px Urbanist;letter-spacing:.2em;color:{{ t.accentText }}">CONSELHO</span>
+<h1 style="margin:0;font:700 {{ h1 }}/1.05 Urbanist;letter-spacing:-.025em">{{ area.name }}</h1>
+<p style="margin:0;max-width:640px;font:500 16.5px/1.55 Urbanist;color:{{ t.muted }}">Escolha até 4 mentes, conte sua situação e receba a perspectiva de cada uma — e uma síntese do Maestro com próximos passos.</p>
+</div>
+
+<sc-for list="{{ past }}" as="p" hint-placeholder-count="0"><button onClick="{{ p.go }}" style="border-radius:20px;border:0;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};color:{{ t.ink }};padding:14px 18px;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer"><et-i n="history" s="18" c="{{ t.faint }}"></et-i><span style="flex:1;font:600 14.5px/1.35 Urbanist">Rodada anterior · {{ p.q }}</span><et-i n="chevron-down" s="18" c="{{ t.faint }}"></et-i></button></sc-for>
+
+<sc-if value="{{ hasRound }}" hint-placeholder-val="{{ false }}">
+<div style="align-self:flex-end;max-width:86%;padding:14px 20px;border-radius:24px 24px 6px 24px;background:#E0C78E;color:#14110A;font:600 16px/1.5 Urbanist">{{ roundQ }}</div>
+<div style="display:grid;grid-template-columns:{{ resCols }};gap:12px">
+<sc-for list="{{ answers }}" as="r" hint-placeholder-count="3">
+<div style="border-radius:24px;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};padding:18px;display:flex;flex-direction:column;gap:12px;animation:etIn .4s both;animation-delay:{{ r.delay }}">
+<div style="display:flex;align-items:center;gap:12px"><div style="position:relative;flex:none;width:44px;height:44px;border-radius:50%;overflow:hidden;background:#2A2118;filter:grayscale(1) sepia(.38) contrast(1.08) brightness(.88)"><image-slot id="mind-{{ r.slug }}" shape="circle" compact placeholder="{{ r.ini }}"></image-slot></div><div style="display:flex;flex-direction:column;min-width:0"><span style="font:700 16px Urbanist">{{ r.name }}</span><span style="font:600 12px Urbanist;color:{{ t.accentText }}">{{ r.spec }}</span></div></div>
+<sc-if value="{{ r.waiting }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;gap:6px;align-self:flex-start;padding:12px 15px;border-radius:999px;background:{{ t.card2 }}">{{ dots }}</span></sc-if>
+<p style="margin:0;font:500 15px/1.65 Urbanist;color:{{ t.ink }}">{{ r.text }}<sc-if value="{{ r.typing }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;width:2px;height:15px;margin-left:2px;vertical-align:-2px;background:#E0C78E;animation:etBlink 1s steps(1) infinite"></span></sc-if></p>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{ synth }}" hint-placeholder-val="{{ false }}">
+<div style="border-radius:30px;background:{{ t.hero }};color:{{ t.heroInk }};box-shadow:inset 0 0 0 1px rgba(224,199,142,.45);padding:{{ synPad }};display:flex;flex-direction:column;gap:22px;animation:etIn .5s both">
+<div style="display:flex;align-items:center;gap:14px"><span role="img" aria-label="Aurelius, o Maestro" style="flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#2A2118 url(./portraits/maestro-face.png) center/cover no-repeat;filter:sepia(.2) saturate(.85) contrast(1.05) brightness(.95);box-shadow:0 0 0 1.5px rgba(224,199,142,.7)"></span><div style="display:flex;flex-direction:column"><span style="font:700 22px Urbanist;letter-spacing:-.01em">Síntese do Maestro</span><span style="font:500 13.5px Urbanist;color:{{ t.heroMuted }}">O que o Conselho disse, em poucas linhas.</span></div></div>
+<div style="display:grid;grid-template-columns:{{ synCols }};gap:12px">
+<div style="border-radius:20px;background:rgba(255,255,255,.05);padding:18px;display:flex;flex-direction:column;gap:8px"><span style="display:flex;gap:8px;align-items:center;font:700 15px Urbanist;color:#A4DD8C"><et-i n="check-check" s="17"></et-i>Onde concordam</span><span style="font:500 15px/1.55 Urbanist;color:#E9E4DA">Antes de sair, transforme os freelas num teste real: clientes recorrentes e receita previsível.</span></div>
+<div style="border-radius:20px;background:rgba(255,255,255,.05);padding:18px;display:flex;flex-direction:column;gap:8px"><span style="display:flex;gap:8px;align-items:center;font:700 15px Urbanist;color:#F3A977"><et-i n="split" s="17"></et-i>Onde divergem</span><span style="font:500 15px/1.55 Urbanist;color:#E9E4DA">Jobs valoriza seguir o que te move agora; Drucker e Collins pedem disciplina e números antes do salto.</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font:700 15px Urbanist;color:#E0C78E">Próximos passos</span>
+<sc-for list="{{ steps }}" as="s" hint-placeholder-count="3"><div style="display:flex;gap:14px;align-items:flex-start"><span style="flex:none;width:30px;height:30px;border-radius:50%;background:#E0C78E;color:#14110A;display:grid;place-items:center;font:800 14px Urbanist">{{ s.n }}</span><span style="padding-top:4px;font:500 15.5px/1.5 Urbanist;color:#F3EFE6">{{ s.text }}</span></div></sc-for>
+</div>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ blocked }}" hint-placeholder-val="{{ false }}">
+<div style="border-radius:26px;background:{{ t.hero }};color:{{ t.heroInk }};box-shadow:inset 0 0 0 1px rgba(224,199,142,.4);padding:24px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center"><span style="flex:none;width:42px;height:42px;border-radius:50%;background:rgba(224,199,142,.16);display:grid;place-items:center"><et-i n="lock-keyhole" s="19" c="#E0C78E"></et-i></span><span style="font:700 18px/1.35 Urbanist">O Conselho com várias mentes é exclusivo do plano Premium.</span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button onClick="{{ goPlano }}" style="height:46px;padding:0 22px;border-radius:999px;border:0;background:#E0C78E;color:#14110A;font:700 15px Urbanist;cursor:pointer">Conhecer o Premium</button><button onClick="{{ goMaestro }}" style="height:46px;padding:0 22px;border-radius:999px;border:0;background:rgba(255,255,255,.08);color:#F3EFE6;font:700 15px Urbanist;cursor:pointer">Falar com o Maestro</button></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ canAsk }}" hint-placeholder-val="{{ true }}">
+<div style="border-radius:28px;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};padding:20px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:700 16px Urbanist">Conselheiros</span><span style="font:700 14px Urbanist;color:{{ countColor }}">{{ count }}/4</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ pool }}" as="m" hint-placeholder-count="6"><button onClick="{{ m.toggle }}" disabled="{{ m.disabled }}" style="height:48px;padding:0 16px 0 5px;border-radius:999px;border:0;background:{{ m.bg }};box-shadow:inset 0 0 0 {{ m.ringW }} {{ m.ring }};color:{{ m.fg }};font:700 14px Urbanist;display:flex;align-items:center;gap:10px;cursor:{{ m.cursor }};opacity:{{ m.op }};transition:background .2s,box-shadow .2s"><div style="position:relative;flex:none;width:38px;height:38px;border-radius:50%;overflow:hidden;background:#2A2118;filter:grayscale(1) sepia(.38) contrast(1.08) brightness(.88)"><image-slot id="mind-{{ m.slug }}" shape="circle" compact placeholder="{{ m.ini }}"></image-slot></div>{{ m.name }}<sc-if value="{{ m.on }}" hint-placeholder-val="{{ false }}"><et-i n="check" s="15"></et-i></sc-if></button></sc-for>
+</div>
+<form onSubmit="{{ submit }}" style="display:flex;align-items:flex-end;gap:8px;padding:6px 6px 6px 18px;border-radius:24px;background:{{ t.card2 }};box-shadow:inset 0 0 0 1px {{ t.line }}">
+<textarea rows="2" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="{{ placeholder }}" style="flex:1;min-width:0;min-height:56px;padding:10px 0;border:0;background:transparent;color:{{ t.ink }};font:500 16px/1.45 Urbanist;outline:none;resize:none"></textarea>
+<button type="submit" disabled="{{ busy }}" style="flex:none;height:48px;padding:0 20px;border-radius:999px;border:0;background:{{ sendBg }};color:{{ t.onAccent }};font:700 15px Urbanist;display:flex;align-items:center;gap:8px;cursor:pointer">Perguntar<et-i n="arrow-up" s="17"></et-i></button>
+</form>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+<aside style="border-radius:26px;background:{{ t.card }};box-shadow:inset 0 0 0 1px {{ t.line }};padding:18px 12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0">
+<span style="font:700 16px Urbanist;padding:0 8px 8px">Conselhos anteriores</span>
+<sc-for list="{{ hist }}" as="h" hint-placeholder-count="3"><div style="border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px;background:{{ h.bg }}"><span style="font:700 11px Urbanist;letter-spacing:.1em;color:{{ t.accentText }}">{{ h.area }}</span><span style="font:700 14px/1.3 Urbanist">{{ h.title }}</span><span style="font:500 12px Urbanist;color:{{ t.faint }}">{{ h.when }}</span></div></sc-for>
+</aside>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const Q = 'Estou pensando em sair da agência para viver só de freelas de design. Tenho medo de não ter clientes suficientes.';
+const ANS = {
+  drucker: 'Comece pelo cliente, não pela sua vontade de sair. Quem paga você hoje, e por quê? Se três clientes já contratam você com frequência, existe um negócio. Se não, ainda é um desejo. Meça antes de decidir.',
+  christensen: 'Pergunte que “trabalho” os seus clientes contratam você para fazer. Talvez não seja “design”, e sim “parecer profissional rápido”. Quem entende esse trabalho cobra melhor e depende menos de volume.',
+  jobs: 'Você vai passar a maior parte da vida trabalhando. Se a agência já não te move, isso importa. Mas foque: escolha um tipo de projeto que você faria de graça e seja a melhor nele.',
+  collins: 'Disciplina antes do salto. Monte o seu “volante”: um cliente satisfeito indica o próximo. Primeiro as pessoas certas, depois o que fazer. Que clientes você quer ter daqui a cinco anos?',
+};
+const STEPS = ['Liste os três clientes de freela que mais pagam e pergunte se contratariam mais.', 'Defina uma meta de receita mensal e alcance-a três meses seguidos antes de pedir demissão.', 'Escolha um nicho em que você seja a primeira opção.'];
+const generic = m => `Olhando pelas minhas ideias: ${m.quote.charAt(0).toLowerCase() + m.quote.slice(1)} Antes de decidir, separe o que é medo do que é informação. O que você já sabe, com fatos, sobre os seus clientes?`;
+
+class Component extends DCLogic {
+  state = { sel: ['drucker', 'christensen', 'jobs'], draft: '', round: null, past: [] };
+  componentDidMount() { if ((this.props.app || {}).variant === 'resultado') this.run(Q, true); }
+  componentWillUnmount() { clearInterval(this.ti); }
+  run(q, instant) {
+    const E = window.ETT;
+    if (this.state.round) this.setState(s => ({ past: [...s.past, s.round.q] }));
+    const texts = this.state.sel.map(k => ANS[k] || generic(E.bySlug[k]));
+    const round = { q, sel: [...this.state.sel], texts, n: texts.map(x => instant ? x.length : 0), start: this.state.sel.map((_, i) => 6 + i * 10), tick: instant ? 999 : 0, synth: !!instant };
+    this.setState({ round, draft: '' });
+    if (instant) return;
+    clearInterval(this.ti);
+    this.ti = setInterval(() => this.setState(s => {
+      const r = s.round; if (!r) return null;
+      const tick = r.tick + 1;
+      const n = r.n.map((v, i) => tick > r.start[i] ? Math.min(r.texts[i].length, v + 2 + (i % 2)) : v);
+      const done = n.every((v, i) => v >= r.texts[i].length);
+      if (done) { clearInterval(this.ti); setTimeout(() => this.setState(st => ({ round: st.round && { ...st.round, synth: true } })), 600); }
+      return { round: { ...r, tick, n } };
+    }), 22);
+  }
+  renderVals() {
+    const a = this.props.app || {}, E = window.ETT, t = a.t || {}, s = this.state, mob = !!a.mobile;
+    if (!E) return {};
+    const nav = (r, p) => a.nav && a.nav(r, p);
+    const area = E.areaBySlug[a.param] || E.areaBySlug.negocios;
+    const blocked = a.plan === 'free' || a.variant === 'bloqueio';
+    const poolSlugs = E.minds.filter(m => m.areas.includes(area.slug)).map(m => m.slug);
+    const r = s.round;
+    const busy = !!r && !r.synth;
+    return {
+      t, desktop: !mob && (a.w || 1440) >= 1100, cols: mob || (a.w || 1440) < 1100 ? 'minmax(0,1fr)' : 'minmax(0,1fr) 290px', h1: mob ? '30px' : '42px',
+      area, past: s.past.map(q => ({ q: q.length > 60 ? q.slice(0, 60) + '…' : q, go: () => {} })),
+      hasRound: !!r, roundQ: r ? r.q : '',
+      resCols: mob ? '1fr' : (r && r.sel.length === 4 ? '1fr 1fr' : r && r.sel.length === 1 ? '1fr' : 'repeat(auto-fit,minmax(240px,1fr))'),
+      answers: r ? r.sel.map((k, i) => { const m = E.bySlug[k]; return { slug: k, name: m.name, ini: E.initials(m.name), spec: m.spec.split(' · ')[0], text: r.texts[i].slice(0, r.n[i]), waiting: r.n[i] === 0, typing: r.n[i] > 0 && r.n[i] < r.texts[i].length, delay: i * 80 + 'ms' }; }) : [],
+      dots: [0, .16, .32].map(d => React.createElement('span', { key: d, style: { width: 7, height: 7, borderRadius: '50%', background: '#E0C78E', display: 'inline-block', animation: `etPulse 1.2s ${d}s infinite ease-in-out` } })),
+      synth: !!(r && r.synth), synPad: mob ? '22px' : '30px', synCols: mob ? '1fr' : '1fr 1fr', steps: STEPS.map((text, i) => ({ n: i + 1, text })),
+      blocked, canAsk: !blocked, goPlano: () => nav('plano'), goMaestro: () => nav('maestro'),
+      count: s.sel.length, countColor: s.sel.length === 4 ? t.accentText : t.muted,
+      pool: poolSlugs.map(k => { const m = E.bySlug[k]; const on = s.sel.includes(k); const dis = !on && s.sel.length >= 4; return { slug: k, name: m.name, ini: E.initials(m.name), on, disabled: dis, bg: on ? t.accentSoft : t.card2, ring: on ? t.accent : t.line, ringW: on ? '2px' : '1px', fg: t.ink, op: dis ? .45 : 1, cursor: dis ? 'not-allowed' : 'pointer', toggle: () => this.setState(st => ({ sel: on ? st.sel.filter(x => x !== k) : [...st.sel, k] })) }; }),
+      draft: s.draft, onDraft: e => this.setState({ draft: e.target.value }), placeholder: `Conte ao Conselho de ${area.name} o que está acontecendo…`,
+      submit: e => { e.preventDefault(); if (busy || !s.sel.length) return; this.run(s.draft.trim() || Q); }, busy, sendBg: busy || !s.sel.length ? t.card3 : t.accent,
+      hist: [['NEGÓCIOS & LIDERANÇA', 'Largar a agência e viver de freelas?', 'Ontem'], ['RELACIONAMENTOS', 'Como dizer não para a minha mãe', '26 set'], ['VIDA INTERIOR', 'Ansiedade antes de apresentações', '19 set']].map(([area, title, when], i) => ({ area, title, when, bg: i === 0 ? t.card2 : 'transparent' })),
+    };
+  }
+}
+</script>
+</body>
+</html>

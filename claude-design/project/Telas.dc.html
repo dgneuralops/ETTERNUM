@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<script src="./etternum-data.js"></script>
+<script src="./image-slot.js"></script>
+<style>body{margin:0;background:#050505;color:#F3EFE6;font-family:Urbanist,system-ui,sans-serif}*{box-sizing:border-box}a{color:#E0C78E}a:hover{color:#EBD6A6}</style>
+</helmet>
+<div style="padding:64px 72px 120px;display:flex;flex-direction:column;gap:96px;background:#050505;color:#F3EFE6;min-width:max-content">
+
+<header style="display:flex;flex-direction:column;gap:18px;max-width:900px">
+<div style="display:flex;align-items:center;gap:10px"><et-i n="infinity" s="30" c="#E0C78E"></et-i><span style="font:800 18px Urbanist;letter-spacing:.24em">ETTERNUM</span></div>
+<h1 style="margin:0;font:700 72px/1 Urbanist;letter-spacing:-.035em">Todas as telas · <span style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;color:#E0C78E">Noite dourada</span></h1>
+<p style="margin:0;font:500 19px/1.55 Urbanist;color:#A7A197">Cada quadro abaixo é o protótipo real, aberto numa rota e num estado. Todos são clicáveis. Para navegar pelo fluxo completo, abra <a href="Etternum.dc.html">Etternum.dc.html</a> e use o botão “Mapa de telas”.</p>
+</header>
+
+<section style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font:700 13px Urbanist;letter-spacing:.16em;color:#E0C78E">COMECE POR AQUI</span><h2 style="margin:0;font:700 40px Urbanist;letter-spacing:-.025em">Retratos das mentes</h2><p style="margin:0;font:500 16px/1.55 Urbanist;color:#A7A197;max-width:760px">Arraste a foto de cada mente para o quadro com o nome dela. A imagem é salva e aparece em todas as telas (recarregue a página depois de preencher). O filtro sépia e a vinheta são aplicados automaticamente.</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+<div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;aspect-ratio:4/5;border-radius:20px;overflow:hidden;background:#2A2118 url(./portraits/maestro.png) 50% 20%/cover no-repeat;filter:sepia(.2) saturate(.85) contrast(1.05) brightness(.95);box-shadow:0 0 0 1.5px rgba(224,199,142,.6)"></div><span style="font:700 13.5px/1.2 Urbanist">Aurelius · Maestro</span><span style="font:500 12px Urbanist;color:#E0C78E">Guardião das Mentes do Etternum</span></div>
+<sc-for list="{{ minds }}" as="m" hint-placeholder-count="31"><div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;aspect-ratio:4/5;border-radius:20px;overflow:hidden;background:#1A1510"><div style="position:absolute;inset:0;filter:grayscale(1) sepia(.38) contrast(1.08) brightness(.88)"><image-slot id="mind-{{ m.slug }}" shape="rect" placeholder="{{ m.name }}"></image-slot></div></div><span style="font:700 13.5px/1.2 Urbanist">{{ m.name }}</span><span style="font:500 12px Urbanist;color:{{ m.tagColor }}">{{ m.tag }}</span></div></sc-for>
+</div>
+</section>
+
+<sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+<section id="{{ g.id }}" style="display:flex;flex-direction:column;gap:28px;scroll-margin-top:24px">
+<div style="display:flex;align-items:baseline;gap:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)"><span style="font:800 44px/1 Urbanist;letter-spacing:-.03em;color:#E0C78E">{{ g.n }}</span><h2 style="margin:0;font:700 34px Urbanist;letter-spacing:-.02em">{{ g.title }}</h2><span style="font:600 15px ui-monospace,Menlo,monospace;color:#8A847A">{{ g.route }}</span></div>
+<div style="display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap">
+<sc-for list="{{ g.frames }}" as="f" hint-placeholder-count="2">
+<div data-screen-label="{{ f.label }}" style="flex:none;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:10px;align-items:baseline"><span style="font:700 15px Urbanist">{{ f.label }}</span><span style="font:500 13px Urbanist;color:#8A847A">{{ f.note }}</span></div>
+<div ref="{{ f.ref }}" style="width:{{ f.w }};height:{{ f.h }};border-radius:{{ f.r }};overflow:hidden;background:#0B0B0C;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 80px -30px rgba(0,0,0,.8)">
+<sc-if value="{{ f.on }}" hint-placeholder-val="{{ false }}"><dc-import name="Etternum" screen="{{ f.screen }}" device="{{ f.device }}" variant="{{ f.variant }}" plan="{{ f.plan }}" theme="{{ f.theme }}" frameless="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const D = (screen, note, o = {}) => ({ screen, note, device: 'desktop', w: '1440px', h: '900px', r: '20px', variant: '', plan: 'trial', theme: 'dark', ...o });
+const M = (screen, note, o = {}) => ({ screen, note, device: 'mobile', w: '390px', h: '844px', r: '44px', variant: '', plan: 'trial', theme: 'dark', ...o });
+const G = [
+  ['01', 'Landing page', '/', [D('landing', 'Topo e carrossel'), M('landing', 'Celular')]],
+  ['02', 'Cadastro', '/cadastro', [D('cadastro', 'Padrão'), D('cadastro', 'Com erros', { variant: 'erro' }), M('cadastro', 'Celular')]],
+  ['03', 'Entrar', '/entrar', [D('entrar', 'Padrão'), M('entrar', 'Erro de login', { variant: 'erro' })]],
+  ['04', 'Triagem (quiz)', '/triagem', [D('triagem', 'Pergunta de múltipla escolha', { variant: '5' }), M('triagem', 'Abertura'), M('triagem', 'Escolha única · avança sozinho', { variant: '1' }), M('triagem', 'Tela de incentivo', { variant: '4' }), M('triagem', 'Áreas de interesse', { variant: '13' }), M('triagem', 'Montando seu Etternum…', { variant: 'build' }), M('triagem', 'Concluída', { variant: 'done' })]],
+  ['05', 'Início', '/inicio', [D('inicio', 'Tema escuro'), D('inicio', 'Tema claro', { theme: 'light' }), M('inicio', 'Celular'), M('inicio', 'Celular · claro', { theme: 'light' })]],
+  ['06', 'Maestro', '/maestro', [D('maestro', 'Estado vazio'), D('maestro', 'Resposta com recomendação', { variant: 'recomendacao' }), M('maestro', 'Resposta chegando', { variant: 'streaming' }), M('maestro', 'Vindo de uma área', { variant: 'area:negocios' })]],
+  ['07', 'Áreas da vida', '/areas', [D('areas', 'Grade'), M('areas', 'Celular')]],
+  ['08', 'Área', '/area/[slug]', [D('area:negocios', 'Negócios & Liderança'), D('area:astrologia', 'Astrologia & Cosmos'), M('area:astrologia', 'Astrologia · celular')]],
+  ['09', 'Todas as mentes', '/mentes', [D('mentes', 'Plano gratuito · cards bloqueados', { plan: 'free' }), M('mentes', 'Celular')]],
+  ['10', 'Conversa com uma mente', '/mente/[slug]', [D('mente:frankl', 'Conversa com resposta longa', { variant: 'conversa' }), D('mente:mate', '“Inspirado em” · Gabor Maté'), M('mente:frankl', '(a) Vazio'), M('mente:frankl', '(c) Pensando', { variant: 'pensando' }), M('mente:frankl', '(c) Streaming', { variant: 'streaming' }), M('maestro', '(d) Aviso de crise', { variant: 'crise' }), M('mente:frankl', '(e) Bloqueio do plano', { plan: 'free' }), M('mente:frankl', '(f) Erro de conexão', { variant: 'erro' })]],
+  ['11', 'Conselho', '/conselho/[area]', [D('conselho:negocios', 'Escolha dos conselheiros'), D('conselho:negocios', 'Resultado + síntese', { variant: 'resultado' }), M('conselho:negocios', 'Resultado · celular', { variant: 'resultado' }), M('conselho:negocios', 'Bloqueado no gratuito', { plan: 'free' })]],
+  ['12', 'Minhas conversas', '/conversas', [D('conversas', 'Lista'), M('conversas', 'Celular'), M('conversas', 'Vazio', { variant: 'vazio' })]],
+  ['13', 'Perfil', '/perfil', [D('perfil', 'Dados, memória, triagem'), M('perfil', 'Celular')]],
+  ['14', 'Plano', '/plano', [D('plano', 'Teste grátis'), M('plano', 'Gratuito · medidor', { plan: 'free' }), M('plano', 'Premium', { plan: 'premium' })]],
+  ['15', 'Termos e Privacidade', '/termos', [D('termos', 'Texto longo'), M('privacidade', 'Celular')]],
+  ['16', 'Estados globais', '/estados · 404', [D('estados', 'Skeletons, erro, toasts, modal'), M('404', 'Página 404')]],
+  ['17', 'Cápsula de Memória Viva', 'conceito', [D('memoria', 'Apresentação'), M('memoria', 'Celular')]],
+];
+class Component extends DCLogic {
+  state = { ready: !!window.ETT, vis: {} };
+  refs = {};
+  io = window.IntersectionObserver ? new IntersectionObserver(es => { const add = {}; es.forEach(e => { if (e.isIntersecting) { add[e.target.dataset.k] = true; this.io.unobserve(e.target); } }); if (Object.keys(add).length) this.setState(s => ({ vis: { ...s.vis, ...add } })); }, { rootMargin: '400px' }) : null;
+  refFor(k) { if (!this.refs[k]) this.refs[k] = el => { if (el && this.io && !el.dataset.k) { el.dataset.k = k; this.io.observe(el); } }; return this.refs[k]; }
+  componentDidMount() { if (!window.ETT) this.p = setInterval(() => { if (window.ETT) { clearInterval(this.p); this.setState({ ready: true }); } }, 50); }
+  componentWillUnmount() { clearInterval(this.p); this.io && this.io.disconnect(); }
+  renderVals() {
+    const E = window.ETT;
+    return {
+      minds: E ? E.minds.map(m => ({ slug: m.slug, name: m.name, tag: m.inspired ? 'Inspirado em · pessoa viva ou religiosa' : 'Faleceu · ' + m.period, tagColor: m.inspired ? '#E0C78E' : '#8A847A' })) : [],
+      groups: G.map(([n, title, route, frames]) => ({ id: 's' + n, n, title, route, frames: frames.map((f, i) => ({ ...f, ref: this.refFor(n + '-' + i), on: !this.io || !!this.state.vis[n + '-' + i], label: `${n} ${title} — ${f.device === 'mobile' ? 'Celular' : 'Desktop'}` })) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

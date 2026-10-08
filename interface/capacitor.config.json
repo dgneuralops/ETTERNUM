@@ -1,0 +1,12 @@
+{
+  "appId": "app.etternum",
+  "appName": "Etternum",
+  "webDir": "dist",
+  "backgroundColor": "#0B0B0C",
+  "ios": { "contentInset": "never", "backgroundColor": "#0B0B0C" },
+  "android": { "backgroundColor": "#0B0B0C" },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 600, "backgroundColor": "#0B0B0C", "showSpinner": false },
+    "StatusBar": { "style": "DARK", "overlaysWebView": true }
+  }
+}

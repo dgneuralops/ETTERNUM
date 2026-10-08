@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<script src="./etternum-data.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+html,body{margin:0;background:#0B0B0C;font-family:Urbanist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#E0C78E;text-decoration:none}a:hover{color:#EBD6A6}
+button,input,textarea,select{font-family:inherit}
+::selection{background:rgba(224,199,142,.35)}
+@keyframes ccIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes ccPop{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="min-height:{{ rootMinH }};background:#0B0B0C;color:#F3EFE6;font-family:Urbanist,system-ui,sans-serif;border-radius:{{ rootRadius }};overflow:clip">
+
+<header style="position:{{ headPos }};top:0;z-index:30;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(11,11,12,.84);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.08)">
+<button onClick="{{ goLib }}" style="display:flex;align-items:center;gap:10px;border:0;background:transparent;color:#F3EFE6;cursor:pointer;padding:0"><sc-if value="{{ standalone }}" hint-placeholder-val="{{ true }}"><et-i n="infinity" s="24" c="#E0C78E"></et-i><span style="font:800 14px Urbanist;letter-spacing:.22em">ETTERNUM</span><span style="color:#5A554D;font-size:18px">/</span></sc-if><sc-if value="{{ embedded }}" hint-placeholder-val="{{ false }}"><et-i n="library" s="20" c="#E0C78E"></et-i></sc-if><span style="font:italic 400 21px 'EB Garamond',serif;color:#E0C78E">Clube do Livro</span></button>
+<span style="flex:1"></span>
+<sc-if value="{{ showBackAdmin }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goAdmin }}" style="height:36px;padding:0 16px;border-radius:999px;border:0;background:#E0C78E;color:#14110A;font:700 13px Urbanist;display:flex;align-items:center;gap:7px;cursor:pointer"><et-i n="arrow-left" s="15"></et-i>Voltar ao admin</button></sc-if>
+<sc-if value="{{ adminIn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:14px"><span style="font:600 13px Urbanist;color:#8A847A">Administrador</span><button onClick="{{ logout }}" style="height:36px;padding:0 14px;border-radius:999px;border:0;background:#1A1A1C;color:#F3EFE6;font:600 13px Urbanist;display:flex;align-items:center;gap:7px;cursor:pointer"><et-i n="log-out" s="15"></et-i>Sair</button></div></sc-if>
+</header>
+
+<sc-if value="{{ vLib }}" hint-placeholder-val="{{ true }}">
+<main data-screen-label="Biblioteca" style="max-width:1240px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(16px,4vw,40px) 96px;display:flex;flex-direction:column;gap:64px;animation:ccIn .45s both">
+
+<sc-if value="{{ hasFeatured }}" hint-placeholder-val="{{ true }}">
+<section style="position:relative;overflow:hidden;border-radius:32px;background:{{ feat.heroBg }};padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;gap:clamp(28px,3.5vw,40px)">
+<div style="display:flex;gap:clamp(24px,4vw,48px);align-items:center;flex-wrap:wrap">
+<div style="flex:none;width:clamp(130px,15vw,180px);container-type:inline-size"><div style="position:relative;overflow:hidden;aspect-ratio:2/3;border-radius:3px 9px 9px 3px;background:{{ feat.color }};color:{{ feat.ink }};padding:13% 11%;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 36px 60px -26px rgba(0,0,0,.95)"><sc-if value="{{ feat.img }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;z-index:5;background:{{ feat.coverBg }}"></span></sc-if><span style="position:absolute;left:0;top:0;bottom:0;width:5%;z-index:6;background:linear-gradient(90deg,rgba(0,0,0,.35),rgba(255,255,255,.12) 60%,transparent)"></span><span style="font:700 5cqw Urbanist;letter-spacing:.2em;text-transform:uppercase;opacity:.75">{{ feat.cat }}</span><span style="font-family:'EB Garamond',serif;font-size:15cqw;line-height:1">{{ feat.title }}</span><span style="font:600 6cqw Urbanist">{{ feat.author }}</span></div></div>
+<div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:14px">
+<span style="display:flex;align-items:center;gap:8px;font:700 12px Urbanist;letter-spacing:.16em;text-transform:uppercase;color:#E0C78E"><et-i n="sparkles" s="14"></et-i>Leitura do mês · Outubro</span>
+<h1 style="margin:0;font:400 clamp(36px,4.4vw,56px)/1 'EB Garamond',serif;letter-spacing:-.01em;text-wrap:balance">{{ feat.title }}</h1>
+<span style="font:500 15px Urbanist;color:#A7A197">por {{ feat.author }} · {{ feat.mins }} min · {{ feat.nIns }} insights · {{ feat.nChap }} capítulos</span>
+<p style="margin:4px 0 0;max-width:620px;font:400 16px/1.6 Urbanist;color:#CFC8BC;text-wrap:pretty">{{ feat.synopsis }}</p>
+</div>
+<div style="flex:0 0 auto;display:flex;flex-direction:column;gap:10px;align-self:center">
+<button onClick="{{ feat.read }}" style="height:50px;padding:0 26px;border-radius:999px;border:0;background:#E0C78E;color:#14110A;font:700 15px Urbanist;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;white-space:nowrap" style-hover="background:#EBD6A6">Começar a ler<et-i n="arrow-right" s="17"></et-i></button>
+<button onClick="{{ feat.open }}" style="height:50px;padding:0 24px;border-radius:999px;border:0;background:rgba(255,255,255,.07);color:#F3EFE6;font:700 15px Urbanist;cursor:pointer;white-space:nowrap" style-hover="background:rgba(255,255,255,.12)">Ver o livro</button>
+</div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ hasContinue }}" hint-placeholder-val="{{ true }}">
+<section style="display:flex;flex-direction:column;gap:20px">
+<h2 style="margin:0;font:700 24px Urbanist;letter-spacing:-.01em">Continue lendo</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px">
+<sc-for list="{{ continueList }}" as="b" hint-placeholder-count="2">
+<button key="{{ b.id }}" onClick="{{ b.read }}" style="display:flex;gap:18px;align-items:center;padding:16px;border-radius:20px;border:0;background:#131315;color:#F3EFE6;text-align:left;cursor:pointer;transition:background .2s" style-hover="background:#1F1F22">
+<div style="flex:none;width:64px;container-type:inline-size"><div style="position:relative;overflow:hidden;aspect-ratio:2/3;border-radius:3px 7px 7px 3px;background:{{ b.color }};color:{{ b.ink }};padding:12%;display:flex;align-items:center;box-shadow:0 14px 24px -12px rgba(0,0,0,.9),inset 4px 0 0 rgba(0,0,0,.18)"><sc-if value="{{ b.img }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;z-index:5;background:{{ b.coverBg }}"></span></sc-if><span style="font-family:'EB Garamond',serif;font-size:17cqw;line-height:1">{{ b.title }}</span></div></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+<span style="font:700 16px Urbanist">{{ b.title }}</span>
+<span style="font:500 13px Urbanist;color:#A7A197">{{ b.author }} · {{ b.progLabel }}</span>
+<span style="height:4px;border-radius:2px;background:#26262A;overflow:hidden;margin-top:6px"><span style="display:block;height:100%;width:{{ b.progW }};background:#E0C78E;border-radius:2px"></span></span>
+</div>
+<et-i n="play" s="18" c="#E0C78E"></et-i>
+</button>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<section style="display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:6px"><h2 style="margin:0;font:700 24px Urbanist;letter-spacing:-.01em">Biblioteca</h2><span style="font:500 14px Urbanist;color:#A7A197">As ideias centrais de cada livro, em minutos.</span></div>
+<label style="flex:0 1 340px;height:46px;border-radius:999px;background:#161618;display:flex;align-items:center;gap:10px;padding:0 18px;color:#8A847A"><et-i n="search" s="17"></et-i><input value="{{ q }}" onChange="{{ setQ }}" placeholder="Buscar livro ou autor" style="flex:1;min-width:0;border:0;background:transparent;outline:none;color:#F3EFE6;font:500 15px Urbanist"></label>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6"><button key="{{ c.k }}" onClick="{{ c.go }}" style="height:38px;padding:0 16px;border-radius:999px;border:0;background:{{ c.bg }};color:{{ c.fg }};font:600 14px Urbanist;cursor:pointer">{{ c.k }}</button></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:14px">
+<sc-for list="{{ grid }}" as="b" hint-placeholder-count="6">
+<article key="{{ b.id }}" style="border-radius:26px;background:#141416;padding:8px 8px 16px;display:flex;flex-direction:column;gap:14px;transition:transform .3s cubic-bezier(.25,.1,.25,1)" style-hover="transform:translateY(-4px)">
+<button onClick="{{ b.open }}" aria-label="{{ b.title }}" style="position:relative;height:300px;border:0;padding:0;border-radius:20px;overflow:hidden;background:{{ b.glow }};cursor:pointer;display:flex;align-items:center;justify-content:center">
+<div style="width:52%;container-type:inline-size"><div style="position:relative;overflow:hidden;aspect-ratio:2/3;border-radius:3px 8px 8px 3px;background:{{ b.color }};color:{{ b.ink }};padding:13% 11%;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 28px 40px -18px rgba(0,0,0,.95)"><sc-if value="{{ b.img }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;z-index:5;background:{{ b.coverBg }}"></span></sc-if><span style="font:700 6cqw Urbanist;letter-spacing:.2em;text-transform:uppercase;opacity:.7">{{ b.cat }}</span><span style="font-family:'EB Garamond',serif;font-size:15cqw;line-height:1">{{ b.title }}</span><span style="font:600 6.5cqw Urbanist;opacity:.85">{{ b.author }}</span></div></div>
+<span style="position:absolute;left:10px;top:10px;height:26px;padding:0 11px;border-radius:999px;background:rgba(11,11,12,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#E0C78E;font:700 11px Urbanist;letter-spacing:.04em;display:flex;align-items:center">{{ b.cat }}</span>
+</button>
+<div style="padding:0 8px;display:flex;flex-direction:column;gap:6px;flex:1">
+<h3 style="margin:0;font:700 19px/1.2 Urbanist;letter-spacing:-.01em">{{ b.title }}</h3>
+<span style="font:500 13px Urbanist;color:#8A847A">{{ b.author }}</span>
+<p style="margin:4px 0 0;font:italic 400 17px/1.35 'EB Garamond',serif;color:#A7A197;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">{{ b.excerpt }}</p>
+<div style="display:flex;gap:16px;margin-top:6px;font:600 12.5px Urbanist;color:#A7A197"><span style="display:flex;align-items:center;gap:6px"><et-i n="clock" s="14" c="#E0C78E"></et-i>{{ b.mins }} min</span><span style="display:flex;align-items:center;gap:6px"><et-i n="lightbulb" s="14" c="#E0C78E"></et-i>{{ b.nIns }} insights</span></div>
+<button onClick="{{ b.open }}" style="margin-top:12px;height:44px;border-radius:999px;border:0;background:#1F1F22;color:#F3EFE6;font:700 14px Urbanist;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .2s" style-hover="background:#E0C78E;color:#14110A">{{ b.readLabel }}</button>
+</div>
+</article>
+</sc-for>
+</div>
+<sc-if value="{{ gridEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:56px 20px;border-radius:22px;background:#161618;text-align:center;color:#A7A197;font:500 15px Urbanist">Nenhum livro encontrado para essa busca.</div></sc-if>
+</section>
+</main>
+</sc-if>
+
+<sc-if value="{{ vBook }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Livro" style="max-width:1160px;margin:0 auto;padding:clamp(20px,3vw,36px) clamp(16px,4vw,40px) 96px;display:flex;flex-direction:column;gap:36px;animation:ccIn .45s both">
+<button onClick="{{ goLib }}" style="align-self:flex-start;display:flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 12px;border-radius:999px;border:0;background:#161618;color:#A7A197;font:600 14px Urbanist;cursor:pointer"><et-i n="arrow-left" s="16"></et-i>Biblioteca</button>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(28px,5vw,64px);align-items:start">
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center;max-width:340px;justify-self:center;width:100%">
+<div style="width:100%;padding:40px 0;border-radius:28px;background:{{ cur.glow }};display:flex;justify-content:center"><div style="width:62%;container-type:inline-size"><div style="position:relative;overflow:hidden;aspect-ratio:2/3;border-radius:5px 12px 12px 5px;background:{{ cur.color }};color:{{ cur.ink }};padding:13% 11%;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 40px 60px -26px rgba(0,0,0,.95),inset 7px 0 0 rgba(0,0,0,.18)"><sc-if value="{{ cur.img }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;z-index:5;background:{{ cur.coverBg }}"></span></sc-if><span style="font:700 5cqw Urbanist;letter-spacing:.2em;text-transform:uppercase;opacity:.7">{{ cur.cat }}</span><span style="font-family:'EB Garamond',serif;font-size:15cqw;line-height:1">{{ cur.title }}</span><span style="font:600 6cqw Urbanist;opacity:.85">{{ cur.author }}</span></div></div></div>
+<button onClick="{{ cur.read }}" style="width:100%;height:52px;border-radius:999px;border:0;background:#E0C78E;color:#14110A;font:700 15px Urbanist;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer" style-hover="background:#EBD6A6"><et-i n="book-open" s="17"></et-i>{{ cur.readLabel }}</button>
+<button onClick="{{ toggleSave }}" style="width:100%;height:48px;border-radius:999px;border:0;background:#161618;color:#F3EFE6;font:700 14px Urbanist;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer"><et-i n="{{ saveIcon }}" s="16" c="#E0C78E"></et-i>{{ saveLabel }}</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:36px;min-width:0">
+<div style="display:flex;flex-direction:column;gap:14px">
+<span style="font:700 12px Urbanist;letter-spacing:.18em;text-transform:uppercase;color:#E0C78E">{{ cur.cat }}</span>
+<h1 style="margin:0;font:400 clamp(40px,5.5vw,62px)/1.02 'EB Garamond',serif;text-wrap:balance">{{ cur.title }}</h1>
+<span style="font:500 16px Urbanist;color:#A7A197">por {{ cur.author }} · {{ cur.mins }} min · {{ cur.nIns }} insights</span>
+<p style="margin:8px 0 0;font:400 18px/1.65 Urbanist;color:#CFC8BC;text-wrap:pretty;max-width:640px">{{ cur.synopsis }}</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<h2 style="margin:0;font:700 20px Urbanist">Ideias principais</h2>
+<sc-for list="{{ cur.insightsN }}" as="it" hint-placeholder-count="4">
+<div key="{{ it.n }}" style="display:grid;grid-template-columns:auto 1fr;gap:20px;padding:24px 0;border-top:1px solid rgba(255,255,255,.07)">
+<span style="font:400 30px/1 'EB Garamond',serif;color:#E0C78E;min-width:34px">{{ it.n }}</span>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font:700 17px Urbanist">{{ it.t }}</span><span style="font:400 15.5px/1.6 Urbanist;color:#A7A197;text-wrap:pretty">{{ it.d }}</span></div>
+</div>
+</sc-for>
+</div>
+<sc-for list="{{ cur.quotes }}" as="qt" hint-placeholder-count="1">
+<figure style="margin:0;padding:34px clamp(22px,4vw,44px);border-radius:26px;background:radial-gradient(400px 200px at 0% 0%,rgba(224,199,142,.14),transparent 70%),#121214;display:flex;flex-direction:column;gap:16px">
+<et-i n="quote" s="30" c="#E0C78E"></et-i>
+<blockquote style="margin:0;font:italic 400 clamp(24px,3vw,30px)/1.3 'EB Garamond',serif;text-wrap:pretty">{{ qt.q }}</blockquote>
+<figcaption style="font:600 14px Urbanist;color:#A7A197">— {{ qt.a }}</figcaption>
+</figure>
+</sc-for>
+<div style="display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0 0 4px;font:700 20px Urbanist">Capítulos</h2>
+<sc-for list="{{ cur.chapList }}" as="c" hint-placeholder-count="3">
+<button key="{{ c.n }}" onClick="{{ c.go }}" style="display:flex;align-items:center;gap:16px;padding:18px 0;border:0;border-top:1px solid rgba(255,255,255,.07);background:transparent;color:#F3EFE6;text-align:left;cursor:pointer" style-hover="color:#E0C78E"><span style="font:700 13px Urbanist;color:#8A847A;min-width:24px">{{ c.n }}</span><span style="flex:1;font:600 16px Urbanist">{{ c.t }}</span><et-i n="chevron-right" s="17" c="#8A847A"></et-i></button>
+</sc-for>
+</div>
+</div>
+</div>
+</main>
+</sc-if>
+
+<sc-if value="{{ vRead }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Leitura" style="animation:ccIn .45s both">
+<div style="position:sticky;top:{{ readTop }};z-index:20;background:rgba(11,11,12,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+<div style="max-width:760px;margin:0 auto;padding:12px clamp(16px,4vw,24px);display:flex;align-items:center;gap:12px">
+<button onClick="{{ backToBook }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:50%;border:0;background:#161618;color:#F3EFE6;display:grid;place-items:center;cursor:pointer"><et-i n="arrow-left" s="17"></et-i></button>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font:700 14px Urbanist;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ cur.title }}</span><span style="font:500 12px Urbanist;color:#8A847A">Capítulo {{ chapNum }} de {{ cur.nChap }} · {{ hlCount }} destaques</span></div>
+<button onClick="{{ fsDown }}" aria-label="Diminuir texto" style="width:40px;height:40px;border-radius:50%;border:0;background:#161618;color:#F3EFE6;font:500 14px 'EB Garamond',serif;cursor:pointer">A</button>
+<button onClick="{{ fsUp }}" aria-label="Aumentar texto" style="width:40px;height:40px;border-radius:50%;border:0;background:#161618;color:#F3EFE6;font:500 20px 'EB Garamond',serif;cursor:pointer">A</button>
+</div>
+<div style="height:2px;background:#1F1F22"><div style="height:100%;width:{{ readPct }};background:#E0C78E;transition:width .4s"></div></div>
+</div>
+<article style="max-width:680px;margin:0 auto;padding:56px clamp(20px,5vw,24px) 120px;display:flex;flex-direction:column;gap:26px">
+<span style="font:700 12px Urbanist;letter-spacing:.18em;text-transform:uppercase;color:#E0C78E">Capítulo {{ chapNum }}</span>
+<h1 style="margin:-12px 0 8px;font:400 clamp(36px,5vw,48px)/1.08 'EB Garamond',serif;text-wrap:balance">{{ chap.t }}</h1>
+<span style="display:flex;align-items:center;gap:8px;font:500 13px Urbanist;color:#8A847A"><et-i n="highlighter" s="15"></et-i>Toque em um parágrafo para destacar</span>
+<sc-for list="{{ paras }}" as="p" hint-placeholder-count="3">
+<p key="{{ p.k }}" onClick="{{ p.toggle }}" style="margin:0 -14px;padding:6px 14px;border-radius:10px;font-family:'EB Garamond',serif;font-size:{{ fsPx }};line-height:1.65;color:#E8E2D6;background:{{ p.bg }};box-shadow:{{ p.ring }};cursor:pointer;text-wrap:pretty;transition:background .2s">{{ p.text }}</p>
+</sc-for>
+<div style="display:flex;gap:12px;justify-content:space-between;margin-top:32px;padding-top:28px;border-top:1px solid rgba(255,255,255,.08);flex-wrap:wrap">
+<button onClick="{{ prevChap }}" disabled="{{ noPrev }}" style="height:48px;padding:0 20px;border-radius:999px;border:0;background:#161618;color:#F3EFE6;font:700 14px Urbanist;display:flex;align-items:center;gap:8px;cursor:pointer;opacity:{{ prevOp }}"><et-i n="arrow-left" s="16"></et-i>Anterior</button>
+<button onClick="{{ nextChap }}" style="height:48px;padding:0 22px;border-radius:999px;border:0;background:#E0C78E;color:#14110A;font:700 14px Urbanist;display:flex;align-items:center;gap:8px;cursor:pointer">{{ nextLabel }}<et-i n="arrow-right" s="16"></et-i></button>
+</div>
+</article>
+</main>
+</sc-if>
+
+<sc-if value="{{ adminLogin }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Admin · Login" style="min-height:calc(100vh - 70px);display:grid;place-items:center;padding:48px 20px;animation:ccIn .45s both">
+<form onSubmit="{{ login }}" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+<span style="width:60px;height:60px;border-radius:50%;background:#161618;display:grid;place-items:center"><et-i n="lock-keyhole" s="24" c="#E0C78E"></et-i></span>
+<h1 style="margin:0;font:600 32px Urbanist;letter-spacing:-.025em">Acesso administrativo</h1>
+<p style="margin:0;font:500 15px/1.5 Urbanist;color:#8A847A">Área restrita à equipe do Etternum.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<input type="email" value="{{ lEmail }}" onChange="{{ setLEmail }}" placeholder="E-mail" autocomplete="username" style="height:54px;padding:0 18px;border-radius:14px;border:0;background:#161618;color:#F3EFE6;font:500 16px Urbanist;outline:none">
+<input type="password" value="{{ lPass }}" onChange="{{ setLPass }}" placeholder="Senha" autocomplete="current-password" style="height:54px;padding:0 18px;border-radius:14px;border:0;background:#161618;color:#F3EFE6;font:500 16px Urbanist;outline:none">
+<sc-if value="{{ lErr }}" hint-placeholder-val="{{ false }}"><span style="font:500 13.5px Urbanist;color:#F28B82;padding:2px 4px 0">{{ lErr }}</span></sc-if>
+</div>
+<button type="submit" style="height:54px;border-radius:999px;border:0;background:#F3EFE6;color:#0B0B0C;font:700 16px Urbanist;cursor:pointer;transition:opacity .2s" style-hover="opacity:.88">Entrar</button>
+<span style="text-align:center;font:500 13px Urbanist;color:#5F5A52">Leitores acessam o clube pelo app Etternum.</span>
+</form>
+</main>
+</sc-if>
+
+<sc-if value="{{ adminIn }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Admin" style="max-width:1360px;margin:0 auto;padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 96px;display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+<aside style="flex:1 1 200px;max-width:240px;position:sticky;top:{{ stickTop }};padding:8px 0;background:transparent;display:flex;flex-direction:column;gap:4px">
+<span style="padding:0 12px 10px;font:700 11px Urbanist;letter-spacing:.18em;text-transform:uppercase;color:#8A847A">Gestão</span>
+<sc-for list="{{ adminNav }}" as="n" hint-placeholder-count="3"><button key="{{ n.k }}" onClick="{{ n.go }}" style="height:42px;padding:0 14px;border-radius:999px;border:0;display:flex;align-items:center;gap:11px;background:{{ n.bg }};color:{{ n.fg }};font:600 14px Urbanist;cursor:pointer;text-align:left"><et-i n="{{ n.icon }}" s="17"></et-i>{{ n.label }}</button></sc-for>
+<div style="height:1px;background:rgba(255,255,255,.08);margin:10px 8px"></div>
+<button onClick="{{ newBook }}" style="height:42px;border-radius:999px;border:0;background:#E0C78E;color:#14110A;font:700 14px Urbanist;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer"><et-i n="plus" s="16"></et-i>Novo livro</button>
+</aside>
+
+<div style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:24px;animation:ccIn .4s both">
+
+<sc-if value="{{ aBooks }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap"><div style="display:flex;flex-direction:column;gap:4px"><h1 style="margin:0;font:700 28px Urbanist;letter-spacing:-.01em">Livros</h1><span style="font:500 14px Urbanist;color:#A7A197">Cadastre resumos, insights, capítulos e citações.</span></div></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+<sc-for list="{{ stats }}" as="s" hint-placeholder-count="4"><div key="{{ s.l }}" style="padding:4px 0;display:flex;flex-direction:column;gap:8px"><span style="display:flex;align-items:center;gap:7px;font:600 13px Urbanist;color:#A7A197"><et-i n="{{ s.icon }}" s="15" c="#E0C78E"></et-i>{{ s.l }}</span><span style="font:700 30px Urbanist;letter-spacing:-.02em">{{ s.v }}</span></div></sc-for>
+</div>
+<div style="border-radius:24px;background:#121214;overflow:hidden">
+<div style="display:flex;gap:8px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.07);flex-wrap:wrap">
+<sc-for list="{{ statusTabs }}" as="f" hint-placeholder-count="3"><button key="{{ f.k }}" onClick="{{ f.go }}" style="height:34px;padding:0 14px;border-radius:999px;border:0;background:{{ f.bg }};color:{{ f.fg }};font:600 13px Urbanist;cursor:pointer">{{ f.label }}</button></sc-for>
+</div>
+<sc-for list="{{ rows }}" as="b" hint-placeholder-count="5">
+<div key="{{ b.id }}" style="display:flex;align-items:center;gap:16px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap">
+<div style="flex:none;width:42px;container-type:inline-size"><div style="position:relative;overflow:hidden;aspect-ratio:2/3;border-radius:2px 5px 5px 2px;background:{{ b.color }};color:{{ b.ink }};padding:12%;display:flex;align-items:center;box-shadow:inset 3px 0 0 rgba(0,0,0,.2)"><sc-if value="{{ b.img }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;z-index:5;background:{{ b.coverBg }}"></span></sc-if><span style="font-family:'EB Garamond',serif;font-size:18cqw;line-height:1">{{ b.title }}</span></div></div>
+<div style="flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:700 15px Urbanist;display:flex;align-items:center;gap:8px">{{ b.title }}<sc-if value="{{ b.featured }}" hint-placeholder-val="{{ false }}"><et-i n="star" s="13" c="#E0C78E"></et-i></sc-if></span><span style="font:500 13px Urbanist;color:#8A847A">{{ b.author }} · {{ b.cat }}</span></div>
+<span style="flex:none;width:96px;font:600 13px Urbanist;color:#A7A197">{{ b.nIns }} insights</span>
+<span style="flex:none;width:90px;font:600 13px Urbanist;color:#A7A197">{{ b.readsLabel }}</span>
+<span style="flex:none;height:26px;padding:0 11px;border-radius:999px;background:{{ b.stBg }};color:{{ b.stFg }};font:700 12px Urbanist;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span>{{ b.stLabel }}</span>
+<div style="flex:none;display:flex;gap:6px">
+<button onClick="{{ b.edit }}" aria-label="Editar" style="width:36px;height:36px;border-radius:50%;border:0;background:#1F1F22;color:#F3EFE6;display:grid;place-items:center;cursor:pointer" style-hover="background:#2A2A2E"><et-i n="pencil" s="15"></et-i></button>
+<button onClick="{{ b.preview }}" aria-label="Ver como leitor" style="width:36px;height:36px;border-radius:50%;border:0;background:#1F1F22;color:#F3EFE6;display:grid;place-items:center;cursor:pointer" style-hover="background:#2A2A2E"><et-i n="eye" s="15"></et-i></button>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ aEdit }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+<button onClick="{{ goAdmin }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:50%;border:0;background:#161618;color:#F3EFE6;display:grid;place-items:center;cursor:pointer"><et-i n="arrow-left" s="17"></et-i></button>
+<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:2px"><span style="font:700 12px Urbanist;letter-spacing:.14em;text-transform:uppercase;color:#8A847A">{{ editKicker }}</span><h1 style="margin:0;font:700 26px Urbanist;letter-spacing:-.01em">{{ d.titleOr }}</h1></div>
+<button onClick="{{ delBook }}" style="height:42px;padding:0 16px;border-radius:999px;border:0;background:transparent;color:#F28B82;font:700 14px Urbanist;display:flex;align-items:center;gap:7px;cursor:pointer"><et-i n="trash-2" s="15"></et-i>Excluir</button>
+<button onClick="{{ saveDraft }}" style="height:42px;padding:0 18px;border-radius:999px;border:0;background:#1F1F22;color:#F3EFE6;font:700 14px Urbanist;cursor:pointer">Salvar rascunho</button>
+<button onClick="{{ publish }}" style="height:42px;padding:0 20px;border-radius:999px;border:0;background:#E0C78E;color:#14110A;font:700 14px Urbanist;display:flex;align-items:center;gap:7px;cursor:pointer"><et-i n="send" s="15"></et-i>Publicar</button>
+</div>
+
+<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+<div style="flex:999 1 420px;min-width:0;display:flex;flex-direction:column;gap:20px">
+
+<section style="padding:24px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font:700 17px Urbanist">Informações</h2>
+<label style="display:flex;flex-direction:column;gap:7px;font:600 13px Urbanist;color:#A7A197">Título<input value="{{ d.title }}" onChange="{{ on.title }}" placeholder="Ex.: Em Busca de Sentido" style="height:46px;padding:0 14px;border-radius:14px;border:0;background:#1F1F22;color:#F3EFE6;font:500 15px Urbanist;outline:none"></label>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
+<label style="display:flex;flex-direction:column;gap:7px;font:600 13px Urbanist;color:#A7A197">Autor<input value="{{ d.author }}" onChange="{{ on.author }}" style="height:46px;padding:0 14px;border-radius:14px;border:0;background:#1F1F22;color:#F3EFE6;font:500 15px Urbanist;outline:none"></label>
+<label style="display:flex;flex-direction:column;gap:7px;font:600 13px Urbanist;color:#A7A197">Categoria<select value="{{ d.cat }}" onChange="{{ on.cat }}" style="height:46px;padding:0 12px;border-radius:14px;border:0;background:#1F1F22;color:#F3EFE6;font:500 15px Urbanist;outline:none"><sc-for list="{{ catOpts }}" as="o" hint-placeholder-count="5"><option key="{{ o }}" value="{{ o }}">{{ o }}</option></sc-for></select></label>
+<label style="display:flex;flex-direction:column;gap:7px;font:600 13px Urbanist;color:#A7A197">Tempo de leitura (min)<input type="number" value="{{ d.mins }}" onChange="{{ on.mins }}" style="height:46px;padding:0 14px;border-radius:14px;border:0;background:#1F1F22;color:#F3EFE6;font:500 15px Urbanist;outline:none"></label>
+</div>
+<label style="display:flex;flex-direction:column;gap:7px;font:600 13px Urbanist;color:#A7A197">Sinopse<textarea value="{{ d.synopsis }}" onChange="{{ on.synopsis }}" rows="4" style="padding:12px 14px;border-radius:14px;border:0;background:#1F1F22;color:#F3EFE6;font:400 15px/1.55 Urbanist;outline:none;resize:vertical"></textarea></label>
+</section>
+
+<section style="padding:24px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h2 style="margin:0;font:700 17px Urbanist">Insights <span style="color:#8A847A;font-weight:600">· {{ d.nIns }}</span></h2><button onClick="{{ addIns }}" style="height:36px;padding:0 14px;border-radius:999px;border:0;background:rgba(224,199,142,.14);color:#E0C78E;font:700 13px Urbanist;display:flex;align-items:center;gap:6px;cursor:pointer"><et-i n="plus" s="14"></et-i>Adicionar</button></div>
+<sc-for list="{{ insRows }}" as="r" hint-placeholder-count="3">
+<div key="{{ r.k }}" style="display:grid;grid-template-columns:auto 1fr auto;gap:14px;padding:18px 0 4px;border-top:1px solid rgba(255,255,255,.07)">
+<span style="font:400 24px/1 'EB Garamond',serif;color:#E0C78E;padding-top:10px">{{ r.n }}</span>
+<div style="display:flex;flex-direction:column;gap:8px;min-width:0"><input value="{{ r.t }}" onChange="{{ r.onT }}" placeholder="Título do insight" style="height:40px;padding:0 12px;border-radius:12px;border:0;background:#232326;color:#F3EFE6;font:700 14.5px Urbanist;outline:none"><textarea value="{{ r.d }}" onChange="{{ r.onD }}" rows="2" placeholder="Explique em 1–3 frases" style="padding:10px 12px;border-radius:12px;border:0;background:#232326;color:#CFC8BC;font:400 14px/1.5 Urbanist;outline:none;resize:vertical"></textarea></div>
+<div style="display:flex;flex-direction:column;gap:6px"><button onClick="{{ r.up }}" aria-label="Subir" style="width:32px;height:32px;border-radius:50%;border:0;background:#232326;color:#A7A197;display:grid;place-items:center;cursor:pointer"><et-i n="chevron-up" s="15"></et-i></button><button onClick="{{ r.del }}" aria-label="Remover" style="width:32px;height:32px;border-radius:50%;border:0;background:#232326;color:#F28B82;display:grid;place-items:center;cursor:pointer"><et-i n="x" s="15"></et-i></button></div>
+</div>
+</sc-for>
+</section>
+
+<section style="padding:24px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h2 style="margin:0;font:700 17px Urbanist">Capítulos do resumo <span style="color:#8A847A;font-weight:600">· {{ d.nChap }}</span></h2><button onClick="{{ addChap }}" style="height:36px;padding:0 14px;border-radius:999px;border:0;background:rgba(224,199,142,.14);color:#E0C78E;font:700 13px Urbanist;display:flex;align-items:center;gap:6px;cursor:pointer"><et-i n="plus" s="14"></et-i>Adicionar</button></div>
+<sc-for list="{{ chapRows }}" as="r" hint-placeholder-count="2">
+<div key="{{ r.k }}" style="display:flex;flex-direction:column;gap:8px;padding:18px 0 4px;border-top:1px solid rgba(255,255,255,.07)">
+<div style="display:flex;gap:10px;align-items:center"><span style="font:700 12px Urbanist;color:#8A847A;min-width:22px">{{ r.n }}</span><input value="{{ r.t }}" onChange="{{ r.onT }}" placeholder="Título do capítulo" style="flex:1;min-width:0;height:40px;padding:0 12px;border-radius:12px;border:0;background:#232326;color:#F3EFE6;font:700 14.5px Urbanist;outline:none"><button onClick="{{ r.del }}" aria-label="Remover" style="width:32px;height:32px;border-radius:50%;border:0;background:#232326;color:#F28B82;display:grid;place-items:center;cursor:pointer"><et-i n="x" s="15"></et-i></button></div>
+<textarea value="{{ r.body }}" onChange="{{ r.onB }}" rows="5" placeholder="Texto do capítulo. Separe parágrafos com uma linha em branco." style="padding:12px;border-radius:12px;border:0;background:#232326;color:#CFC8BC;font:400 15px/1.6 'EB Garamond',serif;outline:none;resize:vertical"></textarea>
+</div>
+</sc-for>
+</section>
+
+<section style="padding:24px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h2 style="margin:0;font:700 17px Urbanist">Citações</h2><button onClick="{{ addQuote }}" style="height:36px;padding:0 14px;border-radius:999px;border:0;background:rgba(224,199,142,.14);color:#E0C78E;font:700 13px Urbanist;display:flex;align-items:center;gap:6px;cursor:pointer"><et-i n="plus" s="14"></et-i>Adicionar</button></div>
+<sc-for list="{{ quoteRows }}" as="r" hint-placeholder-count="1">
+<div key="{{ r.k }}" style="display:flex;gap:10px;align-items:flex-start;padding:18px 0 4px;border-top:1px solid rgba(255,255,255,.07)">
+<et-i n="quote" s="18" c="#E0C78E"></et-i>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><textarea value="{{ r.q }}" onChange="{{ r.onQ }}" rows="2" placeholder="Citação" style="padding:10px 12px;border-radius:12px;border:0;background:#232326;color:#F3EFE6;font:italic 400 17px/1.4 'EB Garamond',serif;outline:none;resize:vertical"></textarea><input value="{{ r.a }}" onChange="{{ r.onA }}" placeholder="Autor da citação" style="height:38px;padding:0 12px;border-radius:12px;border:0;background:#232326;color:#A7A197;font:600 13.5px Urbanist;outline:none"></div>
+<button onClick="{{ r.del }}" aria-label="Remover" style="width:32px;height:32px;border-radius:50%;border:0;background:#232326;color:#F28B82;display:grid;place-items:center;cursor:pointer"><et-i n="x" s="15"></et-i></button>
+</div>
+</sc-for>
+</section>
+</div>
+
+<div style="flex:1 1 280px;min-width:260px;max-width:380px;display:flex;flex-direction:column;gap:20px;position:sticky;top:{{ stickTop }}">
+<section style="padding:22px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:14px">
+<h2 style="margin:0;font:700 17px Urbanist">Capa</h2>
+<div key="{{ d.id }}" style="width:100%;aspect-ratio:2/3;max-height:320px;border-radius:16px;overflow:hidden;background:#1F1F22"><image-slot id="{{ coverSlotId }}" placeholder="Arraste a capa do livro (JPG/PNG)" shape="rounded" radius="16"></image-slot></div>
+<span style="font:600 13px Urbanist;color:#A7A197">Sem imagem, a capa tipográfica usa esta cor:</span>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ swatches }}" as="w" hint-placeholder-count="7"><button key="{{ w.c }}" onClick="{{ w.pick }}" aria-label="Cor" style="width:34px;height:34px;border-radius:50%;border:0;background:{{ w.c }};box-shadow:{{ w.ring }};cursor:pointer"></button></sc-for></div>
+</section>
+<section style="padding:22px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:14px">
+<h2 style="margin:0;font:700 17px Urbanist">Publicação</h2>
+<div style="display:flex;gap:6px;padding:4px;border-radius:999px;background:#1F1F22"><sc-for list="{{ statusOpts }}" as="o" hint-placeholder-count="2"><button key="{{ o.k }}" onClick="{{ o.go }}" style="flex:1;height:36px;border-radius:999px;border:0;background:{{ o.bg }};color:{{ o.fg }};font:700 13px Urbanist;cursor:pointer">{{ o.label }}</button></sc-for></div>
+<button onClick="{{ toggleFeat }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:0;background:#1A1A1C;color:#F3EFE6;text-align:left;cursor:pointer"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:700 14px Urbanist">Leitura do mês</span><span style="font:500 12.5px Urbanist;color:#8A847A">Aparece no destaque da biblioteca</span></span><span style="width:44px;height:26px;border-radius:999px;background:{{ featTrack }};padding:3px;display:flex;justify-content:{{ featJustify }};transition:background .2s"><span style="width:20px;height:20px;border-radius:50%;background:#F3EFE6"></span></span></button>
+</section>
+<section style="padding:22px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:14px;align-items:center">
+<span style="align-self:flex-start;font:700 12px Urbanist;letter-spacing:.14em;text-transform:uppercase;color:#8A847A">Pré-visualização</span>
+<div style="width:46%;container-type:inline-size"><div style="position:relative;overflow:hidden;aspect-ratio:2/3;border-radius:4px 9px 9px 4px;background:{{ d.color }};color:{{ d.ink }};padding:13% 11%;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 26px 36px -18px rgba(0,0,0,.95),inset 5px 0 0 rgba(0,0,0,.18)"><sc-if value="{{ d.img }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;z-index:5;background:{{ d.coverBg }}"></span></sc-if><span style="font:700 6cqw Urbanist;letter-spacing:.2em;text-transform:uppercase;opacity:.7">{{ d.cat }}</span><span style="font-family:'EB Garamond',serif;font-size:15cqw;line-height:1">{{ d.titleOr }}</span><span style="font:600 6.5cqw Urbanist;opacity:.85">{{ d.author }}</span></div></div>
+</section>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ aMedia }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:4px"><h1 style="margin:0;font:700 28px Urbanist;letter-spacing:-.01em">Materiais</h1><span style="font:500 14px Urbanist;color:#A7A197">Imagens e arquivos de apoio usados nos resumos e encontros do clube.</span></div>
+<section style="padding:24px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font:700 17px Urbanist">Imagens</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
+<sc-for list="{{ mediaSlots }}" as="m" hint-placeholder-count="8"><div key="{{ m.id }}" style="aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:#1F1F22"><image-slot id="{{ m.id }}" placeholder="{{ m.ph }}" shape="rounded" radius="16"></image-slot></div></sc-for>
+</div>
+</section>
+<section style="padding:24px;border-radius:24px;background:#121214;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px"><h2 style="margin:0;font:700 17px Urbanist">Arquivos</h2><button onClick="{{ fakeUpload }}" style="height:36px;padding:0 14px;border-radius:999px;border:0;background:rgba(224,199,142,.14);color:#E0C78E;font:700 13px Urbanist;display:flex;align-items:center;gap:6px;cursor:pointer"><et-i n="upload" s="14"></et-i>Enviar arquivo</button></div>
+<sc-for list="{{ files }}" as="f" hint-placeholder-count="3"><div key="{{ f.n }}" style="display:flex;align-items:center;gap:14px;padding:12px 4px;border-top:1px solid rgba(255,255,255,.06)"><span style="width:40px;height:40px;border-radius:12px;background:#1F1F22;display:grid;place-items:center"><et-i n="{{ f.icon }}" s="18" c="#E0C78E"></et-i></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:700 14px Urbanist">{{ f.n }}</span><span style="font:500 12.5px Urbanist;color:#8A847A">{{ f.meta }}</span></span><button aria-label="Mais opções" style="width:34px;height:34px;border-radius:50%;border:0;background:transparent;color:#8A847A;display:grid;place-items:center;cursor:pointer"><et-i n="ellipsis" s="17"></et-i></button></div></sc-for>
+</section>
+</sc-if>
+
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ standalone }}" hint-placeholder-val="{{ true }}">
+<div style="position:fixed;left:14px;bottom:14px;z-index:70;display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+<sc-if value="{{ mapOpen }}" hint-placeholder-val="{{ false }}">
+<div style="width:250px;max-height:420px;overflow-y:auto;padding:10px;border-radius:20px;background:#1F1F22;box-shadow:0 30px 60px -20px rgba(0,0,0,.8);display:flex;flex-direction:column;gap:2px">
+<sc-for list="{{ mapItems }}" as="m" hint-placeholder-count="8"><button key="{{ m.label }}" onClick="{{ m.go }}" style="height:36px;padding:0 10px;border:0;border-radius:10px;background:{{ m.bg }};color:#F3EFE6;font:500 13px Urbanist;text-align:left;cursor:pointer;display:flex;justify-content:space-between;gap:8px" style-hover="background:#2A2A2E"><span>{{ m.label }}</span><span style="color:#8A847A;font:11px ui-monospace,Menlo,monospace">{{ m.path }}</span></button></sc-for>
+</div>
+</sc-if>
+<button onClick="{{ toggleMap }}" style="height:36px;padding:0 14px;border-radius:999px;border:0;background:#1F1F22;color:#E0C78E;box-shadow:inset 0 0 0 1px rgba(224,199,142,.35);font:700 12px Urbanist;display:flex;align-items:center;gap:6px;cursor:pointer"><et-i n="map" s="14"></et-i>Mapa de telas</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;padding:13px 20px;border-radius:999px;background:#F3EFE6;color:#0B0B0C;font:600 14px Urbanist;box-shadow:0 20px 40px -12px rgba(0,0,0,.6);animation:ccPop .3s both;white-space:nowrap"><et-i n="circle-check" s="17"></et-i>{{ toast }}</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;leitor&quot;,&quot;admin&quot;],&quot;default&quot;:&quot;leitor&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showContinue&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const P = s => s.split('\n\n');
+const SEED = [
+ { id:'frankl', img:'./covers/em-busca-de-sentido.webp', title:'Em Busca de Sentido', author:'Viktor Frankl', cat:'Vida Interior', mins:14, color:'#1E2A3A', ink:'#E0C78E', status:'publicado', featured:true, progress:42, reads:1284,
+   synopsis:'Psiquiatra e sobrevivente de quatro campos de concentração, Frankl descreve o que observou em quem resistia e em quem desistia. Dessa experiência nasce a logoterapia: a força mais profunda do ser humano é a busca por um sentido.',
+   insights:[{t:'A última liberdade',d:'Tudo pode ser tirado de uma pessoa, exceto a escolha da atitude diante das circunstâncias.'},{t:'Sentido se descobre',d:'Frankl aponta três fontes: um trabalho ou obra, o encontro com alguém e a postura diante do sofrimento inevitável.'},{t:'O vazio existencial',d:'Tédio e apatia são sintomas de uma vida sem direção, e não de falta de distração.'},{t:'Responder à vida',d:'A pergunta não é o que esperamos da vida, mas o que a vida espera de nós em cada situação.'}],
+   chapters:[{t:'Experiências no campo',body:'Frankl divide a vida no campo em três fases: o choque da chegada, a apatia que se instala como defesa e, depois da libertação, a difícil volta ao mundo.\n\nEle percebe que os prisioneiros que mantinham uma razão para viver, como reencontrar alguém ou terminar uma obra, suportavam melhor a fome e o frio do que os que perdiam a esperança.'},{t:'Os fundamentos da logoterapia',body:'A logoterapia parte de uma ideia simples: o ser humano é movido pela vontade de sentido. Quando ela é frustrada, surgem o vazio e a neurose.\n\nO terapeuta não entrega um sentido pronto. Ele ajuda a pessoa a enxergar as possibilidades de sentido presentes na própria vida.'},{t:'O otimismo trágico',body:'Dor, culpa e morte fazem parte de toda existência. Frankl propõe dizer sim à vida apesar delas.\n\nO sofrimento transforma-se em conquista, a culpa em mudança e a finitude em um convite à ação responsável.'}],
+   quotes:[{q:'Quem tem um porquê para viver suporta quase qualquer como.',a:'Nietzsche, citado por Frankl'}] },
+ { id:'habitos', img:'./covers/habitos-atomicos.jpg', title:'Hábitos Atômicos', author:'James Clear', cat:'Hábitos', mins:13, color:'#E0C78E', ink:'#14110A', status:'publicado', featured:false, progress:75, reads:2310,
+   synopsis:'Pequenas melhorias, repetidas todos os dias, produzem resultados enormes ao longo do tempo. Clear apresenta um método prático para criar bons hábitos e abandonar os ruins.',
+   insights:[{t:'1% melhor por dia',d:'Os resultados são um reflexo atrasado dos hábitos. A melhoria composta só aparece depois de um tempo.'},{t:'Identidade primeiro',d:'A mudança mais duradoura começa por quem você quer se tornar, e não pelo resultado que quer alcançar.'},{t:'As quatro leis',d:'Torne o hábito óbvio, atraente, fácil e satisfatório.'},{t:'Ambiente acima da força de vontade',d:'Desenhe o espaço ao seu redor para que a boa escolha seja a mais simples.'}],
+   chapters:[{t:'O poder dos pequenos hábitos',body:'Melhorar 1% ao dia durante um ano rende algo perto de trinta e sete vezes melhor. O contrário também vale.\n\nSistemas importam mais que metas: vencedores e perdedores costumam ter as mesmas metas.'},{t:'Como construir hábitos melhores',body:'Todo hábito segue um ciclo de deixa, desejo, resposta e recompensa. Cada lei atua sobre uma dessas etapas.'}],
+   quotes:[{q:'Você não sobe ao nível das suas metas. Você cai ao nível dos seus sistemas.',a:'James Clear'}] },
+ { id:'seneca', img:'./covers/cartas-a-lucilio.jpg', title:'Cartas a Lucílio', author:'Sêneca', cat:'Filosofia', mins:11, color:'#6E2B22', ink:'#F3E6CF', status:'publicado', featured:false, progress:0, reads:846,
+   synopsis:'Em cartas a um amigo, Sêneca reflete sobre tempo, amizade, medo e morte. Um guia estoico para viver com serenidade em meio ao caos.',
+   insights:[{t:'O tempo é o único bem',d:'Perdemos a vida não por ser curta, mas por desperdiçá-la sem perceber.'},{t:'Sofremos mais na imaginação',d:'Grande parte do medo vem do que antecipamos, e não do que de fato acontece.'},{t:'Amizade verdadeira',d:'Escolha amigos que te tornem melhor, e seja esse amigo para alguém.'}],
+   chapters:[{t:'Sobre o tempo',body:'Reivindique a posse de si mesmo. Guarde o tempo que até agora lhe era tirado ou escapava.\n\nNenhum dia deve passar sem que você aprenda algo que o ajude a enfrentar a morte e a pobreza.'}],
+   quotes:[{q:'Não é que tenhamos pouco tempo, é que perdemos muito.',a:'Sêneca'}] },
+ { id:'focado', title:'Trabalho Focado', author:'Cal Newport', cat:'Negócios', mins:12, color:'#F3EFE6', ink:'#14110A', status:'publicado', featured:false, progress:0, reads:1102,
+   synopsis:'A capacidade de se concentrar sem distração está ficando rara e, por isso, mais valiosa. Newport mostra como treinar o foco como um músculo.',
+   insights:[{t:'Trabalho profundo é raro',d:'Quem consegue se concentrar por longos períodos produz mais e aprende mais rápido.'},{t:'Abrace o tédio',d:'Resistir à distração em momentos ociosos fortalece o foco.'},{t:'Rituais de foco',d:'Defina onde, quando e por quanto tempo você vai trabalhar sem interrupções.'}],
+   chapters:[{t:'A ideia',body:'Tarefas rasas são fáceis de reproduzir e criam pouco valor. O trabalho profundo cria valor novo e é difícil de copiar.'}],
+   quotes:[{q:'Clareza sobre o que importa traz clareza sobre o que não importa.',a:'Cal Newport'}] },
+ { id:'mindset', title:'Mindset', author:'Carol Dweck', cat:'Psicologia', mins:10, color:'#2F4A3A', ink:'#EAD9AE', status:'publicado', featured:false, progress:0, reads:932,
+   synopsis:'A forma como você enxerga as próprias habilidades muda a forma como aprende, trabalha e se relaciona. Dweck compara a mentalidade fixa com a de crescimento.',
+   insights:[{t:'Fixa ou de crescimento',d:'Quem acredita que pode se desenvolver encara o erro como informação, e não como sentença.'},{t:'Elogie o processo',d:'Elogiar o esforço e a estratégia forma pessoas mais resilientes do que elogiar o talento.'},{t:'O poder do ainda',d:'Trocar “não sei” por “ainda não sei” muda a relação com o desafio.'}],
+   chapters:[{t:'As duas mentalidades',body:'Na mentalidade fixa, cada desafio é um teste de valor. Na de crescimento, é uma chance de aprender.'}],
+   quotes:[] },
+ { id:'kahneman', title:'Rápido e Devagar', author:'Daniel Kahneman', cat:'Psicologia', mins:16, color:'#3A2E5A', ink:'#F2C9D2', status:'publicado', featured:false, progress:0, reads:1540,
+   synopsis:'Pensamos com dois sistemas: um rápido e intuitivo, outro lento e deliberado. Kahneman mostra como os atalhos do primeiro nos levam a erros previsíveis.',
+   insights:[{t:'Sistema 1 e Sistema 2',d:'O primeiro decide quase tudo; o segundo só entra quando algo exige esforço.'},{t:'Ancoragem',d:'O primeiro número que ouvimos distorce todas as estimativas seguintes.'},{t:'Aversão à perda',d:'Perder dói cerca de duas vezes mais do que ganhar o mesmo valor.'}],
+   chapters:[{t:'Dois sistemas',body:'O Sistema 1 opera de forma automática. O Sistema 2 é preguiçoso e muitas vezes apenas aprova o que o primeiro sugeriu.'}],
+   quotes:[] },
+ { id:'meditacoes', title:'Meditações', author:'Marco Aurélio', cat:'Filosofia', mins:9, color:'#2A2A2E', ink:'#E0C78E', status:'rascunho', featured:false, progress:0, reads:0,
+   synopsis:'Notas pessoais de um imperador romano para si mesmo, sobre dever, impermanência e autocontrole.',
+   insights:[{t:'O obstáculo é o caminho',d:'O que impede a ação se torna a própria ação.'}],
+   chapters:[{t:'Livro I',body:''}], quotes:[] },
+];
+const CATS = ['Vida Interior','Filosofia','Hábitos','Negócios','Psicologia','Espiritualidade'];
+const SW = [['#1E2A3A','#E0C78E'],['#6E2B22','#F3E6CF'],['#E0C78E','#14110A'],['#F3EFE6','#14110A'],['#2F4A3A','#EAD9AE'],['#3A2E5A','#F2C9D2'],['#2A2A2E','#E0C78E']];
+const KEY = 'ett-clube-livro-v2';
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    let books = SEED;
+    try { const s = localStorage.getItem(KEY); if (s) books = JSON.parse(s); } catch (e) {}
+    const mode = p.mode || 'leitor';
+    this.state = { mode, view: mode === 'admin' ? 'books' : 'lib', sel: 'frankl', chap: 0, q: '', cat: 'Todos', books, draft: null, hl: {}, fs: 21, toast: '', saved: { frankl: true }, stF: 'todos', authed: (() => { try { return sessionStorage.getItem('ett-admin') === '1'; } catch (e) { return false; } })(), lEmail: '', lPass: '', lErr: '' };
+  }
+  componentDidUpdate(pp) { if (pp.mode !== this.props.mode && this.props.mode) this.setState({ mode: this.props.mode, view: this.props.mode === 'admin' ? 'books' : 'lib' }); }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  rootRef = el => { this.root = el; };
+  top() { requestAnimationFrame(() => { window.scrollTo(0, 0); let n = this.root && this.root.parentElement; while (n) { const o = getComputedStyle(n).overflowY; if ((o === 'auto' || o === 'scroll') && n.scrollHeight > n.clientHeight) { n.scrollTop = 0; break; } n = n.parentElement; } }); }
+  go = (o) => { this.setState(o); this.top(); };
+  toast = m => { clearTimeout(this.tt); this.setState({ toast: m }); this.tt = setTimeout(() => this.setState({ toast: '' }), 2400); };
+  persist(books) { this.setState({ books }); try { localStorage.setItem(KEY, JSON.stringify(books)); } catch (e) {} }
+  upd = fn => this.setState(s => ({ draft: fn(JSON.parse(JSON.stringify(s.draft))) }));
+  commit(status) {
+    const d = { ...this.state.draft, status: status || this.state.draft.status, title: this.state.draft.title || 'Sem título' };
+    let books = this.state.books.slice();
+    if (d.featured) books = books.map(b => ({ ...b, featured: false }));
+    const i = books.findIndex(b => b.id === d.id);
+    if (i >= 0) books[i] = d; else books.unshift(d);
+    this.persist(books);
+    this.toast(status === 'publicado' ? 'Livro publicado' : 'Rascunho salvo');
+    this.go({ view: 'books', draft: null });
+  }
+  vm(b) {
+    return { ...b, glow: `radial-gradient(circle at 50% 62%, ${b.color}55, transparent 68%), #131315`, heroBg: `radial-gradient(800px 360px at 10% 0%, ${b.color}70, transparent 70%), #121214`,
+      nIns: b.insights.length, nChap: b.chapters.length, progW: (b.progress || 0) + '%', progLabel: `${b.progress || 0}% lido`,
+      readLabel: b.progress > 0 ? 'Continuar leitura' : 'Ler resumo',
+      coverBg: b.img ? `url(${b.img}) center/cover no-repeat` : 'none',
+      excerpt: (b.synopsis || '').split(/(?<=\.)\s/)[0],
+      pagesFlat: b.insights.slice(0, 3).map((x, i) => ({ ...x, n: String(i + 1).padStart(2, '0') })),
+      pages: b.insights.slice(0, 3).map((x, i) => ({ ...x, n: String(i + 1).padStart(2, '0'), tf: `translateX(${(i + 1) * 10}%) rotate(${(i + 1) * 4}deg)`, bg: ['#F6F0E3', '#EFE7D6', '#E7DDC9'][i] })).reverse(),
+      open: () => this.go({ mode: 'leitor', view: 'book', sel: b.id }),
+      read: () => this.go({ mode: 'leitor', view: 'read', sel: b.id, chap: 0 }) };
+  }
+  renderVals() {
+    const s = this.state, books = s.books;
+    const pub = books.filter(b => b.status === 'publicado');
+    const isL = s.mode === 'leitor', isA = s.mode === 'admin';
+    const seg = on => ({ bg: on ? '#E0C78E' : 'transparent', fg: on ? '#14110A' : '#A7A197' });
+    const featB = pub.find(b => b.featured) || pub[0];
+    const q = s.q.trim().toLowerCase();
+    const grid = pub.filter(b => (s.cat === 'Todos' || b.cat === s.cat) && (!q || (b.title + ' ' + b.author).toLowerCase().includes(q))).map(b => this.vm(b));
+    const curB = books.find(b => b.id === s.sel) || books[0];
+    const cur = this.vm(curB);
+    cur.insightsN = curB.insights.map((x, i) => ({ ...x, n: String(i + 1).padStart(2, '0') }));
+    cur.chapList = curB.chapters.map((c, i) => ({ t: c.t, n: String(i + 1).padStart(2, '0'), go: () => this.go({ view: 'read', chap: i }) }));
+    const ci = Math.min(s.chap, curB.chapters.length - 1);
+    const chap = curB.chapters[ci] || { t: '', body: '' };
+    const paras = P(chap.body || '').filter(Boolean).map((text, i) => {
+      const k = `${curB.id}:${ci}:${i}`, on = !!s.hl[k];
+      return { k, text, bg: on ? 'rgba(224,199,142,.16)' : 'transparent', ring: on ? 'inset 3px 0 0 #E0C78E' : 'none', toggle: () => this.setState(st => ({ hl: { ...st.hl, [k]: !st.hl[k] } })) };
+    });
+    const hlCount = Object.keys(s.hl).filter(k => s.hl[k] && k.startsWith(curB.id + ':')).length;
+    const last = ci >= curB.chapters.length - 1;
+    const saved = !!s.saved[curB.id];
+
+    const emb = !!this.props.embedded, realAdmin = this.props.mode === 'admin';
+    const vals = {
+      rootRef: this.rootRef, embedded: emb,
+      adminLogin: isA && !s.authed, adminIn: isA && s.authed, showBackAdmin: realAdmin && isL,
+      lEmail: s.lEmail, lPass: s.lPass, lErr: s.lErr,
+      setLEmail: e => this.setState({ lEmail: e.target.value, lErr: '' }), setLPass: e => this.setState({ lPass: e.target.value, lErr: '' }),
+      login: e => { e.preventDefault(); if (!/.+@.+\..+/.test(s.lEmail) || s.lPass.length < 4) return this.setState({ lErr: 'Confira o e-mail e a senha.' }); try { sessionStorage.setItem('ett-admin', '1'); } catch (x) {} this.setState({ authed: true, lPass: '' }); this.toast('Bem-vindo ao admin'); },
+      logout: () => { try { sessionStorage.removeItem('ett-admin'); } catch (x) {} this.go({ authed: false, view: 'books', draft: null }); }, standalone: !emb, rootMinH: emb ? '100%' : '100vh', rootRadius: emb ? '26px' : '0', headPos: emb ? 'relative' : 'sticky', readTop: emb ? '0px' : '69px', stickTop: emb ? '16px' : '90px',
+      segL: seg(isL), segA: seg(isA), isAdmin: isA,
+      vLib: isL && s.view === 'lib', vBook: isL && s.view === 'book', vRead: isL && s.view === 'read',
+      goLib: () => this.go({ mode: 'leitor', view: 'lib' }), goLeitor: () => this.go({ mode: 'leitor', view: 'lib' }), goAdmin: () => this.go({ mode: 'admin', view: 'books', draft: null }),
+      hasFeatured: !!featB, feat: featB ? this.vm(featB) : {},
+      continueList: pub.filter(b => b.progress > 0).map(b => this.vm(b)), hasContinue: (this.props.showContinue ?? true) && pub.some(b => b.progress > 0),
+      q: s.q, setQ: e => this.setState({ q: e.target.value }),
+      catChips: ['Todos', ...CATS.filter(c => pub.some(b => b.cat === c))].map(k => ({ k, bg: s.cat === k ? '#F3EFE6' : 'transparent', fg: s.cat === k ? '#0B0B0C' : '#CFC8BC', ring: s.cat === k ? 'transparent' : 'rgba(255,255,255,.14)', go: () => this.setState({ cat: k }) })),
+      grid, gridEmpty: grid.length === 0,
+      cur, toggleSave: () => { this.setState(st => ({ saved: { ...st.saved, [curB.id]: !st.saved[curB.id] } })); this.toast(saved ? 'Removido da estante' : 'Salvo na sua estante'); },
+      saveIcon: saved ? 'bookmark-check' : 'bookmark', saveLabel: saved ? 'Na sua estante' : 'Salvar na estante',
+      chap, chapNum: ci + 1, paras, hlCount, fsPx: s.fs + 'px', readPct: Math.round(((ci + 1) / curB.chapters.length) * 100) + '%',
+      fsUp: () => this.setState(st => ({ fs: Math.min(28, st.fs + 1) })), fsDown: () => this.setState(st => ({ fs: Math.max(16, st.fs - 1) })),
+      backToBook: () => this.go({ view: 'book' }),
+      noPrev: ci === 0, prevOp: ci === 0 ? '.4' : '1',
+      prevChap: () => ci > 0 && this.go({ chap: ci - 1 }),
+      nextChap: () => last ? (this.toast('Resumo concluído'), this.go({ view: 'book' })) : this.go({ chap: ci + 1 }),
+      nextLabel: last ? 'Concluir' : 'Próximo capítulo',
+      toast: s.toast,
+      mapOpen: !!s.mapOpen, toggleMap: () => this.setState(st => ({ mapOpen: !st.mapOpen })),
+      mapItems: [
+        ['Biblioteca', '/clube', { mode: 'leitor', view: 'lib' }, isL && s.view === 'lib'],
+        ['Livro', '/clube/livro', { mode: 'leitor', view: 'book', sel: 'frankl' }, isL && s.view === 'book'],
+        ['Leitura', '/clube/ler', { mode: 'leitor', view: 'read', sel: 'frankl', chap: 0 }, isL && s.view === 'read'],
+        ['Admin · Login', '/admin', { mode: 'admin', view: 'books', authed: false }, isA && !s.authed],
+        ['Admin · Livros', '/admin/livros', { mode: 'admin', view: 'books', authed: true }, isA && s.authed && s.view === 'books'],
+        ['Admin · Editor', '/admin/livro', { mode: 'admin', view: 'edit', authed: true, draft: JSON.parse(JSON.stringify(books[0])) }, isA && s.view === 'edit'],
+        ['Admin · Materiais', '/admin/materiais', { mode: 'admin', view: 'media', authed: true }, isA && s.view === 'media'],
+      ].map(([label, path, st, on]) => ({ label, path, bg: on ? '#2A2A2E' : 'transparent', go: () => this.go({ ...st, mapOpen: false }) })),
+    };
+
+    if (isA) {
+      const navI = [['books', 'Livros', 'book-open'], ['media', 'Materiais', 'image']];
+      vals.adminNav = navI.map(([k, label, icon]) => { const on = s.view === k || (k === 'books' && s.view === 'edit'); return { k, label, icon, bg: on ? '#E0C78E' : 'transparent', fg: on ? '#14110A' : '#CFC8BC', go: () => this.go({ view: k, draft: null }) }; });
+      vals.aBooks = s.view === 'books'; vals.aEdit = s.view === 'edit' && !!s.draft; vals.aMedia = s.view === 'media';
+      vals.newBook = () => this.go({ view: 'edit', draft: { id: 'livro-' + Date.now(), title: '', author: '', cat: CATS[0], mins: 10, color: SW[0][0], ink: SW[0][1], status: 'rascunho', featured: false, progress: 0, reads: 0, synopsis: '', insights: [{ t: '', d: '' }], chapters: [{ t: '', body: '' }], quotes: [], isNew: true } });
+      vals.stats = [
+        { l: 'Publicados', v: pub.length, icon: 'circle-check' }, { l: 'Rascunhos', v: books.length - pub.length, icon: 'file-pen' },
+        { l: 'Insights', v: books.reduce((a, b) => a + b.insights.length, 0), icon: 'lightbulb' }, { l: 'Leituras (30d)', v: books.reduce((a, b) => a + b.reads, 0).toLocaleString('pt-BR'), icon: 'trending-up' },
+      ];
+      vals.statusTabs = [['todos', 'Todos'], ['publicado', 'Publicados'], ['rascunho', 'Rascunhos']].map(([k, label]) => ({ k, label, bg: s.stF === k ? '#F3EFE6' : 'transparent', fg: s.stF === k ? '#0B0B0C' : '#A7A197', go: () => this.setState({ stF: k }) }));
+      vals.rows = books.filter(b => s.stF === 'todos' || b.status === s.stF).map(b => {
+        const p = b.status === 'publicado';
+        return { ...b, nIns: b.insights.length, readsLabel: b.reads ? b.reads.toLocaleString('pt-BR') + ' leituras' : '—', stLabel: p ? 'Publicado' : 'Rascunho', stBg: p ? 'rgba(143,217,182,.14)' : 'rgba(255,255,255,.07)', stFg: p ? '#8FD9B6' : '#A7A197',
+          edit: () => this.go({ view: 'edit', draft: JSON.parse(JSON.stringify(b)) }), preview: () => this.go({ mode: 'leitor', view: 'book', sel: b.id }) };
+      });
+      const d = s.draft;
+      if (d) {
+        const f = k => e => { const v = e.target.value; this.upd(x => { x[k] = k === 'mins' ? (+v || 0) : v; return x; }); };
+        const listF = (key, i, k) => e => { const v = e.target.value; this.upd(x => { x[key][i][k] = v; return x; }); };
+        const del = (key, i) => () => this.upd(x => { x[key].splice(i, 1); return x; });
+        vals.d = { ...d, coverBg: d.img ? `url(${d.img}) center/cover no-repeat` : 'none', titleOr: d.title || 'Novo livro', nIns: d.insights.length, nChap: d.chapters.length };
+        vals.editKicker = d.isNew ? 'Novo livro' : 'Editando livro';
+        vals.on = { title: f('title'), author: f('author'), cat: f('cat'), mins: f('mins'), synopsis: f('synopsis') };
+        vals.catOpts = CATS;
+        vals.insRows = d.insights.map((r, i) => ({ ...r, k: i, n: String(i + 1).padStart(2, '0'), onT: listF('insights', i, 't'), onD: listF('insights', i, 'd'), del: del('insights', i), up: () => i > 0 && this.upd(x => { const a = x.insights; [a[i - 1], a[i]] = [a[i], a[i - 1]]; return x; }) }));
+        vals.chapRows = d.chapters.map((r, i) => ({ ...r, k: i, n: String(i + 1).padStart(2, '0'), onT: listF('chapters', i, 't'), onB: listF('chapters', i, 'body'), del: del('chapters', i) }));
+        vals.quoteRows = d.quotes.map((r, i) => ({ ...r, k: i, onQ: listF('quotes', i, 'q'), onA: listF('quotes', i, 'a'), del: del('quotes', i) }));
+        vals.addIns = () => this.upd(x => { x.insights.push({ t: '', d: '' }); return x; });
+        vals.addChap = () => this.upd(x => { x.chapters.push({ t: '', body: '' }); return x; });
+        vals.addQuote = () => this.upd(x => { x.quotes.push({ q: '', a: '' }); return x; });
+        vals.coverSlotId = 'clube-capa-' + d.id;
+        vals.swatches = SW.map(([c, ink]) => ({ c, ring: d.color === c ? '0 0 0 2px #121214, 0 0 0 4px #E0C78E' : 'inset 0 0 0 1px rgba(255,255,255,.18)', pick: () => this.upd(x => { x.color = c; x.ink = ink; return x; }) }));
+        vals.statusOpts = [['rascunho', 'Rascunho'], ['publicado', 'Publicado']].map(([k, label]) => ({ k, label, bg: d.status === k ? '#E0C78E' : 'transparent', fg: d.status === k ? '#14110A' : '#A7A197', go: () => this.upd(x => { x.status = k; return x; }) }));
+        vals.featTrack = d.featured ? '#E0C78E' : '#2A2A2E'; vals.featJustify = d.featured ? 'flex-end' : 'flex-start';
+        vals.toggleFeat = () => this.upd(x => { x.featured = !x.featured; return x; });
+        vals.saveDraft = () => this.commit();
+        vals.publish = () => this.commit('publicado');
+        vals.delBook = () => { this.persist(books.filter(b => b.id !== d.id)); this.toast('Livro excluído'); this.go({ view: 'books', draft: null }); };
+      }
+      vals.mediaSlots = ['Banner do clube', 'Encontro do mês', 'Autor em destaque', 'Ilustração de capítulo', 'Imagem livre', 'Imagem livre', 'Imagem livre', 'Imagem livre'].map((ph, i) => ({ id: 'clube-media-' + (i + 1), ph }));
+      vals.files = [{ n: 'Guia de discussão — Em Busca de Sentido.pdf', meta: 'PDF · 1,2 MB · enviado em 28 set', icon: 'file-text' }, { n: 'Áudio do encontro de setembro.mp3', meta: 'Áudio · 38 MB · enviado em 21 set', icon: 'headphones' }, { n: 'Calendário de leituras 2026.pdf', meta: 'PDF · 340 KB · enviado em 2 set', icon: 'calendar' }];
+      vals.fakeUpload = () => this.toast('Selecione um arquivo para enviar');
+    }
+    return vals;
+  }
+}
+</script>
+</body>
+</html>
