@@ -1,48 +1,68 @@
 import { z } from "zod";
 import { isAreaSlug } from "./areas";
 import { isValidCpf, onlyDigits } from "./cpf";
+import { DEFAULT_TIME_ZONE, isValidTimeZone } from "./plans";
 import { ageOn, isZodiacSlug, parseIsoDate } from "./zodiac";
+import type { Messages } from "@/lib/i18n/messages";
 
 export const MIN_AGE = 18;
 
-const text = (max: number) => z.string().trim().max(max, `Use no máximo ${max} caracteres.`);
+/** Mensagens de validação no idioma da pessoa (`messages.validation` do dicionário). */
+export type ValidationMessages = Messages["validation"];
 
-export const signupSchema = z.object({
-  name: z.string().trim().min(2, "Digite seu nome.").max(120),
-  email: z.string().trim().toLowerCase().pipe(z.email("Digite um e-mail válido.")),
-  password: z.string().min(8, "A senha precisa ter pelo menos 8 caracteres.").max(200),
-  cpf: z.string().transform(onlyDigits).refine(isValidCpf, "CPF inválido. Confira os números."),
-  birthDate: z
-    .string()
-    .refine((v) => parseIsoDate(v) !== null, "Informe sua data de nascimento.")
-    .refine((v) => (ageOn(v) ?? 0) >= MIN_AGE, `O Etternum é para maiores de ${MIN_AGE} anos.`)
-    .refine((v) => (ageOn(v) ?? 200) < 120, "Confira a data de nascimento."),
-  zodiacSign: z.string().refine(isZodiacSlug, "Escolha seu signo."),
-  consent: z.literal("on", { error: "Para continuar, aceite os termos e a política de privacidade." }),
-});
+const text = (v: ValidationMessages, max: number) => z.string().trim().max(max, v.maxLength(max));
+const email = (v: ValidationMessages) => z.string().trim().toLowerCase().pipe(z.email(v.email));
 
-export const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().pipe(z.email("Digite um e-mail válido.")),
-  password: z.string().min(1, "Digite sua senha."),
-});
+/**
+ * Cadastro. O CPF só é pedido no Brasil (cadastro em português); nos outros idiomas ele é ignorado.
+ * O fuso horário vem do navegador e define o "dia" do limite diário.
+ */
+export function signupSchema(v: ValidationMessages, opts: { requireCpf: boolean }) {
+  return z.object({
+    name: z.string().trim().min(2, v.name).max(120),
+    email: email(v),
+    password: z.string().min(8, v.password).max(200),
+    cpf: z
+      .string()
+      .optional()
+      .transform((value) => (opts.requireCpf ? onlyDigits(value ?? "") : null))
+      .refine((value) => value === null || isValidCpf(value), v.cpf),
+    birthDate: z
+      .string()
+      .refine((value) => parseIsoDate(value) !== null, v.birthDate)
+      .refine((value) => (ageOn(value) ?? 0) >= MIN_AGE, v.minAge(MIN_AGE))
+      .refine((value) => (ageOn(value) ?? 200) < 120, v.birthDateRange),
+    zodiacSign: z.string().refine(isZodiacSlug, v.sign),
+    timeZone: z
+      .string()
+      .optional()
+      .transform((value) => (isValidTimeZone(value) ? value : DEFAULT_TIME_ZONE)),
+    consent: z.literal("on", { error: v.consent }),
+  });
+}
 
-export const triageSchema = z.object({
-  occupation: text(500).min(1, "Conte com o que você trabalha (ou se está estudando, buscando trabalho...)."),
-  likesToDo: text(1000).min(1, "Conte o que você gosta de fazer."),
-  dislikesToDo: text(1000),
-  difficulties: text(2000).min(1, "Conte suas maiores dificuldades — isso ajuda muito as mentes a orientar você."),
-  dailyStressors: text(2000),
-  biggestDrain: text(2000),
-  likesToEat: text(1000),
-  dislikesToEat: text(1000),
-  goals: text(1000),
-  interestAreas: z.array(z.string().refine(isAreaSlug)).max(10),
-});
+export function loginSchema(v: ValidationMessages) {
+  return z.object({ email: email(v), password: z.string().min(1, v.passwordRequired) });
+}
 
-export const waitlistSchema = z.object({
-  name: z.string().trim().min(2, "Digite seu nome.").max(120),
-  email: z.string().trim().toLowerCase().pipe(z.email("Digite um e-mail válido.")),
-});
+export function triageSchema(v: ValidationMessages) {
+  return z.object({
+    occupation: text(v, 500).min(1, v.occupation),
+    likesToDo: text(v, 1000).min(1, v.likesToDo),
+    dislikesToDo: text(v, 1000),
+    difficulties: text(v, 2000).min(1, v.difficulties),
+    dailyStressors: text(v, 2000),
+    biggestDrain: text(v, 2000),
+    likesToEat: text(v, 1000),
+    dislikesToEat: text(v, 1000),
+    goals: text(v, 1000),
+    interestAreas: z.array(z.string().refine(isAreaSlug)).max(10),
+  });
+}
+
+export function waitlistSchema(v: ValidationMessages) {
+  return z.object({ name: z.string().trim().min(2, v.name).max(120), email: email(v) });
+}
 
 export type FormState = {
   ok?: boolean;

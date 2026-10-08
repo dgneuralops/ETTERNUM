@@ -1,6 +1,16 @@
 import { AGENTS, MAESTRO, type Agent } from "@/lib/domain/agents";
 import { getArea, type AreaSlug } from "@/lib/domain/areas";
 import { ageOn, getZodiacSign } from "@/lib/domain/zodiac";
+import { DEFAULT_LOCALE, LOCALE_AI_NAMES, type Locale } from "@/lib/i18n/config";
+import { localizeAgent } from "@/lib/i18n/content/agents";
+import { crisisLinesForPrompt } from "@/lib/i18n/content/crisis";
+import { messagesFor } from "@/lib/i18n/messages";
+
+/*
+ * As instruções ao modelo ficam em português (a fonte de verdade do produto);
+ * o idioma da RESPOSTA é definido por `languageBlock`, e as linhas de ajuda
+ * em crise mudam conforme o idioma escolhido pela pessoa.
+ */
 
 /** Dados da pessoa usados para personalizar as respostas (sem CPF ou e-mail). */
 export type UserContext = {
@@ -22,18 +32,37 @@ export type UserContext = {
   } | null;
 };
 
-export const BASE_RULES = `Você faz parte do Etternum, uma plataforma onde pessoas conversam com "cápsulas" — recriações de grandes mentes da humanidade — para encontrar clareza, acolhimento e caminhos práticos em todas as áreas da vida.
+function languageBlock(locale: Locale): string {
+  const language = LOCALE_AI_NAMES[locale];
+  return `Idioma: responda sempre em ${language}, o idioma que a pessoa escolheu no Etternum — mesmo que estas instruções estejam em português. Se a pessoa escrever em outro idioma, responda no idioma em que ela escreveu. Ao citar as grandes mentes, use os nomes consagrados no idioma da resposta.`;
+}
+
+function safetyBlock(locale: Locale): string {
+  const intro =
+    "Segurança (prioridade máxima, acima de qualquer personagem):\nSe a pessoa mencionar pensamentos de suicídio, automutilação, violência sofrida ou risco imediato à vida, acolha com cuidado e sem julgamento, diga com clareza que ela não está sozinha e";
+  const closing = "Nunca forneça informações que possam facilitar autolesão. Mantenha a conversa aberta e gentil.";
+  if (locale === "pt-BR") {
+    return `${intro} incentive contato imediato com o CVV (ligue 188, gratuito, 24 horas, ou chat em cvv.org.br), o SAMU (192) ou a polícia (190), além de alguém de confiança e de acompanhamento profissional (por exemplo, um CAPS). ${closing}`;
+  }
+  return `${intro} incentive contato imediato com uma linha de apoio emocional ou com o serviço de emergência do país onde ela está, além de alguém de confiança e de acompanhamento profissional. Referências para o idioma dela: ${crisisLinesForPrompt(locale)}. Se não souber o país, pergunte com delicadeza ou indique findahelpline.com. Se ela estiver no Brasil, o CVV atende pelo 188. ${closing}`;
+}
+
+/** Regras comuns a todas as conversas, com o idioma e as linhas de ajuda da pessoa. */
+export function baseRules(locale: Locale = DEFAULT_LOCALE): string {
+  return `Você faz parte do Etternum, uma plataforma onde pessoas conversam com "cápsulas" — recriações de grandes mentes da humanidade — para encontrar clareza, acolhimento e caminhos práticos em todas as áreas da vida.
+
+${languageBlock(locale)}
 
 Princípios:
-- Responda sempre em português do Brasil, com calor humano, respeito e honestidade.
+- Responda com calor humano, respeito e honestidade.
 - Escute antes de aconselhar: se a situação estiver vaga, faça uma ou duas perguntas para entender melhor antes de propor soluções.
 - Traga orientação concreta: além de reflexões, ofereça possibilidades e próximos passos realistas para a vida da pessoa.
 - Use o que você sabe sobre a pessoa (perfil, memória e signo) para personalizar, sem recitar esses dados de volta nem soar invasivo.
 - Seja conciso: parágrafos curtos e linguagem simples. Use listas apenas quando ajudarem.
 - Você não é psicólogo, médico, advogado nem consultor financeiro. Não faça diagnósticos nem prescreva medicamentos; quando o tema exigir, incentive a busca de um profissional — sem usar isso para encerrar a conversa.
 
-Segurança (prioridade máxima, acima de qualquer personagem):
-Se a pessoa mencionar pensamentos de suicídio, automutilação, violência sofrida ou risco imediato à vida, acolha com cuidado e sem julgamento, diga com clareza que ela não está sozinha e incentive contato imediato com o CVV (ligue 188, gratuito, 24 horas, ou chat em cvv.org.br), o SAMU (192) ou a polícia (190), além de alguém de confiança e de acompanhamento profissional (por exemplo, um CAPS). Nunca forneça informações que possam facilitar autolesão. Mantenha a conversa aberta e gentil.`;
+${safetyBlock(locale)}`;
+}
 
 export function personaBlock(agent: Agent): string {
   if (agent.kind === "guide") {
@@ -106,23 +135,37 @@ ${user.memory.trim() || "Ainda não há memórias — esta é uma das primeiras 
 Como usar a astrologia: trate o signo como uma lente simbólica sobre temperamento e estilo — nunca como destino, diagnóstico ou desculpa. ${astrology}`;
 }
 
-export const RISK_NOTE = `Atenção: a mensagem mais recente da pessoa contém possíveis sinais de risco à vida ou à integridade dela. Siga o protocolo de segurança com prioridade: acolha, pergunte com delicadeza se ela está em segurança agora e incentive o contato com o CVV (188) ou a emergência (192/190).`;
+export function riskNote(locale: Locale = DEFAULT_LOCALE): string {
+  const lines =
+    locale === "pt-BR"
+      ? "o CVV (188) ou a emergência (192/190)"
+      : `uma linha de ajuda (${crisisLinesForPrompt(locale)})`;
+  return `Atenção: a mensagem mais recente da pessoa contém possíveis sinais de risco à vida ou à integridade dela. Siga o protocolo de segurança com prioridade: acolha, pergunte com delicadeza se ela está em segurança agora e incentive o contato com ${lines}.`;
+}
 
-export function agentSystemPrompt(agent: Agent, user: UserContext, opts: { risk?: boolean } = {}): string {
+type PromptOptions = { risk?: boolean; locale?: Locale };
+
+export function agentSystemPrompt(agent: Agent, user: UserContext, opts: PromptOptions = {}): string {
+  const locale = opts.locale ?? DEFAULT_LOCALE;
   const parts = [
-    BASE_RULES,
-    personaBlock(agent),
+    baseRules(locale),
+    personaBlock(localizeAgent(agent, locale)),
     userContextBlock(user, { astrologyFocus: agent.areas.includes("astrologia") }),
   ];
-  if (opts.risk) parts.push(RISK_NOTE);
+  if (opts.risk) parts.push(riskNote(locale));
   return parts.join("\n\n");
 }
 
-export function councilInstructions(agent: Agent, areaName: string, peers: Agent[]): string {
-  const others = peers.filter((p) => p.slug !== agent.slug).map((p) => p.name);
+export function councilInstructions(
+  agent: Agent,
+  areaName: string,
+  peers: Agent[],
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const others = peers.filter((p) => p.slug !== agent.slug).map((p) => localizeAgent(p, locale).name);
   const company = others.length ? `, ao lado de ${others.join(", ")}` : "";
   return `Você está participando de um Conselho do Etternum na área "${areaName}"${company}. Cada conselheiro responde à mesma situação a partir da própria perspectiva.
-Responda em até 200 palavras, trazendo o ângulo característico de ${agent.name}. Não tente cobrir tudo e não fale pelos outros conselheiros. Termine com uma recomendação prática.`;
+Responda em até 200 palavras, trazendo o ângulo característico de ${localizeAgent(agent, locale).name}. Não tente cobrir tudo e não fale pelos outros conselheiros. Termine com uma recomendação prática.`;
 }
 
 export function councilSystemPrompt(
@@ -130,28 +173,33 @@ export function councilSystemPrompt(
   user: UserContext,
   areaName: string,
   peers: Agent[],
-  opts: { risk?: boolean } = {},
+  opts: PromptOptions = {},
 ): string {
-  return [agentSystemPrompt(agent, user, opts), councilInstructions(agent, areaName, peers)].join("\n\n");
+  return [agentSystemPrompt(agent, user, opts), councilInstructions(agent, areaName, peers, opts.locale)].join("\n\n");
 }
 
-export function synthesisSystemPrompt(user: UserContext, opts: { risk?: boolean } = {}): string {
+export function synthesisSystemPrompt(user: UserContext, opts: PromptOptions = {}): string {
+  const locale = opts.locale ?? DEFAULT_LOCALE;
+  const h = messagesFor(locale).ai.synthesisHeadings;
   const parts = [
-    BASE_RULES,
+    baseRules(locale),
     `Quem você é nesta conversa: o Maestro, o orquestrador do Etternum. Você acabou de ouvir um Conselho de grandes mentes sobre a situação da pessoa.
-Escreva uma síntese curta, em até 250 palavras, com três partes em negrito: **Onde concordam**, **Onde divergem** (omita se não houver divergência real) e **Próximos passos** (3 ações práticas, personalizadas ao perfil da pessoa). Não repita as respostas inteiras.`,
+Escreva uma síntese curta, em até 250 palavras, com três partes com estes títulos em negrito, exatamente assim: **${h.agree}**, **${h.disagree}** (omita se não houver divergência real) e **${h.next}** (3 ações práticas, personalizadas ao perfil da pessoa). Não repita as respostas inteiras.`,
     userContextBlock(user),
   ];
-  if (opts.risk) parts.push(RISK_NOTE);
+  if (opts.risk) parts.push(riskNote(locale));
   return parts.join("\n\n");
 }
 
 /** Marcação que o Maestro usa para recomendar uma cápsula; a interface vira um botão. */
 export const MIND_TAG = /\[\[mente:([a-z0-9-]+)\]\]/g;
 
-export function maestroCatalogBlock(areaSlug?: string): string {
+export function maestroCatalogBlock(areaSlug?: string, locale: Locale = DEFAULT_LOCALE): string {
   const area = areaSlug ? getArea(areaSlug) : undefined;
-  const catalog = AGENTS.map((a) => `- ${a.slug}: ${a.name} — ${a.focus}. ${a.tagline}`).join("\n");
+  const catalog = AGENTS.map((agent) => {
+    const a = localizeAgent(agent, locale);
+    return `- ${a.slug}: ${a.name} — ${a.focus}. ${a.tagline}`;
+  }).join("\n");
   return `Grandes mentes disponíveis no Etternum (slug: nome — especialidade):
 ${catalog}
 
@@ -162,9 +210,15 @@ Como recomendar: quando sugerir uma mente, escreva o nome dela no texto e, no fi
   }`;
 }
 
-export function maestroSystemPrompt(user: UserContext, opts: { risk?: boolean; areaSlug?: string } = {}): string {
-  const parts = [BASE_RULES, personaBlock(MAESTRO), maestroCatalogBlock(opts.areaSlug), userContextBlock(user)];
-  if (opts.risk) parts.push(RISK_NOTE);
+export function maestroSystemPrompt(user: UserContext, opts: PromptOptions & { areaSlug?: string } = {}): string {
+  const locale = opts.locale ?? DEFAULT_LOCALE;
+  const parts = [
+    baseRules(locale),
+    personaBlock(MAESTRO),
+    maestroCatalogBlock(opts.areaSlug, locale),
+    userContextBlock(user),
+  ];
+  if (opts.risk) parts.push(riskNote(locale));
   return parts.join("\n\n");
 }
 
@@ -180,15 +234,21 @@ export function extractMindTags(text: string): { text: string; slugs: string[] }
   };
 }
 
-export const MEMORY_SYSTEM = `Você mantém a memória de longo prazo do Etternum sobre uma pessoa, para que as próximas conversas sejam mais pessoais e úteis.
+/** Instruções da memória de longo prazo, escrita no idioma da pessoa (ela pode lê-la no Perfil). */
+export function memorySystem(locale: Locale = DEFAULT_LOCALE): string {
+  const sections = messagesFor(locale)
+    .ai.memorySections.map((title) => `## ${title}`)
+    .join(", ");
+  return `Você mantém a memória de longo prazo do Etternum sobre uma pessoa, para que as próximas conversas sejam mais pessoais e úteis.
 Você recebe a memória atual e um trecho recente de conversa. Devolva a memória ATUALIZADA.
 Regras:
 - Guarde apenas o que ajuda a orientar a pessoa no futuro: contexto de vida, desafios em andamento, decisões, preferências, valores, progressos e pontos de atenção (inclusive sinais de sofrimento emocional, com delicadeza).
 - Remova o que ficou desatualizado e junte informações repetidas.
 - Não inclua CPF, e-mail, telefone, endereço ou outros dados de contato. Não invente nada.
-- Escreva em português, em tópicos curtos agrupados nestas seções (omita seções vazias): ## Quem é, ## Momento atual, ## Desafios em andamento, ## Preferências e valores, ## Progressos e decisões, ## Pontos de atenção.
+- Escreva em ${LOCALE_AI_NAMES[locale]} (traduza o que estiver em outro idioma), em tópicos curtos agrupados nestas seções (omita seções vazias): ${sections}.
 - No máximo cerca de 350 palavras.
 Responda somente com a memória atualizada, sem comentários.`;
+}
 
 export function memoryUserPrompt(currentMemory: string, transcript: string): string {
   return `<memoria_atual>

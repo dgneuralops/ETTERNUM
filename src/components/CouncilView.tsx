@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { readNdjson } from "@/lib/chat/ndjson";
 import type { ClientMessage } from "@/lib/chat/queries";
+import { useI18n } from "@/lib/i18n/client";
 import { CrisisBanner } from "./CrisisBanner";
 import { Markdown } from "./Markdown";
 import { MindAvatar } from "./MindAvatar";
@@ -50,6 +51,7 @@ export function CouncilView({
   lockedMessage: string | null;
 }) {
   const router = useRouter();
+  const { t } = useI18n();
   const byslug = Object.fromEntries(minds.map((m) => [m.slug, m]));
   const [selected, setSelected] = useState<string[]>(() => {
     const used = [...new Set(initialMessages.map((m) => m.agentSlug).filter((s): s is string => !!s && s in byslug))];
@@ -111,8 +113,8 @@ export function CouncilView({
         const data = (await response.json().catch(() => ({}))) as { error?: string };
         setRounds((prev) => prev.filter((r) => r.id !== roundId));
         setDraft(message);
-        if (response.status === 402) setLocked(data.error ?? "Recurso do plano Premium.");
-        else setError(data.error ?? "Não foi possível consultar o Conselho.");
+        if (response.status === 402) setLocked(data.error ?? t.chat.premiumFallback);
+        else setError(data.error ?? t.council.sendError);
         return;
       }
       await readNdjson(response, (event) => {
@@ -142,7 +144,7 @@ export function CouncilView({
         }
       });
     } catch {
-      setError("A conexão caiu. Tente novamente.");
+      setError(t.council.connectionError);
     } finally {
       setRunning(false);
       if (created) router.refresh();
@@ -178,7 +180,10 @@ export function CouncilView({
                   {a.text ? (
                     <Markdown>{a.text}</Markdown>
                   ) : (
-                    <span className="typing inline-flex gap-1 text-2xl leading-none text-gold" aria-label="Pensando">
+                    <span
+                      className="typing inline-flex gap-1 text-2xl leading-none text-gold"
+                      aria-label={t.chat.thinking}
+                    >
                       <span>·</span>
                       <span>·</span>
                       <span>·</span>
@@ -193,12 +198,15 @@ export function CouncilView({
             <article className="glass rounded-3xl border-line-strong p-6">
               <header className="mb-3 flex items-center gap-3">
                 <MindAvatar agent={{ slug: MAESTRO_SLUG, name: "Maestro" }} size="sm" />
-                <p className="font-serif text-xl text-gold">Síntese do Maestro</p>
+                <p className="font-serif text-xl text-gold">{t.council.synthesis}</p>
               </header>
               {round.synthesis?.text ? (
                 <Markdown>{round.synthesis.text}</Markdown>
               ) : (
-                <span className="typing inline-flex gap-1 text-2xl leading-none text-gold" aria-label="Sintetizando">
+                <span
+                  className="typing inline-flex gap-1 text-2xl leading-none text-gold"
+                  aria-label={t.council.synthesizing}
+                >
                   <span>·</span>
                   <span>·</span>
                   <span>·</span>
@@ -214,13 +222,13 @@ export function CouncilView({
         <div className="glass rounded-3xl p-5 text-sm text-muted">
           <p>{locked}</p>
           <Link href="/plano" className="btn-gold mt-3 inline-block rounded-full px-4 py-2 text-sm font-semibold">
-            Conhecer o Premium
+            {t.chat.premiumCta}
           </Link>
         </div>
       ) : (
         <div className="glass rounded-3xl p-5">
           <p className="text-sm text-ink">
-            Conselheiros{" "}
+            {t.council.counselors}{" "}
             <span className="text-faint">
               ({selected.length}/{MAX})
             </span>
@@ -253,21 +261,21 @@ export function CouncilView({
             className="mt-4 flex items-end gap-2"
           >
             <label htmlFor="council-input" className="sr-only">
-              Sua situação
+              {t.council.inputLabel}
             </label>
             <textarea
               id="council-input"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               rows={3}
-              placeholder={`Conte ao Conselho de ${areaName} o que está acontecendo…`}
+              placeholder={t.council.placeholder(areaName)}
               className="field flex-1 resize-y rounded-2xl px-4 py-3 text-[15px] leading-relaxed placeholder:text-faint"
             />
             <button
               type="submit"
               disabled={running || !draft.trim() || selected.length === 0}
               className="btn-gold rounded-full p-3"
-              aria-label="Enviar ao Conselho"
+              aria-label={t.council.submit}
             >
               <ArrowUp className="h-4 w-4" />
             </button>

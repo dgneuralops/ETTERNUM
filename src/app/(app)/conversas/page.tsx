@@ -7,30 +7,38 @@ import { requireUser } from "@/lib/auth/session";
 import { conversationHref, conversationLabel } from "@/lib/chat/links";
 import { recentConversations } from "@/lib/chat/queries";
 import { MAESTRO, getSpeaker } from "@/lib/domain/agents";
+import { DEFAULT_TIME_ZONE, isValidTimeZone } from "@/lib/domain/plans";
+import { INTL_LOCALE } from "@/lib/i18n/config";
+import { localizeAgent } from "@/lib/i18n/content/agents";
+import { getI18n } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Minhas conversas" };
-
-const dateFormat = new Intl.DateTimeFormat("pt-BR", {
-  day: "2-digit",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-  timeZone: "America/Sao_Paulo",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return { title: t.meta.conversations };
+}
 
 export default async function ConversationsPage() {
   const { user } = await requireUser();
+  const { locale, t } = await getI18n();
+  const p = t.conversationsPage;
   const conversations = await recentConversations(user.id, 200);
+  const dateFormat = new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: isValidTimeZone(user.timeZone) ? user.timeZone : DEFAULT_TIME_ZONE,
+  });
 
   return (
     <div>
-      <h1 className="font-serif text-4xl text-ink">Minhas conversas</h1>
-      <p className="mt-2 text-muted">Tudo o que você conversou fica guardado aqui. Continue de onde parou.</p>
+      <h1 className="font-serif text-4xl text-ink">{p.title}</h1>
+      <p className="mt-2 text-muted">{p.intro}</p>
       {conversations.length === 0 ? (
         <div className="glass mt-8 rounded-3xl p-6 text-muted">
-          Você ainda não conversou com ninguém.{" "}
+          {p.emptyBefore}{" "}
           <Link href="/maestro" className="text-gold hover:underline">
-            Comece pelo Maestro
+            {p.emptyLink}
           </Link>
           .
         </div>
@@ -40,9 +48,11 @@ export default async function ConversationsPage() {
             const speaker = c.kind === "council" ? MAESTRO : (getSpeaker(c.agentSlug ?? "") ?? MAESTRO);
             return (
               <li key={c.id} className="glass flex items-center gap-4 rounded-3xl p-4">
-                <MindAvatar agent={speaker} size="md" />
+                <MindAvatar agent={localizeAgent(speaker, locale)} size="md" />
                 <Link href={conversationHref(c)} className="min-w-0 flex-1">
-                  <span className="block text-xs uppercase tracking-wider text-gold">{conversationLabel(c)}</span>
+                  <span className="block text-xs uppercase tracking-wider text-gold">
+                    {conversationLabel(c, locale)}
+                  </span>
                   <span className="block truncate text-ink">{c.title}</span>
                   <span className="block text-xs text-faint">{dateFormat.format(c.updatedAt)}</span>
                 </Link>
@@ -50,8 +60,8 @@ export default async function ConversationsPage() {
                   <button
                     type="submit"
                     className="rounded-full p-2 text-faint hover:bg-white/5 hover:text-danger"
-                    aria-label={`Excluir conversa "${c.title}"`}
-                    title="Excluir conversa"
+                    aria-label={p.delete(c.title)}
+                    title={p.deleteTitle}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

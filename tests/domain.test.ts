@@ -5,8 +5,10 @@ import { formatCpf, isValidCpf, maskCpf } from "@/lib/domain/cpf";
 import {
   FREE_DAILY_MESSAGES,
   canSendMessage,
+  hourIn,
+  isValidTimeZone,
   planState,
-  startOfTodayInSaoPaulo,
+  startOfTodayIn,
   trialEndFrom,
 } from "@/lib/domain/plans";
 import { detectRisk } from "@/lib/domain/safety";
@@ -57,17 +59,34 @@ describe("Signos", () => {
   });
 });
 
-describe("Detecção de risco", () => {
+describe("Detecção de risco (quatro idiomas)", () => {
   it.each([
     "Às vezes penso em suicídio",
     "eu QUERO MORRER",
     "não aguento mais viver assim",
     "tenho vontade de me cortar",
+    "I've been thinking about killing myself",
+    "Honestly I just want to die",
+    "I don’t want to live anymore",
+    "everyone would be better off without me",
+    "a veces quiero morir",
+    "tengo ganas de morirme",
+    "pienso en quitarme la vida",
+    "j'ai envie de mourir",
+    "je pense à me tuer",
+    "je veux en finir",
   ])("detecta: %s", (text) => expect(detectRisk(text)).toBe(true));
-  it.each(["Estou morrendo de rir", "quero matar a saudade da minha mãe", "meu negócio está difícil"])(
-    "não dispara em: %s",
-    (text) => expect(detectRisk(text)).toBe(false),
-  );
+  it.each([
+    "Estou morrendo de rir",
+    "quero matar a saudade da minha mãe",
+    "meu negócio está difícil",
+    "this traffic is killing me",
+    "I'm dying to see the new movie",
+    "me muero de risa",
+    "voy a cortarme el pelo mañana",
+    "ce travail va me tuer",
+    "je meurs de faim",
+  ])("não dispara em: %s", (text) => expect(detectRisk(text)).toBe(false));
 });
 
 describe("Planos", () => {
@@ -97,10 +116,26 @@ describe("Planos", () => {
     const fresh = planState(base, new Date("2026-11-01"));
     expect(canSendMessage(fresh, { capsuleSlug: "carl-jung", messagesToday: 0 }).ok).toBe(true);
   });
-  it("o dia começa à meia-noite de São Paulo", () => {
+  it("o dia começa à meia-noite no fuso da pessoa", () => {
     // 02:30 UTC de 3/10 ainda é 23:30 de 2/10 em São Paulo (UTC-3).
-    expect(startOfTodayInSaoPaulo(new Date("2026-10-03T02:30:00Z")).toISOString()).toBe("2026-10-02T03:00:00.000Z");
-    expect(startOfTodayInSaoPaulo(new Date("2026-10-03T15:00:00Z")).toISOString()).toBe("2026-10-03T03:00:00.000Z");
+    const sp = "America/Sao_Paulo";
+    expect(startOfTodayIn(sp, new Date("2026-10-03T02:30:00Z")).toISOString()).toBe("2026-10-02T03:00:00.000Z");
+    expect(startOfTodayIn(sp, new Date("2026-10-03T15:00:00Z")).toISOString()).toBe("2026-10-03T03:00:00.000Z");
+    // Paris em outubro está em UTC+2: 23:30 UTC de 2/10 já é 3/10.
+    expect(startOfTodayIn("Europe/Paris", new Date("2026-10-02T23:30:00Z")).toISOString()).toBe(
+      "2026-10-02T22:00:00.000Z",
+    );
+    // Fuso inválido cai no padrão (São Paulo).
+    expect(startOfTodayIn("Lua/Crateras", new Date("2026-10-03T15:00:00Z")).toISOString()).toBe(
+      "2026-10-03T03:00:00.000Z",
+    );
+  });
+  it("valida fusos e calcula a hora local para a saudação", () => {
+    expect(isValidTimeZone("America/New_York")).toBe(true);
+    expect(isValidTimeZone("Lua/Crateras")).toBe(false);
+    expect(isValidTimeZone(undefined)).toBe(false);
+    expect(hourIn("America/New_York", new Date("2026-10-03T15:00:00Z"))).toBe(11);
+    expect(hourIn("Asia/Tokyo", new Date("2026-10-03T15:00:00Z"))).toBe(0);
   });
 });
 

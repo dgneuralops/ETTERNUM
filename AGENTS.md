@@ -14,11 +14,17 @@ Plataforma em português do Brasil: o usuário faz uma triagem e conversa com "c
 Maestro (amigo pessoal eterno e orquestrador). Leia `docs/ARQUITETURA.md` e `docs/VISAO.md` antes de mudanças
 grandes.
 
-- Toda a interface e todos os textos para o usuário são em português do Brasil.
+- A interface existe em português do Brasil (fonte), inglês, espanhol e francês. Nenhum texto para o usuário fica
+  escrito direto em componente: adicione a chave em `src/lib/i18n/messages/pt-BR.ts` e traduza em `en.ts`, `es.ts`
+  e `fr.ts` (o TypeScript e `tests/i18n.test.ts` acusam o que faltar). Servidor: `getI18n()`; cliente: `useI18n()`.
+- Mentes, áreas, signos e linhas de ajuda traduzidos ficam em `src/lib/i18n/content/`. Mente nova = tradução nova.
 - Regras de negócio puras ficam em `src/lib/domain` (sem acesso a banco) e têm testes em `tests/`.
 - Cápsulas: `src/lib/domain/agents.ts`. Pessoas vivas e figuras religiosas devem ser `kind: "inspired"`
   (especialista que fala sobre a pessoa, nunca como ela) — há um teste que garante isso.
-- Prompts: `src/lib/ai/prompts.ts`. Mantenha o protocolo de segurança (CVV 188) e não envie CPF/e-mail ao modelo.
-- Acesso ao modelo só por `src/lib/ai/claude.ts`. `ETTERNUM_AI_MOCK=1` simula respostas.
-- Banco: altere `src/lib/db/schema.ts` e rode `npm run db:generate` para criar a migração.
+- Prompts: `src/lib/ai/prompts.ts`. Instruções em português; o idioma da resposta vem de `baseRules(locale)`.
+  Mantenha o protocolo de segurança (CVV 188 no Brasil, linhas do idioma nos demais) e não envie CPF/e-mail ao modelo.
+- Acesso ao modelo só por `src/lib/ai/model.ts` (provedores em `src/lib/ai/providers/`: OpenRouter e Anthropic,
+  escolhidos por `src/lib/ai/provider.ts`). `ETTERNUM_AI_MOCK=1` simula respostas.
+- Banco: altere `src/lib/db/schema.ts` e rode `npm run db:generate` para criar a migração. Sem `DATABASE_URL`
+  em desenvolvimento (ou com `npm run demo`), o app usa PGlite embutido e aplica as migrações ao subir.
 - Antes de concluir: `npm run lint && npm run typecheck && npm test && npm run build`.

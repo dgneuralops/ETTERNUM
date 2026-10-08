@@ -1,21 +1,24 @@
 import Link from "next/link";
 import type { Agent } from "@/lib/domain/agents";
+import { getI18n } from "@/lib/i18n/server";
 import { FavoriteButton } from "./FavoriteButton";
 import { MindAvatar } from "./MindAvatar";
 
-export function KindBadge({ agent }: { agent: Agent }) {
+export async function KindBadge({ agent }: { agent: Agent }) {
   if (agent.kind !== "inspired") return null;
+  const { t } = await getI18n();
   return (
     <span
       className="rounded-full border border-line px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted"
-      title="Cápsula de um especialista nas ideias desta pessoa — não é uma simulação dela."
+      title={t.common.inspiredTooltip}
     >
-      Inspirado em
+      {t.common.inspiredBadge}
     </span>
   );
 }
 
-export function MindCard({
+/** Recebe a mente já traduzida (`localizeAgent`). */
+export async function MindCard({
   agent,
   favorite,
   locked = false,
@@ -27,6 +30,7 @@ export function MindCard({
   locked?: boolean;
   className?: string;
 }) {
+  const { t } = await getI18n();
   return (
     <article className={`glass group relative flex flex-col rounded-3xl p-5 ${className}`}>
       {favorite !== undefined && (
@@ -50,7 +54,7 @@ export function MindCard({
           locked ? "btn-ghost text-muted" : "btn-gold"
         }`}
       >
-        {locked ? "Disponível no Premium" : "Acessar esta mente"}
+        {locked ? t.common.premiumOnly : t.common.accessMind}
       </Link>
     </article>
   );

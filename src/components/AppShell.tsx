@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
-import { PLAN_LABELS, type EffectivePlan } from "@/lib/domain/plans";
+import type { EffectivePlan } from "@/lib/domain/plans";
+import { getI18n } from "@/lib/i18n/server";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Logo } from "./Logo";
 import { BottomNav, SideNav } from "./NavLinks";
 
-export function AppShell({
+export async function AppShell({
   userName,
   plan,
   trialDaysLeft,
@@ -15,6 +17,7 @@ export function AppShell({
   trialDaysLeft: number;
   children: React.ReactNode;
 }) {
+  const { t } = await getI18n();
   const firstName = userName.split(" ")[0];
   return (
     <div className="min-h-screen lg:pl-64">
@@ -23,7 +26,7 @@ export function AppShell({
         <SideNav />
         <form action={logout} className="mt-auto px-2">
           <button type="submit" className="text-sm text-faint hover:text-ink">
-            Sair
+            {t.common.logout}
           </button>
         </form>
       </aside>
@@ -33,24 +36,23 @@ export function AppShell({
           <div className="lg:hidden">
             <Logo href="/inicio" />
           </div>
-          <p className="hidden text-sm text-muted lg:block">
-            Olá, <span className="text-ink">{firstName}</span>
-          </p>
-          <div className="flex items-center gap-2">
+          <p className="hidden text-sm text-muted lg:block">{t.app.hello(firstName)}</p>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <LanguageSwitcher />
             <Link
               href="/plano"
               className="whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs text-muted hover:border-line-strong"
-              title="Ver meu plano"
+              title={t.app.seePlan}
             >
-              {PLAN_LABELS[plan]}
-              {plan === "trial" && ` · ${trialDaysLeft} ${trialDaysLeft === 1 ? "dia" : "dias"}`}
+              {t.plans.labels[plan]}
+              {plan === "trial" && ` · ${t.app.trialDays(trialDaysLeft)}`}
             </Link>
             {plan !== "premium" && (
               <Link
                 href="/plano"
                 className="btn-gold hidden whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold sm:inline-block"
               >
-                Fazer upgrade
+                {t.app.upgrade}
               </Link>
             )}
           </div>

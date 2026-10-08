@@ -41,7 +41,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { db, pool, schema } = connect();
+  const { db, schema, close } = await connect();
   try {
     await db.transaction(async (tx) => {
       if (substituir) {
@@ -61,7 +61,7 @@ async function main() {
     });
     console.log(`✓ ${chunks.length} trechos de "${fonte}" importados para ${mente}.`);
   } finally {
-    await pool.end();
+    await close();
   }
 }
 

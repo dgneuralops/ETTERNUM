@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Inter } from "next/font/google";
+import { LocaleProvider } from "@/lib/i18n/client";
+import { getI18n } from "@/lib/i18n/server";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -9,12 +11,14 @@ const garamond = EB_Garamond({
   style: ["normal", "italic"],
 });
 
-export const metadata: Metadata = {
-  title: { default: "Etternum — Converse com grandes mentes", template: "%s · Etternum" },
-  description:
-    "Seu amigo pessoal eterno: converse com grandes mentes da humanidade — filósofos, psicólogos, teólogos, historiadores e empresários — sobre todas as áreas da sua vida.",
-  applicationName: "Etternum",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: { default: t.meta.siteTitle, template: "%s · Etternum" },
+    description: t.meta.siteDescription,
+    applicationName: "Etternum",
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0b",
@@ -22,10 +26,13 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { locale } = await getI18n();
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${garamond.variable} h-full antialiased`}>
-      <body className="min-h-full">{children}</body>
+    <html lang={locale} className={`${inter.variable} ${garamond.variable} h-full antialiased`}>
+      <body className="min-h-full">
+        <LocaleProvider locale={locale}>{children}</LocaleProvider>
+      </body>
     </html>
   );
 }

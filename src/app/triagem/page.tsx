@@ -2,27 +2,31 @@ import type { Metadata } from "next";
 import { Logo } from "@/components/Logo";
 import { TriageForm } from "@/components/TriageForm";
 import { requireUser } from "@/lib/auth/session";
-import { getZodiacSign } from "@/lib/domain/zodiac";
+import { getLocalizedSign } from "@/lib/i18n/content/zodiac";
+import { getI18n } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Triagem" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return { title: t.meta.triage };
+}
 
 export default async function TriagePage() {
   const { user, profile } = await requireUser({ allowMissingTriage: true });
-  const sign = getZodiacSign(user.zodiacSign);
+  const { locale, t } = await getI18n();
+  const sign = getLocalizedSign(user.zodiacSign, locale);
   const firstName = user.name.split(" ")[0];
   return (
     <div className="mx-auto max-w-2xl px-4 pb-20 pt-8 sm:px-6">
       <Logo href={profile ? "/inicio" : "/triagem"} />
       <h1 className="mt-10 font-serif text-4xl text-ink">
-        {profile ? "Atualize sua triagem" : `Prazer, ${firstName}.`}
+        {profile ? t.triage.titleEdit : t.triage.titleNew(firstName)}
       </h1>
       <p className="mt-3 leading-relaxed text-muted">
-        Para que as grandes mentes possam orientar você de verdade, conte um pouco sobre a sua vida. Responda com calma
-        e do seu jeito — você pode atualizar isso quando quiser.
+        {t.triage.intro}
         {sign && (
           <>
             {" "}
-            Já sabemos que você é de{" "}
+            {t.triage.signKnown}{" "}
             <span className="text-gold">
               {sign.symbol} {sign.name}
             </span>

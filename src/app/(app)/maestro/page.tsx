@@ -9,22 +9,23 @@ import { conversationsWith, toClientMessages } from "@/lib/chat/queries";
 import { allConversationMessages, conversationMessages, getOwnedConversation } from "@/lib/chat/service";
 import { AGENTS, MAESTRO } from "@/lib/domain/agents";
 import { getArea } from "@/lib/domain/areas";
+import { localizeAgent, localizeAgents } from "@/lib/i18n/content/agents";
+import { localizeArea } from "@/lib/i18n/content/areas";
+import { getI18n } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Maestro" };
-
-const MINDS: Record<string, MindSummary> = Object.fromEntries(
-  AGENTS.map((a) => [a.slug, { slug: a.slug, name: a.name, focus: a.focus }]),
-);
-
-const SUGGESTIONS = [
-  "Hoje eu só preciso desabafar.",
-  "Estou confuso(a) e não sei por onde começar.",
-  "Quem pode me ajudar com meu negócio?",
-];
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return { title: t.meta.maestro };
+}
 
 export default async function MaestroPage({ searchParams }: PageProps<"/maestro">) {
   const { c, area, texto, de } = (await searchParams) as { c?: string; area?: string; texto?: string; de?: string };
   const { user } = await requireUser();
+  const { locale, t } = await getI18n();
+  const maestro = localizeAgent(MAESTRO, locale);
+  const minds: Record<string, MindSummary> = Object.fromEntries(
+    localizeAgents(AGENTS, locale).map((a) => [a.slug, { slug: a.slug, name: a.name, focus: a.focus }]),
+  );
 
   const conversation = c ? await getOwnedConversation(user.id, c) : null;
   const valid = conversation && conversation.agentSlug === MAESTRO.slug && conversation.kind === "chat";
@@ -42,7 +43,8 @@ export default async function MaestroPage({ searchParams }: PageProps<"/maestro"
       draft = [...recent].reverse().find((m) => m.role === "user")?.content ?? "";
     }
   }
-  const areaInfo = area ? getArea(area) : undefined;
+  const areaFound = area ? getArea(area) : undefined;
+  const areaInfo = areaFound ? localizeArea(areaFound, locale) : undefined;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_240px]">
@@ -53,38 +55,39 @@ export default async function MaestroPage({ searchParams }: PageProps<"/maestro"
             <div>
               <h1 className="font-serif text-3xl leading-tight text-ink">Maestro</h1>
               <p className="text-xs text-muted">
-                {areaInfo ? `Vamos encontrar a mente ideal em ${areaInfo.name}` : "Seu amigo pessoal eterno"}
+                {areaInfo ? t.maestroPage.areaSubtitle(areaInfo.name) : t.maestroPage.subtitle}
               </p>
             </div>
           </div>
           <Link
             href="/maestro"
             className="rounded-full p-2 text-muted hover:bg-white/5 hover:text-gold"
-            title="Nova conversa"
-            aria-label="Nova conversa"
+            title={t.common.newConversation}
+            aria-label={t.common.newConversation}
           >
             <Plus className="h-5 w-5" />
           </Link>
         </div>
         <ChatView
           key={valid ? conversation.id : `nova-${area ?? ""}`}
-          mind={{ slug: MAESTRO.slug, name: MAESTRO.name, focus: MAESTRO.tagline }}
+          mind={{ slug: maestro.slug, name: maestro.name, focus: maestro.tagline }}
           conversationId={valid ? conversation.id : undefined}
           initialMessages={toClientMessages(messages)}
           areaSlug={areaInfo?.slug}
           initialDraft={draft}
           autoSend={Boolean(texto) && !valid}
-          minds={MINDS}
-          suggestions={SUGGESTIONS}
-          placeholder="Conte o que você está vivendo…"
+          minds={minds}
+          suggestions={t.maestroPage.suggestions}
+          placeholder={t.maestroPage.placeholder}
         />
       </section>
       <aside className="hidden lg:block">
         <div className="sticky top-24">
-          <h2 className="mb-3 px-3 text-xs uppercase tracking-wider text-faint">Conversas com o Maestro</h2>
+          <h2 className="mb-3 px-3 text-xs uppercase tracking-wider text-faint">{t.maestroPage.history}</h2>
           <ConversationList
             conversations={history}
             activeId={valid ? conversation.id : undefined}
+            timeZone={user.timeZone}
             hrefFor={(conv) => `/maestro?c=${conv.id}`}
           />
         </div>

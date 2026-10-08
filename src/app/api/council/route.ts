@@ -1,6 +1,6 @@
 import { after } from "next/server";
 import { z } from "zod";
-import { AiNotConfiguredError, REFUSAL_TEXT, streamReply } from "@/lib/ai/claude";
+import { AiNotConfiguredError, streamReply } from "@/lib/ai/model";
 import { councilSystemPrompt, synthesisSystemPrompt, withKnowledge } from "@/lib/ai/prompts";
 import { getSessionUserId } from "@/lib/auth/session";
 import { ndjsonResponse } from "@/lib/chat/ndjson";
@@ -22,6 +22,9 @@ import { MAESTRO, MAX_COUNCIL_AGENTS, getAgent, type Agent } from "@/lib/domain/
 import { getArea } from "@/lib/domain/areas";
 import { canSendMessage } from "@/lib/domain/plans";
 import { detectRisk } from "@/lib/domain/safety";
+import { localizeArea } from "@/lib/i18n/content/areas";
+import { accessMessage } from "@/lib/i18n/format";
+import { getI18n } from "@/lib/i18n/server";
 
 export const maxDuration = 300;
 
@@ -38,35 +41,42 @@ function transcriptOf(history: Message[]): string {
 }
 
 export async function POST(request: Request) {
+  const { locale, t } = await getI18n();
   const userId = await getSessionUserId();
-  if (!userId) return Response.json({ error: "Faça login para continuar." }, { status: 401 });
+  if (!userId) return Response.json({ error: t.api.loginRequired }, { status: 401 });
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return Response.json({ error: "Requisição inválida." }, { status: 400 });
+  if (!parsed.success) return Response.json({ error: t.api.invalidRequest }, { status: 400 });
   const { areaSlug, agentSlugs, message, conversationId } = parsed.data;
 
   const area = getArea(areaSlug);
   const council = [...new Set(agentSlugs)]
     .map((slug) => getAgent(slug))
     .filter((a): a is Agent => Boolean(a && area && a.areas.includes(area.slug)));
-  if (!area || council.length === 0) return Response.json({ error: "Conselho inválido." }, { status: 400 });
+  if (!area || council.length === 0) return Response.json({ error: t.api.invalidCouncil }, { status: 400 });
 
   const loaded = await loadUser(userId);
-  if (!loaded) return Response.json({ error: "Faça login para continuar." }, { status: 401 });
+  if (!loaded) return Response.json({ error: t.api.loginRequired }, { status: 401 });
   const { user, profile, plan } = loaded;
 
-  const access = canSendMessage(plan, { capsuleSlug: null, council: true, messagesToday: await messagesToday(userId) });
-  if (!access.ok) return Response.json({ error: access.message, reason: access.reason }, { status: 402 });
+  const access = canSendMessage(plan, {
+    capsuleSlug: null,
+    council: true,
+    messagesToday: await messagesToday(userId, user.timeZone),
+  });
+  if (!access.ok) {
+    return Response.json({ error: accessMessage(t, access.reason), reason: access.reason }, { status: 402 });
+  }
 
   let conversation = conversationId ? await getOwnedConversation(userId, conversationId) : null;
   if (conversationId && (!conversation || conversation.kind !== "council" || conversation.areaSlug !== area.slug)) {
-    return Response.json({ error: "Conversa não encontrada." }, { status: 404 });
+    return Response.json({ error: t.api.conversationNotFound }, { status: 404 });
   }
   conversation ??= await createConversation({
     userId,
     kind: "council",
     areaSlug: area.slug,
-    title: titleFrom(message),
+    title: titleFrom(message, t.common.newConversation),
   });
   const conv = conversation;
 
@@ -79,9 +89,11 @@ export async function POST(request: Request) {
     ? `Rodadas anteriores deste Conselho:\n\n${transcriptOf(previous.slice(-30))}\n\n`
     : "";
 
-  after(() => maybeUpdateMemory(userId, conv.id, { force: true }));
+  after(() => maybeUpdateMemory(userId, conv.id, { force: true, locale }));
 
-  return ndjsonResponse(async (send) => {
+  const areaName = localizeArea(area, locale).name;
+
+  return ndjsonResponse(t.api.generic, async (send) => {
     send({ type: "meta", conversationId: conv.id, risk });
     try {
       const answers = await Promise.all(
@@ -90,14 +102,15 @@ export async function POST(request: Request) {
           const passages = await searchKnowledge(agent.slug, message, 3);
           const prompt = `${earlier}Nova mensagem da pessoa para o Conselho:\n${message}`;
           const result = await streamReply({
-            system: councilSystemPrompt(agent, context, area.name, council, { risk }),
+            system: councilSystemPrompt(agent, context, areaName, council, { risk, locale }),
             messages: [{ role: "user", content: withKnowledge(prompt, agent, passages) }],
             effort: "low",
             maxTokens: 16000,
             signal: request.signal,
+            locale,
             onText: (text) => send({ type: "delta", agent: agent.slug, text }),
           });
-          if (result.refused) send({ type: "replace", agent: agent.slug, text: REFUSAL_TEXT });
+          if (result.refused) send({ type: "replace", agent: agent.slug, text: result.text });
           const saved = await addMessage({
             conversationId: conv.id,
             userId,
@@ -113,7 +126,7 @@ export async function POST(request: Request) {
       send({ type: "start", agent: MAESTRO.slug });
       const round = answers.map((a) => `[${a.agent.name}]: ${a.text}`).join("\n\n");
       const synthesis = await streamReply({
-        system: synthesisSystemPrompt(context, { risk }),
+        system: synthesisSystemPrompt(context, { risk, locale }),
         messages: [
           {
             role: "user",
@@ -123,9 +136,10 @@ export async function POST(request: Request) {
         effort: "medium",
         maxTokens: 16000,
         signal: request.signal,
+        locale,
         onText: (text) => send({ type: "delta", agent: MAESTRO.slug, text }),
       });
-      if (synthesis.refused) send({ type: "replace", agent: MAESTRO.slug, text: REFUSAL_TEXT });
+      if (synthesis.refused) send({ type: "replace", agent: MAESTRO.slug, text: synthesis.text });
       const saved = await addMessage({
         conversationId: conv.id,
         userId,
@@ -137,7 +151,8 @@ export async function POST(request: Request) {
     } catch (error) {
       if (request.signal.aborted) return;
       if (error instanceof AiNotConfiguredError) {
-        send({ type: "error", message: error.message });
+        console.error(error.message);
+        send({ type: "error", message: t.api.aiNotConfigured });
         return;
       }
       throw error;

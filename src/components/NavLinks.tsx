@@ -3,15 +3,19 @@
 import { Compass, CreditCard, Home, Infinity as InfinityIcon, MessageSquareText, User, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useI18n } from "@/lib/i18n/client";
+import type { Messages } from "@/lib/i18n/messages";
 
-const LINKS = [
-  { href: "/inicio", label: "Início", icon: Home },
-  { href: "/maestro", label: "Maestro", icon: InfinityIcon },
-  { href: "/areas", label: "Áreas da vida", icon: Compass, match: ["/areas", "/area/", "/conselho/"] },
-  { href: "/mentes", label: "Todas as mentes", icon: Users, match: ["/mentes", "/mente/"] },
-  { href: "/conversas", label: "Minhas conversas", icon: MessageSquareText },
-  { href: "/perfil", label: "Perfil", icon: User },
-  { href: "/plano", label: "Plano", icon: CreditCard },
+type NavKey = keyof Messages["app"]["nav"];
+
+const LINKS: { href: string; key: NavKey; short?: NavKey; icon: typeof Home; match?: string[] }[] = [
+  { href: "/inicio", key: "home", icon: Home },
+  { href: "/maestro", key: "maestro", icon: InfinityIcon },
+  { href: "/areas", key: "areas", short: "areasShort", icon: Compass, match: ["/areas", "/area/", "/conselho/"] },
+  { href: "/mentes", key: "minds", icon: Users, match: ["/mentes", "/mente/"] },
+  { href: "/conversas", key: "conversations", short: "conversationsShort", icon: MessageSquareText },
+  { href: "/perfil", key: "profile", icon: User },
+  { href: "/plano", key: "plan", icon: CreditCard },
 ];
 
 const MOBILE = ["/inicio", "/maestro", "/areas", "/conversas", "/perfil"];
@@ -23,6 +27,7 @@ function isActive(pathname: string, link: (typeof LINKS)[number]) {
 
 export function SideNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
   return (
     <nav className="mt-10 flex flex-col gap-1">
       {LINKS.map((link) => {
@@ -38,7 +43,7 @@ export function SideNav() {
             aria-current={active ? "page" : undefined}
           >
             <Icon className="h-4 w-4" aria-hidden />
-            {link.label}
+            {t.app.nav[link.key]}
           </Link>
         );
       })}
@@ -48,6 +53,7 @@ export function SideNav() {
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-bg/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-md grid-cols-5">
@@ -62,7 +68,7 @@ export function BottomNav() {
               aria-current={active ? "page" : undefined}
             >
               <Icon className="h-5 w-5" aria-hidden />
-              {link.label === "Áreas da vida" ? "Áreas" : link.label === "Minhas conversas" ? "Conversas" : link.label}
+              <span className="max-w-full truncate px-1">{t.app.nav[link.short ?? link.key]}</span>
             </Link>
           );
         })}

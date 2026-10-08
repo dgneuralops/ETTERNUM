@@ -2,79 +2,31 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { saveTriage } from "@/app/actions/account";
-import { AREAS } from "@/lib/domain/areas";
 import type { FormState } from "@/lib/domain/forms";
+import { useI18n } from "@/lib/i18n/client";
+import { localizedAreas } from "@/lib/i18n/content/areas";
+import type { Messages } from "@/lib/i18n/messages";
 import { AreaIcon } from "./AreaIcon";
-import { FieldError, Label, SubmitButton } from "./Forms";
+import { FieldError, Label, SubmitButton, submitWithoutReset } from "./Forms";
 
-type Question = { name: string; label: string; hint?: string; placeholder: string; required?: boolean };
+type QuestionKey = keyof Messages["triage"]["questions"];
+type StepKey = keyof Messages["triage"]["steps"];
 
-const STEPS: { title: string; questions: Question[] }[] = [
+const STEPS: { key: StepKey; questions: { name: QuestionKey; required?: boolean }[] }[] = [
   {
-    title: "Sua rotina",
+    key: "routine",
     questions: [
-      {
-        name: "occupation",
-        label: "Com o que você trabalha?",
-        hint: "Se estiver estudando, procurando trabalho ou cuidando da casa, conte também.",
-        placeholder: "Ex.: sou enfermeira num hospital público e faço plantões noturnos",
-        required: true,
-      },
-      {
-        name: "likesToDo",
-        label: "O que você gosta de fazer?",
-        placeholder: "Ex.: cozinhar, correr, ler, estar com amigos",
-        required: true,
-      },
-      {
-        name: "dislikesToDo",
-        label: "E o que você não gosta de fazer?",
-        placeholder: "Ex.: reuniões longas, lidar com burocracia",
-      },
+      { name: "occupation", required: true },
+      { name: "likesToDo", required: true },
+      { name: "dislikesToDo" },
     ],
   },
   {
-    title: "O que pesa",
-    questions: [
-      {
-        name: "difficulties",
-        label: "Quais são as suas maiores dificuldades hoje?",
-        placeholder: "Ex.: me sinto sozinho, não consigo dormir, meu negócio não decola",
-        required: true,
-      },
-      {
-        name: "dailyStressors",
-        label: "O que mais deixa você estressado(a) num dia?",
-        placeholder: "Ex.: trânsito, cobranças do chefe, as contas",
-      },
-      {
-        name: "biggestDrain",
-        label: "Qual é a maior causa do seu desgaste?",
-        placeholder: "Ex.: cuidar de tudo sozinho, um relacionamento difícil",
-      },
-    ],
+    key: "weight",
+    questions: [{ name: "difficulties", required: true }, { name: "dailyStressors" }, { name: "biggestDrain" }],
   },
-  {
-    title: "Sabores",
-    questions: [
-      {
-        name: "likesToEat",
-        label: "O que você gosta de comer?",
-        placeholder: "Ex.: comida japonesa, feijoada, frutas",
-      },
-      { name: "dislikesToEat", label: "E o que você não gosta de comer?", placeholder: "Ex.: fígado, coentro" },
-    ],
-  },
-  {
-    title: "Seu caminho",
-    questions: [
-      {
-        name: "goals",
-        label: "O que você espera encontrar no Etternum?",
-        placeholder: "Ex.: um lugar para desabafar, clareza para decidir sobre minha carreira",
-      },
-    ],
-  },
+  { key: "food", questions: [{ name: "likesToEat" }, { name: "dislikesToEat" }] },
+  { key: "path", questions: [{ name: "goals" }] },
 ];
 
 const FIELD_STEP: Record<string, number> = Object.fromEntries(
@@ -82,7 +34,9 @@ const FIELD_STEP: Record<string, number> = Object.fromEntries(
 );
 
 export function TriageForm({ initial }: { initial: Record<string, string> }) {
-  const [state, action] = useActionState<FormState, FormData>(saveTriage, {});
+  const [state, action, pending] = useActionState<FormState, FormData>(saveTriage, {});
+  const { locale, t } = useI18n();
+  const tr = t.triage;
   const values = state.values ?? initial;
   const [step, setStep] = useState(0);
   const [areas, setAreas] = useState<string[]>(() => (values.interestAreas ? values.interestAreas.split(",") : []));
@@ -98,15 +52,15 @@ export function TriageForm({ initial }: { initial: Record<string, string> }) {
   }, [state.fieldErrors]);
 
   return (
-    <form action={action} className="glass rounded-3xl p-6 sm:p-8" noValidate>
-      <ol className="mb-8 flex gap-2" aria-label="Etapas">
+    <form action={action} onSubmit={submitWithoutReset(action)} className="glass rounded-3xl p-6 sm:p-8" noValidate>
+      <ol className="mb-8 flex gap-2" aria-label={tr.stepsLabel}>
         {STEPS.map((s, i) => (
-          <li key={s.title} className="flex-1">
+          <li key={s.key} className="flex-1">
             <button
               type="button"
               onClick={() => setStep(i)}
               className={`h-1.5 w-full rounded-full ${i <= step ? "bg-gold" : "bg-white/10"}`}
-              aria-label={`Etapa ${i + 1}: ${s.title}`}
+              aria-label={tr.stepAria(i + 1, tr.steps[s.key])}
               aria-current={i === step ? "step" : undefined}
             />
           </li>
@@ -114,31 +68,34 @@ export function TriageForm({ initial }: { initial: Record<string, string> }) {
       </ol>
 
       {STEPS.map((s, i) => (
-        <fieldset key={s.title} hidden={i !== step} className="space-y-6">
-          <legend className="mb-2 font-serif text-2xl text-gold">{s.title}</legend>
-          {s.questions.map((q) => (
-            <div key={q.name}>
-              <Label htmlFor={q.name} hint={q.hint}>
-                {q.label} {!q.required && <span className="text-faint">(opcional)</span>}
-              </Label>
-              <textarea
-                id={q.name}
-                name={q.name}
-                rows={3}
-                defaultValue={values[q.name]}
-                placeholder={q.placeholder}
-                className="field w-full resize-y rounded-xl px-4 py-3 leading-relaxed placeholder:text-faint"
-              />
-              <FieldError errors={state.fieldErrors?.[q.name]} />
-            </div>
-          ))}
+        <fieldset key={s.key} hidden={i !== step} className="space-y-6">
+          <legend className="mb-2 font-serif text-2xl text-gold">{tr.steps[s.key]}</legend>
+          {s.questions.map((q) => {
+            const text: { label: string; placeholder: string; hint?: string } = tr.questions[q.name];
+            return (
+              <div key={q.name}>
+                <Label htmlFor={q.name} hint={text.hint}>
+                  {text.label} {!q.required && <span className="text-faint">({t.common.optional})</span>}
+                </Label>
+                <textarea
+                  id={q.name}
+                  name={q.name}
+                  rows={3}
+                  defaultValue={values[q.name]}
+                  placeholder={text.placeholder}
+                  className="field w-full resize-y rounded-xl px-4 py-3 leading-relaxed placeholder:text-faint"
+                />
+                <FieldError errors={state.fieldErrors?.[q.name]} />
+              </div>
+            );
+          })}
           {i === STEPS.length - 1 && (
             <div>
               <p className="mb-3 text-sm font-medium text-ink">
-                Quais áreas da vida mais importam para você agora? <span className="text-faint">(opcional)</span>
+                {tr.interestQuestion} <span className="text-faint">({t.common.optional})</span>
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
-                {AREAS.map((area) => {
+                {localizedAreas(locale).map((area) => {
                   const checked = areas.includes(area.slug);
                   return (
                     <label
@@ -173,14 +130,16 @@ export function TriageForm({ initial }: { initial: Record<string, string> }) {
       <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
         {step > 0 ? (
           <button type="button" onClick={() => setStep(step - 1)} className="btn-ghost rounded-full px-6 py-3 text-ink">
-            Voltar
+            {t.common.back}
           </button>
         ) : (
           <span />
         )}
         {last ? (
           <div className="sm:w-64">
-            <SubmitButton pendingText="Salvando…">Concluir triagem</SubmitButton>
+            <SubmitButton pending={pending} pendingText={tr.pending}>
+              {tr.finish}
+            </SubmitButton>
           </div>
         ) : (
           <button
@@ -188,7 +147,7 @@ export function TriageForm({ initial }: { initial: Record<string, string> }) {
             onClick={() => setStep(step + 1)}
             className="btn-gold rounded-full px-8 py-3 font-semibold"
           >
-            Continuar
+            {tr.continue}
           </button>
         )}
       </div>

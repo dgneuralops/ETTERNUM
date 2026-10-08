@@ -7,7 +7,8 @@
 
 export const TRIAL_DAYS = 14;
 export const FREE_DAILY_MESSAGES = 5;
-export const TIME_ZONE = "America/Sao_Paulo";
+/** Fuso usado quando a pessoa não informou o dela (contas antigas, navegador sem Intl). */
+export const DEFAULT_TIME_ZONE = "America/Sao_Paulo";
 
 export type StoredPlan = "trial" | "premium";
 export type EffectivePlan = "trial" | "free" | "premium";
@@ -37,14 +38,10 @@ export function planState(
   return { plan, trialEndsAt: user.trialEndsAt, trialDaysLeft, freeCapsuleSlug: user.freeCapsuleSlug };
 }
 
-export const PLAN_LABELS: Record<EffectivePlan, string> = {
-  trial: "Teste grátis",
-  free: "Gratuito",
-  premium: "Premium",
-};
+export type AccessDenial = "daily_limit" | "capsule_locked" | "premium_only";
 
-export type AccessDecision =
-  { ok: true } | { ok: false; reason: "daily_limit" | "capsule_locked" | "premium_only"; message: string };
+/** O texto de cada motivo fica no dicionário (`plans.errors`), no idioma da pessoa. */
+export type AccessDecision = { ok: true } | { ok: false; reason: AccessDenial };
 
 /**
  * Decide se a pessoa pode enviar uma mensagem.
@@ -56,34 +53,35 @@ export function canSendMessage(
   opts: { capsuleSlug: string | null; council?: boolean; messagesToday: number },
 ): AccessDecision {
   if (state.plan !== "free") return { ok: true };
-  if (opts.council) {
-    return {
-      ok: false,
-      reason: "premium_only",
-      message: "O Conselho com várias mentes é exclusivo do plano Premium.",
-    };
-  }
+  if (opts.council) return { ok: false, reason: "premium_only" };
   if (opts.capsuleSlug && state.freeCapsuleSlug && opts.capsuleSlug !== state.freeCapsuleSlug) {
-    return {
-      ok: false,
-      reason: "capsule_locked",
-      message: "No plano gratuito você conversa com uma cápsula. Faça upgrade para acessar todas as mentes.",
-    };
+    return { ok: false, reason: "capsule_locked" };
   }
-  if (opts.messagesToday >= FREE_DAILY_MESSAGES) {
-    return {
-      ok: false,
-      reason: "daily_limit",
-      message: `Você atingiu o limite de ${FREE_DAILY_MESSAGES} mensagens por dia do plano gratuito. Faça upgrade para continuar explorando as mentes do Etternum.`,
-    };
-  }
+  if (opts.messagesToday >= FREE_DAILY_MESSAGES) return { ok: false, reason: "daily_limit" };
   return { ok: true };
 }
 
-/** Início do dia atual no fuso de São Paulo, como instante UTC. */
-export function startOfTodayInSaoPaulo(now: Date = new Date()): Date {
+export function isValidTimeZone(value: unknown): value is string {
+  if (typeof value !== "string" || !value || value.length > 64) return false;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Hora (0–23) agora no fuso da pessoa — usada na saudação. */
+export function hourIn(timeZone: string, now: Date = new Date()): number {
+  const zone = isValidTimeZone(timeZone) ? timeZone : DEFAULT_TIME_ZONE;
+  const hour = new Intl.DateTimeFormat("en-US", { timeZone: zone, hour: "numeric", hourCycle: "h23" }).format(now);
+  return Number(hour) % 24;
+}
+
+/** Início do dia atual no fuso da pessoa, como instante UTC (o limite diário recomeça à meia-noite local). */
+export function startOfTodayIn(timeZone: string, now: Date = new Date()): Date {
   const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: TIME_ZONE,
+    timeZone: isValidTimeZone(timeZone) ? timeZone : DEFAULT_TIME_ZONE,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

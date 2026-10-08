@@ -13,7 +13,7 @@ async function main() {
     console.error("Uso: npm run usuario:plano -- <email> <premium|trial>");
     process.exit(1);
   }
-  const { db, pool, schema } = connect();
+  const { db, schema, close } = await connect();
   try {
     const updated = await db
       .update(schema.users)
@@ -22,7 +22,7 @@ async function main() {
       .returning({ id: schema.users.id });
     console.log(updated.length ? `✓ ${email} agora está no plano ${plan}.` : `Nenhum usuário com o e-mail ${email}.`);
   } finally {
-    await pool.end();
+    await close();
   }
 }
 
