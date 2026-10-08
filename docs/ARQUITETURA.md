@@ -30,9 +30,9 @@ Navegador / app ──► Next.js (Vercel)
                                 │
                 ┌───────────────┼──────────────────────┐
                 ▼               ▼                      ▼
-        Postgres (Supabase)   Claude (Anthropic)   Busca nos livros
-        usuários, triagem,    respostas das         (texto completo em
-        conversas, memória,   cápsulas, síntese,    português no próprio
+        Postgres (Supabase)   IA: OpenRouter        Busca nos livros
+        usuários, triagem,    (ou Anthropic)        (texto completo em
+        conversas, memória,   respostas, síntese,   português no próprio
         favoritos, livros     memória               Postgres)
 ```
 
@@ -78,13 +78,23 @@ escolha também fica em `users.locale` e é restaurada ao entrar em outro aparel
 
 ## Modelo de IA
 
-- Claude, via SDK oficial `@anthropic-ai/sdk`. Modelo padrão `claude-opus-5-5`, configurável por
-  `ETTERNUM_MODEL`. Esforço `medium` nas conversas, `low` nos conselheiros e na memória.
-- `fallbacks: "default"`: se um classificador de segurança recusar uma mensagem, a API tenta automaticamente o
-  modelo recomendado; se tudo recusar, a pessoa recebe uma resposta gentil.
-- Cache de prompt automático para baratear conversas longas.
-- Todo o acesso ao modelo fica em `src/lib/ai/claude.ts`; trocar de modelo ou provedor é mudar um arquivo.
+Todo o acesso ao modelo passa por `src/lib/ai/model.ts` (`streamReply` e `completeText`). Ele escolhe o provedor
+pelas variáveis de ambiente (`src/lib/ai/provider.ts`):
+
+| Provedor                | Quando é usado                                              | Modelo padrão       |
+| ----------------------- | ----------------------------------------------------------- | ------------------- |
+| **OpenRouter** (padrão) | `OPENROUTER_API_KEY` definida                               | `typesafe/jev-1.13` |
+| Anthropic (Claude)      | só `ANTHROPIC_API_KEY`, ou `ETTERNUM_AI_PROVIDER=anthropic` | `claude-opus-5-5`   |
+
+- `ETTERNUM_MODEL` troca o modelo do provedor escolhido (no OpenRouter, qualquer id da lista de modelos dele).
+- **OpenRouter** (`providers/openrouter.ts`): API compatível com OpenAI (`/chat/completions`) com streaming SSE,
+  feita com `fetch`, sem dependências. O prompt de sistema vai como primeira mensagem. Respostas limitadas a
+  `OPENROUTER_MAX_TOKENS` (padrão 4000). `finish_reason: "content_filter"` vira a resposta gentil de recusa.
+- **Anthropic** (`providers/anthropic.ts`): SDK oficial, com `effort` (`medium` nas conversas, `low` nos
+  conselheiros e na memória), `fallbacks: "default"` e cache de prompt.
 - `ETTERNUM_AI_MOCK=1` gera respostas simuladas para desenvolvimento e testes.
+- Atenção à privacidade: pelo OpenRouter, as mensagens vão ao provedor que hospeda o modelo escolhido. Nas
+  configurações de privacidade do OpenRouter dá para bloquear provedores que guardam ou treinam com os dados.
 
 ## Dados (Postgres)
 

@@ -511,7 +511,7 @@ const en: Messages = {
         },
         {
           heading: "Sharing",
-          body: "The messages and profile context needed to generate answers are processed by an artificial intelligence provider (Anthropic) and stored in our database infrastructure. We do not sell your data.",
+          body: "The messages and profile context needed to generate answers are processed by artificial intelligence providers (through OpenRouter, which routes them to the configured model, or Anthropic) and stored in our database infrastructure. We do not sell your data.",
         },
         {
           heading: "Your rights",

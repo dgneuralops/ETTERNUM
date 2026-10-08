@@ -1,13 +1,13 @@
-import type Anthropic from "@anthropic-ai/sdk";
 import type { Locale } from "@/lib/i18n/config";
 import { messagesFor } from "@/lib/i18n/messages";
+import type { ChatTurn } from "./types";
 
 /**
  * Respostas simuladas para desenvolvimento e testes sem chave da API
  * (ETTERNUM_AI_MOCK=1), no idioma da pessoa. Nunca usar em produção.
  * O tipo de resposta é reconhecido pelas instruções (em português) do prompt de sistema.
  */
-export function mockReply(system: string, messages: Anthropic.Beta.BetaMessageParam[], locale: Locale): string {
+export function mockReply(system: string, messages: ChatTurn[], locale: Locale): string {
   const mock = messagesFor(locale).ai.mock;
   const last = messages[messages.length - 1];
   const content = typeof last?.content === "string" ? last.content : "";

@@ -510,7 +510,7 @@ const ptBR = {
         },
         {
           heading: "Compartilhamento",
-          body: "As mensagens e o contexto de perfil necessários para gerar as respostas são processados por um provedor de inteligência artificial (Anthropic) e armazenados em nossa infraestrutura de banco de dados. Não vendemos seus dados.",
+          body: "As mensagens e o contexto de perfil necessários para gerar as respostas são processados por provedores de inteligência artificial (pelo OpenRouter, que encaminha ao modelo configurado, ou pela Anthropic) e armazenados em nossa infraestrutura de banco de dados. Não vendemos seus dados.",
         },
         {
           heading: "Seus direitos",

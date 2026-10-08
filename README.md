@@ -31,7 +31,7 @@ signo da pessoa para orientar cada resposta. Disponível em **português do Bras
 ## Stack
 
 Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · PostgreSQL (Supabase ou qualquer Postgres) com
-Drizzle ORM · Claude (Anthropic) para as cápsulas · Vitest.
+Drizzle ORM · IA pelo OpenRouter (modelo padrão `typesafe/jev-1.13`) ou direto pela Anthropic (Claude) · Vitest.
 
 ## Ver funcionando no seu computador (modo demonstração)
 
@@ -47,7 +47,7 @@ simuladas da IA.
 5. Rode: `npm run demo`
 6. Abra **http://localhost:3000** no navegador e crie sua conta.
 
-Para conversar com a IA de verdade, coloque `ANTHROPIC_API_KEY=sua-chave` no arquivo `.env.local` (criado no
+Para conversar com a IA de verdade, coloque `OPENROUTER_API_KEY=sua-chave` no arquivo `.env.local` (criado no
 primeiro `npm run demo`) e rode `npm run demo` de novo. Os dados da demonstração ficam na pasta
 `.etternum-demo`; apague-a para começar do zero. Para parar, pressione `Ctrl+C` no Terminal.
 
@@ -57,12 +57,12 @@ Pré-requisitos: Node.js 20.9+ e um Postgres (local, Docker ou um projeto gratui
 
 ```bash
 npm install
-cp .env.example .env.local   # preencha DATABASE_URL, SESSION_SECRET e ANTHROPIC_API_KEY
+cp .env.example .env.local   # preencha DATABASE_URL, SESSION_SECRET e OPENROUTER_API_KEY
 npm run db:migrate           # cria as tabelas
 npm run dev                  # http://localhost:3000
 ```
 
-Sem `DATABASE_URL`, o `npm run dev` usa o banco embutido da demonstração. Sem chave da Anthropic, coloque
+Sem `DATABASE_URL`, o `npm run dev` usa o banco embutido da demonstração. Sem chave de IA, coloque
 `ETTERNUM_AI_MOCK=1` no `.env.local` para navegar com respostas simuladas.
 
 Postgres rápido com Docker:
@@ -108,7 +108,8 @@ O Etternum funciona em **português do Brasil** (padrão), **inglês**, **espanh
 1. Crie um projeto no [Supabase](https://supabase.com) e copie a connection string do **Session pooler**.
 2. Rode `DATABASE_URL="..." npm run db:migrate` para criar as tabelas.
 3. Importe este repositório na [Vercel](https://vercel.com) e configure `DATABASE_URL`, `SESSION_SECRET`
-   e `ANTHROPIC_API_KEY` (e, quando houver, `NEXT_PUBLIC_CHECKOUT_URL`).
+   e `OPENROUTER_API_KEY` (e, quando houver, `NEXT_PUBLIC_CHECKOUT_URL`). O modelo padrão é `typesafe/jev-1.13`;
+   para trocar, defina `ETTERNUM_MODEL`. Para usar o Claude direto, use `ANTHROPIC_API_KEY` no lugar.
 4. As rotas de conversa usam streaming e podem levar até alguns minutos; o `maxDuration` já está em 300 s.
 
 ## Estrutura

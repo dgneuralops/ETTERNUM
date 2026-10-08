@@ -509,7 +509,7 @@ const es: Messages = {
         },
         {
           heading: "Compartición",
-          body: "Los mensajes y el contexto de perfil necesarios para generar las respuestas los procesa un proveedor de inteligencia artificial (Anthropic) y se guardan en nuestra infraestructura de base de datos. No vendemos tus datos.",
+          body: "Los mensajes y el contexto de perfil necesarios para generar las respuestas los procesan proveedores de inteligencia artificial (a través de OpenRouter, que los envía al modelo configurado, o Anthropic) y se guardan en nuestra infraestructura de base de datos. No vendemos tus datos.",
         },
         {
           heading: "Tus derechos",

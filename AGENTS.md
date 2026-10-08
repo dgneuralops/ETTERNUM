@@ -23,7 +23,8 @@ grandes.
   (especialista que fala sobre a pessoa, nunca como ela) — há um teste que garante isso.
 - Prompts: `src/lib/ai/prompts.ts`. Instruções em português; o idioma da resposta vem de `baseRules(locale)`.
   Mantenha o protocolo de segurança (CVV 188 no Brasil, linhas do idioma nos demais) e não envie CPF/e-mail ao modelo.
-- Acesso ao modelo só por `src/lib/ai/claude.ts`. `ETTERNUM_AI_MOCK=1` simula respostas.
+- Acesso ao modelo só por `src/lib/ai/model.ts` (provedores em `src/lib/ai/providers/`: OpenRouter e Anthropic,
+  escolhidos por `src/lib/ai/provider.ts`). `ETTERNUM_AI_MOCK=1` simula respostas.
 - Banco: altere `src/lib/db/schema.ts` e rode `npm run db:generate` para criar a migração. Sem `DATABASE_URL`
   em desenvolvimento (ou com `npm run demo`), o app usa PGlite embutido e aplica as migrações ao subir.
 - Antes de concluir: `npm run lint && npm run typecheck && npm test && npm run build`.

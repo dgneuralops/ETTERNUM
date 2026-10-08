@@ -517,7 +517,7 @@ const fr: Messages = {
         },
         {
           heading: "Partage",
-          body: "Les messages et le contexte de profil nécessaires pour générer les réponses sont traités par un fournisseur d'intelligence artificielle (Anthropic) et stockés dans notre infrastructure de base de données. Nous ne vendons pas vos données.",
+          body: "Les messages et le contexte de profil nécessaires pour générer les réponses sont traités par des fournisseurs d'intelligence artificielle (via OpenRouter, qui les transmet au modèle configuré, ou Anthropic) et stockés dans notre infrastructure de base de données. Nous ne vendons pas vos données.",
         },
         {
           heading: "Vos droits",

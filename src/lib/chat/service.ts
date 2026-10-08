@@ -1,6 +1,6 @@
 import "server-only";
 import { and, asc, count, desc, eq, gte, sql } from "drizzle-orm";
-import { completeText, type ChatTurn } from "@/lib/ai/claude";
+import { completeText, type ChatTurn } from "@/lib/ai/model";
 import { memorySystem, memoryUserPrompt, type UserContext } from "@/lib/ai/prompts";
 import { db, schema } from "@/lib/db";
 import type { Conversation, Message, Profile, User } from "@/lib/db/schema";

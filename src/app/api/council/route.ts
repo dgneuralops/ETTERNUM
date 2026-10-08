@@ -1,6 +1,6 @@
 import { after } from "next/server";
 import { z } from "zod";
-import { AiNotConfiguredError, streamReply } from "@/lib/ai/claude";
+import { AiNotConfiguredError, streamReply } from "@/lib/ai/model";
 import { councilSystemPrompt, synthesisSystemPrompt, withKnowledge } from "@/lib/ai/prompts";
 import { getSessionUserId } from "@/lib/auth/session";
 import { ndjsonResponse } from "@/lib/chat/ndjson";

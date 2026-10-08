@@ -3,7 +3,7 @@
  * nem configurar chaves. Uso: npm run demo  →  http://localhost:3000
  *
  * - Banco: Postgres embutido (PGlite) na pasta .etternum-demo
- * - IA: respostas simuladas, a menos que ANTHROPIC_API_KEY esteja no .env.local
+ * - IA: respostas simuladas, a menos que OPENROUTER_API_KEY (ou ANTHROPIC_API_KEY) esteja no .env.local
  */
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
@@ -21,8 +21,8 @@ if (!existsSync(ENV_FILE)) {
       "# Criado pelo modo demonstração (npm run demo).",
       `SESSION_SECRET=${randomBytes(32).toString("hex")}`,
       "",
-      "# Para conversar com a IA de verdade, coloque sua chave da Anthropic aqui:",
-      "# ANTHROPIC_API_KEY=",
+      "# Para conversar com a IA de verdade, coloque sua chave do OpenRouter aqui:",
+      "# OPENROUTER_API_KEY=",
       "",
     ].join("\n"),
   );
@@ -31,7 +31,8 @@ if (!existsSync(ENV_FILE)) {
 config({ path: [ENV_FILE, ".env"], quiet: true });
 
 process.env.ETTERNUM_DEMO = "1";
-const useRealAi = Boolean(process.env.ANTHROPIC_API_KEY) && process.env.ETTERNUM_AI_MOCK !== "1";
+const useRealAi =
+  Boolean(process.env.OPENROUTER_API_KEY || process.env.ANTHROPIC_API_KEY) && process.env.ETTERNUM_AI_MOCK !== "1";
 if (!useRealAi) process.env.ETTERNUM_AI_MOCK = "1";
 
 async function main() {
@@ -41,10 +42,12 @@ async function main() {
   await migrateDemoDatabase(db);
   await close();
   console.log(`✓ Banco de demonstração pronto em ${path.resolve(DEMO_DATA_DIR)}`);
+  const { modelFor, selectProvider } = await import("../src/lib/ai/provider");
+  const provider = selectProvider();
   console.log(
-    useRealAi
-      ? "✓ IA: Claude (ANTHROPIC_API_KEY encontrada)"
-      : "• IA: respostas simuladas. Para usar o Claude, coloque ANTHROPIC_API_KEY no .env.local.",
+    useRealAi && provider
+      ? `✓ IA: ${provider === "openrouter" ? "OpenRouter" : "Anthropic"} · modelo ${modelFor(provider)}`
+      : "• IA: respostas simuladas. Para usar a IA de verdade, coloque OPENROUTER_API_KEY no .env.local.",
   );
   const args = process.argv.slice(2);
   const portFlag = args.findIndex((a) => a === "--port" || a === "-p");
