@@ -13,6 +13,7 @@
 // Env: OPENROUTER_API_KEY (required), OPENROUTER_CHAT_MODEL, JEV_MODEL, APP_URL.
 import { ETT } from '../src/data.js';
 import { JEV_MODEL, judgeTurn, rankMinds } from './jev.js';
+import * as CFG from '../src/lib/supabase-config.js';
 
 const MODEL = () => process.env.OPENROUTER_CHAT_MODEL || 'anthropic/claude-sonnet-4.5';
 const ENDPOINT = () => (process.env.OPENROUTER_ORIGIN || 'https://openrouter.ai') + '/api/v1/chat/completions';
@@ -189,8 +190,13 @@ async function triagem(req, res) {
 }
 
 // Live check of both models, so a deploy can be verified from the browser.
-async function diagnostico(res) {
-  const out = { chatModel: MODEL(), jevModel: JEV_MODEL(), keyConfigured: !!process.env.OPENROUTER_API_KEY };
+async function diagnostico(res, url) {
+  const out = { chatModel: MODEL(), jevModel: JEV_MODEL(), keyConfigured: !!process.env.OPENROUTER_API_KEY, supabase: !!SUPABASE_URL() };
+  // The live check spends credits, so it needs ?chave=<DIAGNOSTICO_CHAVE> when that env var is set.
+  if (process.env.DIAGNOSTICO_CHAVE && new URLSearchParams(url.split('?')[1] || '').get('chave') !== process.env.DIAGNOSTICO_CHAVE) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ ...out, aviso: 'Adicione ?chave=... para testar os modelos.' }, null, 2));
+  }
   try {
     const t = Date.now();
     const turn = await judgeTurn({ mind: 'maestro', messages: [{ role: 'user', content: 'Estou exausta e sem saber se continuo no meu emprego.' }] });
@@ -206,23 +212,43 @@ async function diagnostico(res) {
   res.end(JSON.stringify(out, null, 2));
 }
 
+// Only signed-in Etternum users may spend the OpenRouter credits. The Supabase access token
+// is checked against Supabase Auth (cached briefly). AI_OPEN=1 turns the check off (local demo).
+const SUPABASE_URL = () => process.env.AI_OPEN === '1' ? '' : process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || CFG.SUPABASE_URL;
+const SUPABASE_ANON = () => process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || CFG.SUPABASE_ANON_KEY;
+const tokenCache = new Map();
+async function authorized(req) {
+  if (!SUPABASE_URL() || process.env.AI_OPEN === '1') return true;
+  const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  if (!token) return false;
+  const hit = tokenCache.get(token);
+  if (hit && hit > Date.now()) return true;
+  const r = await fetch(SUPABASE_URL() + '/auth/v1/user', { headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_ANON() }, signal: AbortSignal.timeout(5000) }).catch(() => null);
+  if (!r || !r.ok) return false;
+  if (tokenCache.size > 2000) tokenCache.clear();
+  tokenCache.set(token, Date.now() + 5 * 60 * 1000);
+  return true;
+}
+
 const ROUTES = { '/api/chat': chat, '/api/sintese': sintese, '/api/triagem': triagem };
 
 // Node-style handler: works as Vite dev middleware, a plain http server and a Vercel function.
 export default async function handler(req, res) {
-  const path = (req.url || '').split('?')[0];
+  const url = req.url || '';
+  const path = url.split('?')[0];
   res.setHeader('Access-Control-Allow-Origin', process.env.CORS_ORIGIN || '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Expose-Headers', 'X-Etternum-Risco, X-Etternum-Mente');
   if (req.method === 'OPTIONS') { res.statusCode = 204; return res.end(); }
   if (path === '/api/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({ ok: !!process.env.OPENROUTER_API_KEY, chatModel: MODEL(), jevModel: JEV_MODEL() }));
   }
-  if (path === '/api/diagnostico') return diagnostico(res);
+  if (path === '/api/diagnostico') return diagnostico(res, url);
   const route = ROUTES[path];
   if (!route || req.method !== 'POST') { res.statusCode = 404; return res.end('not found'); }
   try {
+    if (!(await authorized(req))) { res.statusCode = 401; return res.end('entre na sua conta'); }
     await route(req, res);
   } catch (e) {
     console.error('[ai]', e.message);

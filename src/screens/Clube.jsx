@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { ETT } from '../data.js';
+import { supabase } from '../lib/supabase.js';
 import { Overlay } from '../components/Overlay.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { ImageSlot } from '../components/ImageSlot.jsx';
@@ -49,17 +50,56 @@ export default class Clube extends React.Component {
   constructor(p) {
     super(p);
     let books = SEED;
-    try { const s = localStorage.getItem(KEY); if (s) books = JSON.parse(s); } catch (e) {}
+    if (!supabase) { try { const s = localStorage.getItem(KEY); if (s) books = JSON.parse(s); } catch (e) {} }
     const mode = p.mode || 'leitor';
-    this.state = { mode, view: mode === 'admin' ? 'books' : 'lib', sel: 'frankl', chap: 0, q: '', cat: 'Todos', books, draft: null, hl: {}, fs: 21, toast: '', saved: { frankl: true }, stF: 'todos', authed: (() => { try { return sessionStorage.getItem('ett-admin') === '1'; } catch (e) { return false; } })(), lEmail: '', lPass: '', lErr: '' };
+    this.state = { mode, view: mode === 'admin' ? 'books' : 'lib', sel: 'frankl', chap: 0, q: '', cat: 'Todos', books, draft: null, hl: {}, fs: 21, toast: '', saved: { frankl: true }, stF: 'todos', authed: supabase ? false : (() => { try { return sessionStorage.getItem('ett-admin') === '1'; } catch (e) { return false; } })(), lEmail: '', lPass: '', lErr: '' };
   }
   componentDidUpdate(pp) { if (pp.mode !== this.props.mode && this.props.mode) this.setState({ mode: this.props.mode, view: this.props.mode === 'admin' ? 'books' : 'lib' }); }
   componentWillUnmount() { clearTimeout(this.tt); }
+  // Books live in Supabase (table `livros`); readers see published ones, admins see all.
+  async componentDidMount() {
+    if (!supabase) return;
+    await this.load();
+    const { data } = await supabase.auth.getSession();
+    if (data.session && this.state.mode === 'admin') this.checkAdmin();
+  }
+  async load() {
+    const { data, error } = await supabase.from('livros').select('dados,status').order('ordem');
+    if (error) return console.error('[clube]', error.message);
+    if (data.length) this.setState({ books: data.map(r => ({ ...r.dados, status: r.status })) });
+  }
+  async checkAdmin() {
+    const { data, error } = await supabase.rpc('is_admin');
+    if (error || !data) { this.setState({ authed: false, lErr: 'Esta conta não tem acesso de administrador.' }); return false; }
+    this.setState({ authed: true, lErr: '', lPass: '' });
+    // First admin visit: the catalogue starts with the sample books.
+    const { count } = await supabase.from('livros').select('id', { count: 'exact', head: true });
+    if (!count) await this.save(this.state.books);
+    return true;
+  }
+  async save(books) {
+    const rows = books.map((b, i) => ({ id: b.id, dados: b, status: b.status, ordem: i, updated_at: new Date().toISOString() }));
+    const { error } = await supabase.from('livros').upsert(rows);
+    if (error) { this.toast('Não foi possível salvar no servidor'); throw error; }
+  }
+  // Uploads a cover (data URL from ImageSlot) to Storage and returns its public URL.
+  async uploadCover(id, dataUrl) {
+    const blob = await (await fetch(dataUrl)).blob();
+    const path = `capas/${id}-${Date.now()}.jpg`;
+    const { error } = await supabase.storage.from('clube').upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+    if (error) throw error;
+    return supabase.storage.from('clube').getPublicUrl(path).data.publicUrl;
+  }
   rootRef = el => { this.root = el; };
   top() { requestAnimationFrame(() => { window.scrollTo(0, 0); let n = this.root && this.root.parentElement; while (n) { const o = getComputedStyle(n).overflowY; if ((o === 'auto' || o === 'scroll') && n.scrollHeight > n.clientHeight) { n.scrollTop = 0; break; } n = n.parentElement; } }); }
   go = (o) => { this.setState(o); this.top(); };
   toast = m => { clearTimeout(this.tt); this.setState({ toast: m }); this.tt = setTimeout(() => this.setState({ toast: '' }), 2400); };
-  persist(books) { this.setState({ books }); try { localStorage.setItem(KEY, JSON.stringify(books)); } catch (e) {} }
+  persist(books, removed) {
+    this.setState({ books });
+    if (!supabase) { try { localStorage.setItem(KEY, JSON.stringify(books)); } catch (e) {} return; }
+    this.save(books).catch(e => console.error('[clube]', e.message));
+    if (removed) supabase.from('livros').delete().eq('id', removed).then(({ error }) => error && console.error('[clube]', error.message));
+  }
   upd = fn => this.setState(s => ({ draft: fn(JSON.parse(JSON.stringify(s.draft))) }));
   commit(status) {
     const d = { ...this.state.draft, status: status || this.state.draft.status, title: this.state.draft.title || 'Sem título' };
@@ -110,8 +150,18 @@ export default class Clube extends React.Component {
       adminLogin: isA && !s.authed, adminIn: isA && s.authed, showBackAdmin: realAdmin && isL,
       lEmail: s.lEmail, lPass: s.lPass, lErr: s.lErr,
       setLEmail: e => this.setState({ lEmail: e.target.value, lErr: '' }), setLPass: e => this.setState({ lPass: e.target.value, lErr: '' }),
-      login: e => { e.preventDefault(); if (!/.+@.+\..+/.test(s.lEmail) || s.lPass.length < 4) return this.setState({ lErr: 'Confira o e-mail e a senha.' }); try { sessionStorage.setItem('ett-admin', '1'); } catch (x) {} this.setState({ authed: true, lPass: '' }); this.toast('Bem-vindo ao admin'); },
-      logout: () => { try { sessionStorage.removeItem('ett-admin'); } catch (x) {} this.go({ authed: false, view: 'books', draft: null }); }, standalone: !emb, rootMinH: emb ? '100%' : '100vh', rootRadius: emb ? '26px' : '0', headPos: emb ? 'relative' : 'sticky', readTop: emb ? '0px' : '69px', stickTop: emb ? '16px' : '90px',
+      login: async e => {
+        e.preventDefault();
+        if (!/.+@.+\..+/.test(s.lEmail) || s.lPass.length < 4) return this.setState({ lErr: 'Confira o e-mail e a senha.' });
+        if (supabase) {
+          const { error } = await supabase.auth.signInWithPassword({ email: s.lEmail.trim(), password: s.lPass });
+          if (error) return this.setState({ lErr: 'E-mail ou senha incorretos.' });
+          if (await this.checkAdmin()) this.toast('Bem-vindo ao admin');
+          return;
+        }
+        try { sessionStorage.setItem('ett-admin', '1'); } catch (x) {} this.setState({ authed: true, lPass: '' }); this.toast('Bem-vindo ao admin');
+      },
+      logout: () => { if (supabase) supabase.auth.signOut(); try { sessionStorage.removeItem('ett-admin'); } catch (x) {} this.go({ authed: false, view: 'books', draft: null }); }, standalone: !emb, rootMinH: emb ? '100%' : '100vh', rootRadius: emb ? '26px' : '0', headPos: emb ? 'relative' : 'sticky', readTop: emb ? '0px' : '69px', stickTop: emb ? '16px' : '90px',
       segL: seg(isL), segA: seg(isA), isAdmin: isA,
       vLib: isL && s.view === 'lib', vBook: isL && s.view === 'book', vRead: isL && s.view === 'read',
       goLib: () => this.go({ mode: 'leitor', view: 'lib' }), goLeitor: () => this.go({ mode: 'leitor', view: 'lib' }), goAdmin: () => this.go({ mode: 'admin', view: 'books', draft: null }),
@@ -139,7 +189,7 @@ export default class Clube extends React.Component {
         ['Admin · Livros', '/admin/livros', { mode: 'admin', view: 'books', authed: true }, isA && s.authed && s.view === 'books'],
         ['Admin · Editor', '/admin/livro', { mode: 'admin', view: 'edit', authed: true, draft: JSON.parse(JSON.stringify(books[0])) }, isA && s.view === 'edit'],
         ['Admin · Materiais', '/admin/materiais', { mode: 'admin', view: 'media', authed: true }, isA && s.view === 'media'],
-      ].concat(this.props.onExit ? [['← Voltar ao Etternum', '/', null, false]] : []).map(([label, path, st, on]) => ({ label, path, bg: on ? '#2A2A2E' : 'transparent', go: () => st ? this.go({ ...st, mapOpen: false }) : this.props.onExit() })),
+      ].concat(this.props.onExit ? [['← Voltar ao Etternum', '/', null, false]] : []).map(([label, path, st, on]) => ({ label, path, bg: on ? '#2A2A2E' : 'transparent', go: () => st ? this.go({ ...st, ...(supabase ? { authed: s.authed } : {}), mapOpen: false }) : this.props.onExit() })),
     };
 
     if (isA) {
@@ -173,14 +223,17 @@ export default class Clube extends React.Component {
         vals.addChap = () => this.upd(x => { x.chapters.push({ t: '', body: '' }); return x; });
         vals.addQuote = () => this.upd(x => { x.quotes.push({ q: '', a: '' }); return x; });
         vals.coverSlotId = 'clube-capa-' + d.id;
-        vals.setCover = url => this.upd(x => { if (url) x.img = url; else delete x.img; return x; });
+        vals.setCover = async url => {
+          if (url && supabase) { try { url = await this.uploadCover(d.id, url); } catch (e) { return this.toast('Não foi possível enviar a capa'); } }
+          this.upd(x => { if (url) x.img = url; else delete x.img; return x; });
+        };
         vals.swatches = SW.map(([c, ink]) => ({ c, ring: d.color === c ? '0 0 0 2px #121214, 0 0 0 4px #E0C78E' : 'inset 0 0 0 1px rgba(255,255,255,.18)', pick: () => this.upd(x => { x.color = c; x.ink = ink; return x; }) }));
         vals.statusOpts = [['rascunho', 'Rascunho'], ['publicado', 'Publicado']].map(([k, label]) => ({ k, label, bg: d.status === k ? '#E0C78E' : 'transparent', fg: d.status === k ? '#14110A' : '#A7A197', go: () => this.upd(x => { x.status = k; return x; }) }));
         vals.featTrack = d.featured ? '#E0C78E' : '#2A2A2E'; vals.featJustify = d.featured ? 'flex-end' : 'flex-start';
         vals.toggleFeat = () => this.upd(x => { x.featured = !x.featured; return x; });
         vals.saveDraft = () => this.commit();
         vals.publish = () => this.commit('publicado');
-        vals.delBook = () => { this.persist(books.filter(b => b.id !== d.id)); this.toast('Livro excluído'); this.go({ view: 'books', draft: null }); };
+        vals.delBook = () => { this.persist(books.filter(b => b.id !== d.id), d.id); this.toast('Livro excluído'); this.go({ view: 'books', draft: null }); };
       }
       vals.mediaSlots = ['Banner do clube', 'Encontro do mês', 'Autor em destaque', 'Ilustração de capítulo', 'Imagem livre', 'Imagem livre', 'Imagem livre', 'Imagem livre'].map((ph, i) => ({ id: 'clube-media-' + (i + 1), ph }));
       vals.files = [{ n: 'Guia de discussão — Em Busca de Sentido.pdf', meta: 'PDF · 1,2 MB · enviado em 28 set', icon: 'file-text' }, { n: 'Áudio do encontro de setembro.mp3', meta: 'Áudio · 38 MB · enviado em 21 set', icon: 'headphones' }, { n: 'Calendário de leituras 2026.pdf', meta: 'PDF · 340 KB · enviado em 2 set', icon: 'calendar' }];

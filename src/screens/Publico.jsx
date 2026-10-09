@@ -3,8 +3,17 @@ import { ETT } from '../data.js';
 import { Icon } from '../components/Icon.jsx';
 import { ImageSlot } from '../components/ImageSlot.jsx';
 
-const SIGNS = [['♑', 'Capricórnio', 120], ['♒', 'Aquário', 219], ['♓', 'Peixes', 320], ['♈', 'Áries', 420], ['♉', 'Touro', 521], ['♊', 'Gêmeos', 621], ['♋', 'Câncer', 722], ['♌', 'Leão', 823], ['♍', 'Virgem', 923], ['♎', 'Libra', 1023], ['♏', 'Escorpião', 1122], ['♐', 'Sagitário', 1222], ['♑', 'Capricórnio', 1232]];
-const signOf = (d, m) => { const v = m * 100 + d; return SIGNS.find(s => v < s[2]) || SIGNS[0]; };
+const SIGNS_ = [['♑', 'Capricórnio', 120], ['♒', 'Aquário', 219], ['♓', 'Peixes', 320], ['♈', 'Áries', 420], ['♉', 'Touro', 521], ['♊', 'Gêmeos', 621], ['♋', 'Câncer', 722], ['♌', 'Leão', 823], ['♍', 'Virgem', 923], ['♎', 'Libra', 1023], ['♏', 'Escorpião', 1122], ['♐', 'Sagitário', 1222], ['♑', 'Capricórnio', 1232]];
+const signOf = (d, m) => { const v = m * 100 + d; return SIGNS_.find(s => v < s[2]) || SIGNS_[0]; };
+const isoDate = br => { const [d, m, y] = br.split('/').map(Number); if (!d || !m || !y || y < 1900 || m > 12 || d > 31) return ''; return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`; };
+const idade = iso => (Date.now() - new Date(iso + 'T12:00:00')) / 3.15576e10;
+// Alerta (erro ou informação) dentro dos formulários de conta.
+const Aviso = ({ t, kind, children }) => (
+  <div role={kind === 'erro' ? 'alert' : 'status'} style={{ padding: '14px 18px', borderRadius: 16, background: kind === 'erro' ? t.dangerBg : t.accentSoft, color: kind === 'erro' ? t.dangerInk : t.accentText, boxShadow: kind === 'erro' ? 'none' : `inset 0 0 0 1px ${t.accentLine}`, font: '600 14px/1.45 Urbanist', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+    <Icon n={kind === 'erro' ? 'circle-alert' : 'circle-check'} s={17} />
+    <span>{children}</span>
+  </div>
+);
 const cpfMask = v => v.replace(/\D/g, '').slice(0, 11).replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 const dateMask = v => v.replace(/\D/g, '').slice(0, 8).replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
 const cpfValid = c => { const d = c.replace(/\D/g, ''); if (d.length !== 11 || /^(\d)\1+$/.test(d)) return false; const calc = n => { let s = 0; for (let i = 0; i < n; i++) s += +d[i] * (n + 1 - i); const r = (s * 10) % 11; return r === 10 ? 0 : r; }; return calc(9) === +d[9] && calc(10) === +d[10]; };
@@ -18,7 +27,7 @@ const TERMOS = [
 
 export default class Publico extends React.Component {
   carRef = React.createRef(); testiRef = React.createRef(); mentesRef = React.createRef(); comoRef = React.createRef(); listaRef = React.createRef(); topRef = React.createRef();
-  state = { faq: 0, f: { nome: 'Ana Clara Souza', email: 'ana@exemplo.com', senha: 'etternum26', cpf: '', nasc: '12/12/1992', termos: false }, err: {}, pw: false, waitDone: false, init: '' };
+  state = { faq: 0, f: this.props.app?.demo ? { nome: 'Ana Clara Souza', email: 'ana@exemplo.com', senha: 'etternum26', cpf: '', nasc: '12/12/1992', termos: false } : { nome: '', email: '', senha: '', cpf: '', nasc: '', termos: false }, busy: false, msg: '', info: '', err: {}, pw: false, waitDone: false, init: '' };
   componentDidMount() { this.applyVariant(); }
   componentDidUpdate() { this.applyVariant(); }
   applyVariant() {
@@ -67,8 +76,34 @@ export default class Publico extends React.Component {
       signo: { sym: sg[0], name: sg[1] },
       chkBg: s.f.termos ? '#E0C78E' : t.card2, chkRing: s.err.termos ? t.danger : t.line2, chkRingW: s.err.termos ? '2px' : '1.5px',
       toggleTermos: () => this.setState(st => ({ f: { ...st.f, termos: !st.f.termos }, err: { ...st.err, termos: false } })),
-      submitCadastro: e => { e.preventDefault(); const err = { cpf: !cpfValid(s.f.cpf), termos: !s.f.termos }; if (err.cpf || err.termos) this.setState({ err }); else nav('triagem'); },
-      submitEntrar: e => { e.preventDefault(); if (!s.f.email || s.f.senha.length < 8 || a.variant === 'erro' && !s.retry) this.setState({ err: { login: true }, retry: true }); else nav('inicio'); },
+      submitCadastro: async e => {
+        e.preventDefault();
+        if (s.busy) return;
+        const nasc = isoDate(s.f.nasc);
+        const err = { cpf: !cpfValid(s.f.cpf), termos: !s.f.termos };
+        const msg = !s.f.nome.trim() ? 'Conte como podemos chamar você.' : !/.+@.+\..+/.test(s.f.email) ? 'Confira o e-mail digitado.' : s.f.senha.length < 8 ? 'A senha precisa ter pelo menos 8 caracteres.' : !nasc ? 'Confira a data de nascimento (dd/mm/aaaa).' : idade(nasc) < 18 ? 'O Etternum é para maiores de 18 anos.' : '';
+        if (err.cpf || err.termos || msg) return this.setState({ err, msg, info: '' });
+        if (a.demo || !a.auth) return nav('triagem');
+        this.setState({ busy: true, msg: '', info: '', err: {} });
+        const r = await a.auth.signUp({ email: s.f.email.trim(), senha: s.f.senha, nome: s.f.nome.trim(), nascimento: nasc, cpf: s.f.cpf });
+        this.setState({ busy: false, msg: r.error || '', info: r.confirm ? `Enviamos um link de confirmação para ${s.f.email.trim()}. Abra o e-mail para ativar sua conta e começar a triagem.` : '' });
+      },
+      submitEntrar: async e => {
+        e.preventDefault();
+        if (s.busy) return;
+        if (a.demo || !a.auth) { if (!s.f.email || s.f.senha.length < 8 || a.variant === 'erro' && !s.retry) this.setState({ err: { login: true }, retry: true }); else nav('inicio'); return; }
+        this.setState({ busy: true, err: {}, msg: '', info: '' });
+        const r = await a.auth.signIn({ email: s.f.email.trim(), senha: s.f.senha });
+        this.setState({ busy: false, err: r.error ? { login: true } : {}, msg: r.error || '' });
+      },
+      esqueci: async () => {
+        if (!/.+@.+\..+/.test(s.f.email)) return this.setState({ err: { login: true }, msg: 'Digite seu e-mail acima e toque de novo em "Esqueci minha senha".' });
+        if (a.demo || !a.auth) return this.setState({ info: 'No modo demonstração não há envio de e-mail.' });
+        const r = await a.auth.reset(s.f.email.trim());
+        this.setState(r.error ? { err: { login: true }, msg: r.error } : { err: {}, msg: '', info: `Se existir uma conta com ${s.f.email.trim()}, você vai receber um link para criar uma nova senha.` });
+      },
+      loginMsg: s.msg || 'E-mail ou senha incorretos.', cadMsg: s.msg, info: s.info, busy: s.busy,
+      cadLabel: s.busy ? 'Criando sua conta…' : 'Criar conta e começar a triagem', entrarLabel: s.busy ? 'Entrando…' : 'Entrar',
       docTitle: route === 'privacidade' ? 'Política de Privacidade' : 'Termos de Uso',
       docSecs: TERMOS.map(([h, p], i) => ({ n: i + 1, h, p })),
       goLanding: () => nav('landing'), goCadastro: () => nav('cadastro'), goEntrar: () => nav('entrar'), goTermos: () => nav('termos'), goPriv: () => nav('privacidade'), goMaestro: () => nav('maestro'),
@@ -842,8 +877,10 @@ export default class Publico extends React.Component {
                           </span>
                         </>
                       ) : null}
-                      <button type={"submit"} style={{ height: "58px", borderRadius: "999px", border: "0", background: v.t?.accent, color: v.t?.onAccent, font: "700 17px Urbanist", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", transition: "background .2s" }}>
-                        Criar conta e começar a triagem
+                      {v.cadMsg ? <Aviso t={v.t} kind="erro">{v.cadMsg}</Aviso> : null}
+                      {v.info ? <Aviso t={v.t} kind="info">{v.info}</Aviso> : null}
+                      <button type={"submit"} disabled={v.busy} style={{ height: "58px", borderRadius: "999px", border: "0", background: v.t?.accent, color: v.t?.onAccent, font: "700 17px Urbanist", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", transition: "background .2s" }}>
+                        {v.cadLabel}
                         <Icon n={"arrow-right"} s={"18"} />
                       </button>
                       <button type={"button"} onClick={v.goEntrar} style={{ border: "0", background: "transparent", color: v.t?.muted, font: "500 15px Urbanist", cursor: "pointer" }}>
@@ -873,10 +910,11 @@ export default class Publico extends React.Component {
                         <>
                           <div role={"alert"} style={{ padding: "14px 18px", borderRadius: "16px", background: v.t?.dangerBg, color: v.t?.dangerInk, font: "600 14px Urbanist", display: "flex", gap: "10px", alignItems: "center" }}>
                             <Icon n={"circle-alert"} s={"17"} />
-                            E-mail ou senha incorretos.
+                            {v.loginMsg}
                           </div>
                         </>
                       ) : null}
+                      {v.info ? <Aviso t={v.t} kind="info">{v.info}</Aviso> : null}
                       <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                         <span style={{ font: "600 14px Urbanist" }}>
                           E-mail
@@ -888,14 +926,14 @@ export default class Publico extends React.Component {
                           <span style={{ font: "600 14px Urbanist" }}>
                             Senha
                           </span>
-                          <span style={{ font: "600 13px Urbanist", color: v.t?.faint }}>
+                          <button type="button" onClick={v.esqueci} style={{ border: 0, padding: 0, background: 'transparent', font: "600 13px Urbanist", color: v.t?.faint, cursor: 'pointer' }}>
                             Esqueci minha senha
-                          </span>
+                          </button>
                         </div>
                         <input type={"password"} value={v.f?.senha ?? ''} onChange={v.on?.senha} style={{ height: "56px", padding: "0 20px", borderRadius: "18px", border: "0", background: v.t?.card2, boxShadow: `inset 0 0 0 1px ${v.t?.line ?? ''}`, color: v.t?.ink, font: "500 16px Urbanist", outline: "none" }} className="publ-f13" />
                       </label>
                       <button type={"submit"} style={{ height: "58px", borderRadius: "999px", border: "0", background: v.t?.accent, color: v.t?.onAccent, font: "700 17px Urbanist", cursor: "pointer" }}>
-                        Entrar
+                        {v.entrarLabel}
                       </button>
                       <button type={"button"} onClick={v.goCadastro} style={{ border: "0", background: "transparent", color: v.t?.muted, font: "500 15px Urbanist", cursor: "pointer" }}>
                         {"Ainda não tem conta? "}

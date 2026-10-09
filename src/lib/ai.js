@@ -1,5 +1,7 @@
 // Client for the Etternum AI backend (server/ai.js). In the native app, set VITE_API_BASE
 // to the deployed web origin (e.g. https://etternum.app) — relative URLs only work on the web.
+import { supabase } from './supabase.js';
+
 const BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
 
 export class AiUnavailable extends Error {}
@@ -7,13 +9,17 @@ export class AiUnavailable extends Error {}
 async function post(path, body, signal) {
   let res;
   try {
-    res = await fetch(BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal });
+    // The API only answers signed-in people (protects the OpenRouter credits).
+    const token = supabase ? (await supabase.auth.getSession()).data.session?.access_token : null;
+    const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+    res = await fetch(BASE + path, { method: 'POST', headers, body: JSON.stringify(body), signal });
   } catch (e) {
     if (e.name === 'AbortError') throw e;
     throw new Error('network');
   }
   // 404: no backend deployed (static hosting); 503: key not configured. Both mean "use demo replies".
   if (res.status === 404 || res.status === 503) throw new AiUnavailable(res.status === 503 ? 'not-configured' : 'no-backend');
+  if (res.status === 401) throw new Error('sessao');
   if (!res.ok) throw new Error('ai-error ' + res.status);
   return res;
 }

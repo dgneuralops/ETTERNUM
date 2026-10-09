@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { ETT } from '../data.js';
 import { streamReply, synthesize, AiUnavailable } from '../lib/ai.js';
+import { createConversa, addMensagem, loadMensagens } from '../lib/supabase.js';
 import { Icon } from '../components/Icon.jsx';
 import { ImageSlot } from '../components/ImageSlot.jsx';
 
@@ -16,7 +17,21 @@ const generic = m => `Olhando pelas minhas ideias: ${m.quote.charAt(0).toLowerCa
 
 export default class Conselho extends React.Component {
   state = { sel: ['drucker', 'christensen', 'jobs'], draft: '', round: null, past: [] };
-  componentDidMount() { if ((this.props.app || {}).variant === 'resultado') this.run(Q, true); }
+  componentDidMount() {
+    const v = (this.props.app || {}).variant || '';
+    if (v === 'resultado') this.run(Q, true);
+    if (v.startsWith('id:')) this.open(v.slice(3));
+  }
+  // Reopens a saved round from "Minhas conversas".
+  async open(id) {
+    try {
+      const rows = await loadMensagens(id);
+      const q = (rows.find(r => r.role === 'user') || {}).content || '';
+      const saved = (rows.find(r => r.role === 'assistant') || {}).meta || {};
+      if (!saved.sel) return;
+      this.setState({ sel: saved.sel, round: { q, sel: saved.sel, texts: saved.texts, n: saved.texts.map(t => t.length), start: [], tick: 999, synth: true, syn: saved.syn || null, live: true } });
+    } catch (e) { console.error('[conselho]', e.message); }
+  }
   componentWillUnmount() { clearInterval(this.ti); this.ctrl && this.ctrl.abort(); }
   run(q, instant) {
     if (!instant && !this.demo) return this.runLive(q);
@@ -53,6 +68,14 @@ export default class Conselho extends React.Component {
       let syn = null;
       try { syn = await synthesize({ area: area.slug, question: q, answers: sel.map((slug, i) => ({ slug, text: texts[i] })), signal: ctrl.signal }); } catch (e) { if (e.name === 'AbortError') return; }
       this.setState(s => ({ round: s.round && { ...s.round, texts, n: texts.map(t => t.length), synth: true, syn } }));
+      const a = this.props.app || {};
+      if (a.loggedIn) {
+        try {
+          const id = await createConversa('conselho', area.slug, q);
+          await addMensagem(id, 'user', q);
+          await addMensagem(id, 'assistant', texts.join('\n\n'), { sel, texts, syn });
+        } catch (e) { console.error('[conselho]', e.message); }
+      }
     } catch (e) {
       if (e.name === 'AbortError') return;
       if (e instanceof AiUnavailable) { this.demo = true; return this.setState({ round: null }, () => this.run(q)); }

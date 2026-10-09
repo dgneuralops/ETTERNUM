@@ -29,17 +29,26 @@ export default class Triagem extends React.Component {
   state = { i: 0, ans: { trabalho: ['Criatividade e design'], dificuldades: ['Ansiedade', 'Solidão', 'Falta de rumo na carreira'], areas: ['vida-interior', 'relacionamentos', 'negocios'] }, pct: 0 };
   componentDidMount() { const v = (this.props.app || {}).variant; if (v === 'build') this.go(STEPS.length - 2); else if (v === 'done') this.setState({ i: STEPS.length - 1, pct: 100 }); else if (v && /^\d+$/.test(v)) this.setState({ i: +v }); }
   componentWillUnmount() { clearInterval(this.bt); clearTimeout(this.at); this.ctrl && this.ctrl.abort(); }
+  respostas() {
+    return Object.fromEntries(STEPS.filter(x => x.type === 'q' && (this.state.ans[x.id] || []).length).map(x => [x.title, x.areas ? this.state.ans[x.id].map(slug => (ETT.areaBySlug[slug] || {}).name || slug) : this.state.ans[x.id]]));
+  }
+  // Saved to the profile once the triagem is done: the Maestro and the minds use it from then on.
+  save() {
+    const a = this.props.app || {};
+    a.saveProfile && a.saveProfile({ triagem: this.respostas(), recomendadas: this.state.recs || [] });
+  }
   // While "Montando seu Etternum…" plays, Jev ranks the minds against the answers.
   rank() {
-    const respostas = Object.fromEntries(STEPS.filter(x => x.type === 'q' && (this.state.ans[x.id] || []).length).map(x => [x.title, x.areas ? this.state.ans[x.id].map(slug => (ETT.areaBySlug[slug] || {}).name || slug) : this.state.ans[x.id]]));
+    const respostas = this.respostas();
     this.ctrl && this.ctrl.abort();
     this.ctrl = new AbortController();
-    rankMinds(respostas, this.ctrl.signal).then(recs => { recs = recs.filter(k => ETT.bySlug[k]); if (recs.length === 3) this.setState({ recs }); }).catch(() => {});
+    rankMinds(respostas, this.ctrl.signal).then(recs => { recs = recs.filter(k => ETT.bySlug[k]); if (recs.length === 3) this.setState({ recs }, () => { if (STEPS[this.state.i].type === 'done') this.save(); }); }).catch(() => {});
   }
   go(i) {
     if (STEPS[i] && STEPS[i].type === 'build') this.rank();
+    if (STEPS[i] && STEPS[i].type === 'done') this.save();
     clearInterval(this.bt); this.setState({ i, pct: 0 });
-    if (STEPS[i] && STEPS[i].type === 'build') this.bt = setInterval(() => this.setState(s => { const pct = Math.min(100, s.pct + 1); if (pct === 100) { clearInterval(this.bt); setTimeout(() => this.setState({ i: i + 1 }), 700); } return { pct }; }), 36);
+    if (STEPS[i] && STEPS[i].type === 'build') this.bt = setInterval(() => this.setState(s => { const pct = Math.min(100, s.pct + 1); if (pct === 100) { clearInterval(this.bt); setTimeout(() => this.go(i + 1), 700); } return { pct }; }), 36);
   }
   next = () => this.go(Math.min(STEPS.length - 1, this.state.i + 1));
   back = () => { if (this.state.i > 0) this.go(Math.max(0, this.state.i - 1 - (STEPS[this.state.i - 1].type === 'build' ? 1 : 0))); };
@@ -72,7 +81,7 @@ export default class Triagem extends React.Component {
     const ctaLabel = { intro: 'Começar', q: step.id === 'areas' ? 'Concluir triagem' : 'Continuar', inter: 'Continuar', done: 'Conhecer o Maestro' }[type] || '';
     return {
       t, is: { intro: type === 'intro', q: type === 'q', inter: type === 'inter', build: type === 'build', done: type === 'done' },
-      step: { ...step, hint: step.hint || '' }, opts, bars, stepKey: 'k' + s.i,
+      u: a.user || {}, step: { ...step, hint: step.hint || '', text: (step.text || '').replace('Ana', (a.user || {}).primeiro || 'Ana') }, opts, bars, stepKey: 'k' + s.i,
       stageLabel: stageIdx >= 0 && stageIdx < 4 ? `Etapa ${stageIdx + 1} de 4 · ${STAGES[stageIdx]}` : stageIdx === 4 ? 'Quase lá' : 'Triagem',
       showTop: type !== 'done', backOp: s.i === 0 ? 0 : 1, back: this.back, next: this.next,
       topPad: mob ? 'calc(8px + env(safe-area-inset-top)) 20px 4px' : '20px 32px 8px', mainPad: mob ? '20px 20px 120px' : '48px 32px 130px', ctaPad: mob ? '16px 20px max(28px, env(safe-area-inset-bottom))' : '20px 32px 40px',
@@ -147,9 +156,9 @@ export default class Triagem extends React.Component {
                     {"Para que as grandes mentes possam orientar você de verdade, conte um pouco sobre a sua vida... Já sabemos que você é de "}
                     <span style={{ color: v.t?.ink, fontWeight: "700" }}>
                       <span style={{ fontFamily: "'EB Garamond',serif", color: v.t?.accentText }}>
-                        ♐︎
+                        {v.u?.signoSym}︎
                       </span>
-                      {" Sagitário"}
+                      {" " + (v.u?.signo || '')}
                     </span>
                     .
                   </p>
@@ -268,7 +277,7 @@ export default class Triagem extends React.Component {
                   <h1 style={{ margin: "0", font: `700 ${v.hq ?? ''}/1.05 Urbanist`, letterSpacing: "-.03em" }}>
                     {"Pronto, "}
                     <span style={{ fontFamily: "'EB Garamond',serif", fontStyle: "italic", fontWeight: "400", color: v.t?.accentText }}>
-                      Ana.
+                      {v.u?.primeiro}.
                     </span>
                   </h1>
                   <p style={{ margin: "0", maxWidth: "480px", font: "500 18px/1.55 Urbanist", color: v.t?.muted }}>

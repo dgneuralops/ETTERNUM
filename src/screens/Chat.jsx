@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { ETT } from '../data.js';
 import { streamReply, AiUnavailable } from '../lib/ai.js';
+import { listConversas, loadMensagens, createConversa, addMensagem, quando } from '../lib/supabase.js';
 import { Icon } from '../components/Icon.jsx';
 import { ImageSlot } from '../components/ImageSlot.jsx';
 
@@ -50,7 +51,37 @@ const SEED_USER = 'Estou exausta e sem saber se continuo no meu emprego.';
 export default class Chat extends React.Component {
   listRef = React.createRef(); inputRef = React.createRef();
   state = { msgs: [], draft: '', thinking: false, stream: null, error: false, crisis: false, tip: false, recUsed: false };
-  componentDidMount() { this.seed(); }
+  componentDidMount() {
+    // Signed in and no demo variant: resume the latest conversation with this mind.
+    // Demo variants ("novo", "conversa"…) only apply without an account; "msg:" starts a new conversation.
+    if (this.a.loggedIn && !/^(msg|area):/.test(this.a.variant || '')) this.resume();
+    else this.seed();
+  }
+  get tipo() { return this.mindSlug === 'maestro' ? 'maestro' : 'mente'; }
+  async resume(id) {
+    try {
+      const hist = await listConversas({ tipo: this.tipo, slug: this.mindSlug });
+      this.setState({ hist });
+      const conv = id ? hist.find(c => c.id === id) : hist[0];
+      if (!conv) return;
+      const rows = await loadMensagens(conv.id);
+      this.conversaId = conv.id;
+      const msgs = rows.map(r => r.role === 'user' ? { role: 'user', text: r.content } : { role: 'ai', md: r.content, blocks: parse(r.content), rec: r.meta && r.meta.rec });
+      this.setState({ msgs, recUsed: msgs.some(m => m.rec), crisis: rows.some(r => r.meta && r.meta.crisis) });
+      this.scrollDown();
+    } catch (e) { console.error('[conversas]', e.message); }
+  }
+  // Saves one message, creating the conversation on the first one.
+  async persist(role, content, meta) {
+    if (!this.a.loggedIn) return;
+    try {
+      if (!this.conversaId) {
+        this.conversaId = await createConversa(this.tipo, this.mindSlug, role === 'user' ? content : 'Conversa');
+        listConversas({ tipo: this.tipo, slug: this.mindSlug }).then(hist => this.setState({ hist })).catch(() => {});
+      }
+      await addMensagem(this.conversaId, role, content, meta);
+    } catch (e) { console.error('[conversas]', e.message); }
+  }
   componentWillUnmount() { clearInterval(this.si); clearTimeout(this.tt); this.ctrl && this.ctrl.abort(); }
   get a() { return this.props.app || {}; }
   get mindSlug() { return this.a.route === 'maestro' ? 'maestro' : (this.a.param || 'frankl'); }
@@ -67,6 +98,10 @@ export default class Chat extends React.Component {
     if (v === 'erro') return this.setState({ msgs: [{ role: 'user', text: SEED_USER }], error: true });
   }
   reply(first, text) {
+    const nome = (this.a.user || {}).primeiro || 'Ana';
+    return this.replyRaw(first, text).replace(/\bAna\b/g, nome);
+  }
+  replyRaw(first, text) {
     const s = this.mindSlug;
     if (s === 'maestro') { if (text && /sumir|morrer|me matar|acabar com tudo|não aguento mais viver/i.test(text)) return MAESTRO_CRISIS; if (text && /neg[oó]cio|empresa|cliente/i.test(text)) return MAESTRO_BIZ; return first ? MAESTRO_FIRST : MAESTRO_NEXT; }
     if (s === 'frankl') return first ? FRANKL : FRANKL_2;
@@ -96,9 +131,11 @@ export default class Chat extends React.Component {
     // Jev flags risk before the reply streams: show the CVV panel right away.
     const onMeta = m => { if (m.crisis) this.setState({ crisis: true }); };
     try {
-      const { text: md, crisis: risk, recommend } = await streamReply({ mind: this.mindSlug, messages: history, signal: this.ctrl.signal, onDelta: show, onMeta });
+      this.persist('user', text);
+      const { text: md, crisis: risk, recommend } = await streamReply({ mind: this.mindSlug, messages: history, profile: this.a.profileAi, signal: this.ctrl.signal, onDelta: show, onMeta });
       const rec = isM && !crisis && !risk && !this.state.recUsed && recommend && ETT.bySlug[recommend] ? recommend : null;
       this.setState(s => ({ stream: null, thinking: false, recUsed: s.recUsed || !!rec, msgs: [...s.msgs, { role: 'ai', md: md.trim(), blocks: parse(md), rec }] }));
+      this.persist('assistant', md.trim(), rec || risk ? { rec, crisis: risk || undefined } : null);
       this.scrollDown();
     } catch (e) {
       if (e.name === 'AbortError') return;
@@ -137,7 +174,7 @@ export default class Chat extends React.Component {
     const toMsg = (m, i, streaming) => { const rec = m.rec && !streaming ? E.bySlug[m.rec] : null; return { user: m.role === 'user', ai: m.role === 'ai', text: m.text || '', blocks: (m.blocks || []).map(fmt), cursor: !!streaming, hasRec: !!rec, rec: rec ? { ...rec, ini: E.initials(rec.name) } : {}, recGo: rec ? () => nav('mente', rec.slug) : null }; };
     const msgs = s.msgs.map((m, i) => toMsg(m, i));
     if (s.stream) msgs.push(toMsg({ role: 'ai', blocks: cut(s.stream.blocks, s.stream.n) }, -1, true));
-    const first = mind.name.split(' ')[0];
+    const first = mind.name.split(' ')[0]; const nome = (a.user || {}).primeiro || 'Ana';
     const sugs = isM ? (areaV ? ['Estou pensando em largar meu emprego para empreender.', 'Como decidir entre dois caminhos?', 'Meu negócio não cresce. Por onde começo?'] : ['Hoje eu só preciso desabafar.', 'Estou confuso(a) e não sei por onde começar.', 'Quem pode me ajudar com meu negócio?'])
       : slug === 'frankl' ? ['Como encontro sentido no meu trabalho?', 'Estou atravessando uma perda.', 'Como lidar com o cansaço?'] : ['Como você enxergaria o meu momento?', `O que você me diria sobre ${raw.spec.split(' · ')[0].toLowerCase()}?`, 'Me conte uma ideia que mudou vidas.'];
     const fav = !!(a.favs || {})[slug];
@@ -150,10 +187,10 @@ export default class Chat extends React.Component {
       tip: s.tip, tipOn: () => this.setState({ tip: true }), tipOff: () => this.setState({ tip: false }), tipToggle: () => this.setState({ tip: !s.tip }),
       starBg: fav ? '#E0C78E' : t.card2, starFg: fav ? '#14110A' : t.ink, fav: () => a.toggleFav(slug),
       forward: () => nav('maestro', '', `msg:Estava conversando com ${raw.name} e queria a sua ajuda para continuar.`),
-      reset: () => { clearInterval(this.si); this.setState({ msgs: [], thinking: false, stream: null, error: false, crisis: false, recUsed: false }); },
+      reset: () => { clearInterval(this.si); this.conversaId = null; this.setState({ msgs: [], thinking: false, stream: null, error: false, crisis: false, recUsed: false }); },
       back: () => nav(isM ? 'inicio' : 'mentes'),
       crisis: s.crisis, empty: !s.msgs.length && !s.stream && !s.thinking,
-      emptyTitle: isM ? (areaV ? 'Me conte o que está acontecendo.' : v === 'novo' ? 'Bem-vinda ao Etternum, Ana. Meu nome é Aurelius. Mas aqui, todos me chamam de Maestro.' : 'Oi, Ana. Estou aqui.') : raw.inspired ? `Uma cápsula sobre as ideias de ${raw.name}.` : `Olá, Ana. Sou ${first === 'Sri' ? raw.name : raw.name}.`,
+      emptyTitle: isM ? (areaV ? 'Me conte o que está acontecendo.' : v === 'novo' ? `Boas-vindas ao Etternum, ${nome}. Meu nome é Aurelius. Mas aqui, todos me chamam de Maestro.` : `Oi, ${nome}. Estou aqui.`) : raw.inspired ? `Uma cápsula sobre as ideias de ${raw.name}.` : `Olá, ${nome}. Sou ${raw.name}.`,
       emptySub: isM ? 'Pode desabafar, perguntar ou pedir um conselho. Se fizer sentido, eu apresento você a uma grande mente.' : raw.inspired ? 'Falo sobre o pensamento dela, nunca como ela. Por onde quer começar?' : `“${raw.quote}” Por onde quer começar?`,
       obraLabel: raw.inspired ? `Alimentada com toda a obra de ${raw.name}` : `Alimentada com todos os livros e materiais de ${first === 'Sri' ? raw.name : raw.name}`,
       sugs: sugs.map(label => ({ label, go: () => this.send(label) })),
@@ -165,7 +202,7 @@ export default class Chat extends React.Component {
       submit: e => { e.preventDefault(); this.send(s.draft); }, busy: s.thinking || !!s.stream, sendBg: s.draft.trim() ? t.accent : t.card3,
       placeholder: isM ? 'Conte o que você está vivendo…' : `Escreva para ${first}…`, listRef: this.listRef, inputRef: this.inputRef,
       histTitle: isM ? 'Conversas com o Maestro' : `Conversas com ${first}`,
-      hist: (isM ? [['Estou exausta e sem saber se continuo no meu emprego.', 'Hoje, 21:58'], ['Como lidar com a solidão à noite', 'Terça, 23:10'], ['Quero voltar a dançar', '28 set'], ['Primeira conversa', '20 set']] : [['Reencontrar o porquê no trabalho', 'Ontem, 22:14'], ['Sentido nas pequenas coisas', '30 set'], ['Primeira conversa', '22 set']]).map(([title, when], i) => ({ title, when, bg: i === 0 ? t.card2 : 'transparent', go: () => this.setState({ msgs: [] }) })),
+      hist: this.a.loggedIn ? (s.hist || []).map(c => ({ title: c.titulo, when: quando(c.updated_at), bg: c.id === this.conversaId ? t.card2 : 'transparent', go: () => { clearInterval(this.si); this.ctrl && this.ctrl.abort(); this.conversaId = null; this.setState({ msgs: [], thinking: false, stream: null, error: false, crisis: false }); this.resume(c.id); } })) : (isM ? [['Estou exausta e sem saber se continuo no meu emprego.', 'Hoje, 21:58'], ['Como lidar com a solidão à noite', 'Terça, 23:10'], ['Quero voltar a dançar', '28 set'], ['Primeira conversa', '20 set']] : [['Reencontrar o porquê no trabalho', 'Ontem, 22:14'], ['Sentido nas pequenas coisas', '30 set'], ['Primeira conversa', '22 set']]).map(([title, when], i) => ({ title, when, bg: i === 0 ? t.card2 : 'transparent', go: () => this.setState({ msgs: [] }) })),
     };
   }
 

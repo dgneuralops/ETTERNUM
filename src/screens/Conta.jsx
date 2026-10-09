@@ -1,5 +1,20 @@
 import React, { Fragment } from 'react';
 import { ETT } from '../data.js';
+import { supabase, listConversas, deleteConversa, quando } from '../lib/supabase.js';
+
+// Perfil > Memória: o que o Etternum sabe da pessoa, montado a partir da triagem.
+const T = { trabalho: 'Com o que você trabalha?', gosta: 'O que você gosta de fazer?', naogosta: 'E o que você não gosta de fazer?', dif: 'Quais são as suas maiores dificuldades hoje?', estresse: 'O que mais deixa você estressado(a) num dia?', desgaste: 'Qual é a maior causa do seu desgaste?', come: 'O que você gosta de comer?', naocome: 'E o que você não gosta de comer?', espera: 'O que você espera encontrar no Etternum?', areas: 'Quais áreas da vida mais interessam a você?' };
+const DEMO_MEMORIA = [['Quem é', 'Designer numa agência, faz freelas à noite. Gosta de dançar, cozinhar e ler poesia.', 'user-round'], ['Momento atual', 'Exausta e em dúvida se continua no emprego.', 'clock'], ['Desafios em andamento', 'Ansiedade, solidão e falta de rumo na carreira.', 'mountain'], ['Preferências e valores', 'Valoriza criar coisas úteis. Ama açaí e comida japonesa; não gosta de fígado.', 'heart'], ['Progressos e decisões', 'Vai anotar três momentos em que se sentiu útil nesta semana.', 'flag'], ['Pontos de atenção', 'Noites com pouco sono costumam piorar a ansiedade.', 'triangle-alert']];
+const DEMO_TRIAGEM = [['Com o que trabalha', 'Criatividade e design'], ['Gosta de fazer', 'Dançar, cozinhar, ler poesia'], ['Não gosta de fazer', 'Reuniões longas'], ['Maiores dificuldades', 'Ansiedade, solidão, falta de rumo na carreira'], ['O que mais estressa', 'Excesso de trabalho'], ['Maior causa de desgaste', 'Trabalho'], ['Gosta de comer', 'Açaí, comida japonesa'], ['Não gosta de comer', 'Fígado'], ['Espera encontrar', 'Alguém para conversar, clareza para decidir'], ['Áreas de interesse', 'Vida Interior, Relacionamentos, Negócios']];
+const L = (tri, k) => (tri[T[k]] || []).join(', ');
+const memoriaDe = tri => [
+  ['Quem é', [L(tri, 'trabalho') && `Trabalha com ${L(tri, 'trabalho').toLowerCase()}.`, L(tri, 'gosta') && `Gosta de ${L(tri, 'gosta').toLowerCase()}.`].filter(Boolean).join(' '), 'user-round'],
+  ['Momento atual', [L(tri, 'desgaste') && `Maior desgaste: ${L(tri, 'desgaste').toLowerCase()}.`, L(tri, 'estresse') && `O que mais estressa: ${L(tri, 'estresse').toLowerCase()}.`].filter(Boolean).join(' '), 'clock'],
+  ['Desafios em andamento', L(tri, 'dif'), 'mountain'],
+  ['Preferências', [L(tri, 'come') && `Gosta de comer: ${L(tri, 'come').toLowerCase()}.`, L(tri, 'naocome') && `Não gosta: ${L(tri, 'naocome').toLowerCase()}.`].filter(Boolean).join(' '), 'heart'],
+  ['O que espera encontrar', L(tri, 'espera'), 'flag'],
+  ['Áreas de interesse', L(tri, 'areas'), 'layout-grid'],
+].filter(([, text]) => text);
 import { Overlay } from '../components/Overlay.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { ImageSlot } from '../components/ImageSlot.jsx';
@@ -13,8 +28,13 @@ const CONVS = [
   ['maestro', 'maestro', 'Hoje eu só preciso desabafar.', '22 set, 22:40'],
 ];
 export default class Conta extends React.Component {
-  state = { convs: CONVS.map((c, i) => i), modal: null, typed: '', memory: true, capsula: 'seneca' };
-  componentDidMount() { if ((this.props.app || {}).variant === 'vazio') this.setState({ convs: [] }); }
+  state = { convs: CONVS.map((c, i) => i), modal: null, typed: '', memory: true, capsula: ((this.props.app || {}).user || {}).capsula || 'seneca' };
+  componentDidMount() {
+    const a = this.props.app || {};
+    if (a.variant === 'vazio') this.setState({ convs: [] });
+    if (a.loggedIn) listConversas().then(db => this.setState({ db })).catch(() => this.setState({ db: [] }));
+    if (a.variant === 'nova-senha') this.ask({ title: 'Crie uma nova senha', text: 'Digite a nova senha da sua conta (pelo menos 8 caracteres).', cta: 'Salvar nova senha', kind: 'senha', run: async () => { const r = await a.auth.newPassword(this.state.typed); a.toast(r.error || 'Senha atualizada.'); } });
+  }
   sk(w, h, r) { return React.createElement('div', { style: { position: 'relative', overflow: 'hidden', width: w, height: h, borderRadius: r, background: ((this.props.app || {}).t || {}).card2, flex: 'none' } }, React.createElement('div', { style: { position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(224,199,142,.1),transparent)', animation: 'etShimmer 1.6s ease-in-out infinite' } })); }
   ask(m) { this.setState({ modal: m, typed: '' }); }
   renderVals() {
@@ -25,36 +45,40 @@ export default class Conta extends React.Component {
     const favSlugs = Object.keys(a.favs || {}).filter(k => a.favs[k] && E.bySlug[k]);
     const h = React.createElement;
     const skCard = () => h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8 } }, this.sk('100%', 110, 16), this.sk('70%', 12, 6), this.sk('45%', 10, 6));
-    const m = s.modal;
+    const m = s.modal; const u = a.user || {};
     return {
       t: { ...t, pastel0: t.pastel[0] }, mobile: mob, desktop: !mob, h1: mob ? '30px' : '42px', h2: mob ? '20px' : '24px', boxPad: mob ? '22px' : '32px',
       isConversas: route === 'conversas', isPerfil: route === 'perfil', isPlano: route === 'plano', isMemoria: route === 'memoria', isEstados: route === 'estados',
-      convs: s.convs.map(i => { const [type, slug, title, when] = CONVS[i]; const mind = E.bySlug[slug]; const area = E.areaBySlug[slug];
+      convs: a.loggedIn ? (s.db || []).map(c => { const mind = E.bySlug[c.slug], area = E.areaBySlug[c.slug], type = c.tipo === 'mente' ? 'mind' : c.tipo;
+        return { isMind: type === 'mind', isMaestro: type === 'maestro', isConselho: type === 'conselho', slug: c.slug, ini: mind ? E.initials(mind.name) : '', title: c.titulo, when: quando(c.updated_at),
+          label: type === 'mind' ? (mind || {}).name : type === 'maestro' ? 'Maestro' : `Conselho · ${(area || {}).name || ''}`, tint: area ? E.hexA(area.color, .16) : '', color: area ? area.color : '',
+          go: () => type === 'mind' ? nav('mente', c.slug) : type === 'maestro' ? nav('maestro') : nav('conselho', c.slug, 'id:' + c.id),
+          del: () => this.ask({ title: 'Apagar esta conversa?', text: `“${c.titulo}” será removida do seu histórico. Essa ação não pode ser desfeita.`, cta: 'Apagar', run: async () => { try { await deleteConversa(c.id); this.setState(st => ({ db: st.db.filter(x => x.id !== c.id) })); toast('Conversa apagada.'); } catch (e) { toast('Não foi possível apagar agora.'); } } }) }; }) : s.convs.map(i => { const [type, slug, title, when] = CONVS[i]; const mind = E.bySlug[slug]; const area = E.areaBySlug[slug];
         return { isMind: type === 'mind', isMaestro: type === 'maestro', isConselho: type === 'conselho', slug, ini: mind ? E.initials(mind.name) : '', title, when,
           label: type === 'mind' ? mind.name : type === 'maestro' ? 'Maestro' : `Conselho · ${area.name}`, tint: area ? E.hexA(area.color, .16) : '', color: area ? area.color : '',
           go: () => type === 'mind' ? nav('mente', slug, 'conversa') : type === 'maestro' ? nav('maestro', '', 'recomendacao') : nav('conselho', slug, 'resultado'),
           del: () => this.ask({ title: 'Apagar esta conversa?', text: `“${title}” será removida do seu histórico. Essa ação não pode ser desfeita.`, cta: 'Apagar', run: () => { this.setState(st => ({ convs: st.convs.filter(x => x !== i) })); toast('Conversa apagada.'); } }) }; }),
-      hasConvs: s.convs.length > 0, noConvs: s.convs.length === 0, goMaestro: () => nav('maestro'),
+      hasConvs: (a.loggedIn ? (s.db || []) : s.convs).length > 0, noConvs: a.loggedIn ? !!s.db && !s.db.length : s.convs.length === 0, goMaestro: () => nav('maestro'),
       avSize: mob ? '64px' : '84px', avFont: mob ? '22px' : '28px', perfilCols: mob ? '1fr' : 'minmax(0,1fr) 340px', dataCols: mob ? '1fr' : '1fr 1fr', memCols: mob ? '1fr' : 'repeat(3,1fr)', triCols: mob ? '1fr' : '240px 1fr',
-      dados: [['Nome', 'Ana Clara Souza'], ['E-mail', 'ana@exemplo.com'], ['CPF', '***.982.247-**'], ['Nascimento', '12/12/1992'], ['Signo', '♐︎ Sagitário'], ['Plano', { trial: 'Teste grátis', free: 'Gratuito', premium: 'Premium' }[plan]]].map(([k, v]) => ({ k, v })),
-      hasMemory: s.memory, noMemory: !s.memory,
-      memoria: [['Quem é', 'Designer numa agência, faz freelas à noite. Gosta de dançar, cozinhar e ler poesia.', 'user-round'], ['Momento atual', 'Exausta e em dúvida se continua no emprego.', 'clock'], ['Desafios em andamento', 'Ansiedade, solidão e falta de rumo na carreira.', 'mountain'], ['Preferências e valores', 'Valoriza criar coisas úteis. Ama açaí e comida japonesa; não gosta de fígado.', 'heart'], ['Progressos e decisões', 'Vai anotar três momentos em que se sentiu útil nesta semana.', 'flag'], ['Pontos de atenção', 'Noites com pouco sono costumam piorar a ansiedade.', 'triangle-alert']].map(([title, text, icon], i) => ({ title, text, icon, bg: t.pastel[i] })),
-      askMem: () => this.ask({ title: 'Apagar a memória?', text: 'O Etternum vai esquecer o resumo que aprendeu sobre você. Suas conversas continuam guardadas.', cta: 'Apagar memória', run: () => { this.setState({ memory: false }); toast('Memória apagada.'); } }),
-      triagem: [['Com o que trabalha', 'Criatividade e design'], ['Gosta de fazer', 'Dançar, cozinhar, ler poesia'], ['Não gosta de fazer', 'Reuniões longas'], ['Maiores dificuldades', 'Ansiedade, solidão, falta de rumo na carreira'], ['O que mais estressa', 'Excesso de trabalho'], ['Maior causa de desgaste', 'Trabalho'], ['Gosta de comer', 'Açaí, comida japonesa'], ['Não gosta de comer', 'Fígado'], ['Espera encontrar', 'Alguém para conversar, clareza para decidir'], ['Áreas de interesse', 'Vida Interior, Relacionamentos, Negócios']].map(([k, v]) => ({ k, v })),
+      u, dados: [['Nome', u.nome], ['E-mail', u.email], ['CPF', u.cpf || '—'], ['Nascimento', u.nascimento || '—'], ['Signo', u.signo ? `${u.signoSym}︎ ${u.signo}` : '—'], ['Plano', { trial: 'Teste grátis', free: 'Gratuito', premium: 'Premium' }[plan]]].map(([k, v]) => ({ k, v })),
+      hasMemory: u.demo ? s.memory : !!u.triagem, noMemory: u.demo ? !s.memory : !u.triagem,
+      memoria: (u.demo ? DEMO_MEMORIA : memoriaDe(u.triagem || {})).map(([title, text, icon], i) => ({ title, text, icon, bg: t.pastel[i % 6] })),
+      askMem: () => this.ask({ title: 'Apagar a memória?', text: 'O Etternum vai esquecer o resumo que aprendeu sobre você. Suas conversas continuam guardadas.', cta: 'Apagar memória', run: () => { if (u.demo) this.setState({ memory: false }); else a.saveProfile({ triagem: null, recomendadas: [] }); toast('Memória apagada.'); } }),
+      triagem: (u.demo ? DEMO_TRIAGEM : Object.entries(u.triagem || {}).map(([k, v]) => [k.replace(/\?$/, ''), Array.isArray(v) ? v.join(', ') : String(v)])).map(([k, v]) => ({ k, v })),
       goTriagem: () => nav('triagem'),
       favs: favSlugs.map(k => ({ slug: k, name: E.bySlug[k].name, ini: E.initials(E.bySlug[k].name), go: () => nav('mente', k) })),
-      toggleTheme: a.toggleTheme, themeLabel: t.name === 'dark' ? 'Escuro' : 'Claro', goSair: () => nav('landing'),
-      askDelete: () => this.ask({ title: 'Excluir sua conta?', text: 'Todos os seus dados, conversas e memória serão apagados de forma permanente. Para confirmar, digite EXCLUIR.', cta: 'Excluir minha conta', needType: true, run: () => nav('landing') }),
+      toggleTheme: a.toggleTheme, themeLabel: t.name === 'dark' ? 'Escuro' : 'Claro', goSair: () => (a.auth && a.loggedIn ? a.auth.signOut() : nav('landing')),
+      askDelete: () => this.ask({ title: 'Excluir sua conta?', text: 'Todos os seus dados, conversas e memória serão apagados de forma permanente. Para confirmar, digite EXCLUIR.', cta: 'Excluir minha conta', needType: true, run: async () => { if (a.loggedIn) { const { error } = await supabase.rpc('excluir_conta'); if (error) return toast('Não foi possível excluir agora.'); await a.auth.signOut(); } nav('landing'); } }),
       planTabs: [['trial', 'Teste'], ['free', 'Gratuito'], ['premium', 'Premium']].map(([k, label]) => ({ label, bg: plan === k ? t.altBg : 'transparent', fg: plan === k ? t.altFg : t.muted, go: () => a.setPlan(k) })),
-      planName: { trial: 'Teste grátis · 14 dias', free: 'Gratuito', premium: 'Premium' }[plan],
-      planText: { trial: 'Seu teste de 14 dias termina em 17 de outubro (14 dias restantes). Até lá, tudo está liberado.', free: 'Você usou 3 de 5 mensagens hoje. Sua cápsula do plano gratuito é Sêneca. O Maestro está sempre disponível.', premium: 'Acesso ilimitado a todas as mentes. Obrigado!' }[plan],
+      planName: { trial: `Teste grátis · ${u.diasTrial} dias`, free: 'Gratuito', premium: 'Premium' }[plan],
+      planText: { trial: `Seu teste de 14 dias termina em ${(u.trialAte || new Date(Date.now() + 14 * 864e5)).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })} (${u.diasTrial} dias restantes). Até lá, tudo está liberado.`, free: 'Você usou 3 de 5 mensagens hoje. Sua cápsula do plano gratuito é Sêneca. O Maestro está sempre disponível.', premium: 'Acesso ilimitado a todas as mentes. Obrigado!' }[plan],
       isTrial: plan === 'trial', isFree: plan === 'free', notPremium: plan !== 'premium',
       usage: [0, 1, 2, 3, 4].map(i => ({ bg: i < 3 ? '#E0C78E' : t.track })),
       premCols: mob ? '1fr' : '1fr 1fr',
       beneficios: [['Todas as 61 mentes, sem limite', 'users'], ['Conselho com até 4 mentes', 'users-round'], ['Memória completa', 'brain'], ['Mensagens ilimitadas', 'messages-square'], ['Em breve: Cápsula de Memória Viva', 'clock']].map(([text, icon]) => ({ text, icon })),
-      assinar: () => { a.setPlan('premium'); toast('Bem-vinda ao Premium, Ana.'); },
+      assinar: () => { if (!u.demo) return toast('A assinatura Premium chega em breve. Por enquanto, aproveite o teste completo.'); a.setPlan('premium'); toast(`Boas-vindas ao Premium, ${u.primeiro}.`); },
       capCols: mob ? 'repeat(2,1fr)' : 'repeat(auto-fill,minmax(150px,1fr))',
-      capsulas: ['seneca', 'frankl', 'jung', 'rumi', 'arendt', 'drucker'].map(k => { const on = s.capsula === k; return { slug: k, name: E.bySlug[k].name, on, sub: on ? 'Sua cápsula' : E.bySlug[k].spec.split(' · ')[0], subColor: on ? t.accentText : t.faint, ring: on ? t.accent : t.line, ringW: on ? '2px' : '1px', pick: () => { this.setState({ capsula: k }); toast(`${E.bySlug[k].name} é a sua cápsula do plano gratuito.`); } }; }),
+      capsulas: ['seneca', 'frankl', 'jung', 'rumi', 'arendt', 'drucker'].map(k => { const on = s.capsula === k; return { slug: k, name: E.bySlug[k].name, on, sub: on ? 'Sua cápsula' : E.bySlug[k].spec.split(' · ')[0], subColor: on ? t.accentText : t.faint, ring: on ? t.accent : t.line, ringW: on ? '2px' : '1px', pick: () => { this.setState({ capsula: k }); a.saveProfile && a.saveProfile({ capsula: k }); toast(`${E.bySlug[k].name} é a sua cápsula do plano gratuito.`); } }; }),
       memHeroH: mob ? 'auto' : '460px', hMem: mob ? '36px' : '56px', memStepCols: mob ? '1fr' : 'repeat(3,1fr)',
       wave: [10, 18, 26, 14, 22, 28, 12, 20, 24, 8, 16, 26, 20, 12, 22, 18, 10, 24, 14, 8].map(x => x + 'px'),
       memSteps: [['Reúna memórias', 'Histórias, fotos, cartas e áudios. Do jeito que você lembra.', 'archive'], ['Ensine o jeito de ser', 'Valores, expressões, o modo de aconselhar e de rir.', 'feather'], ['Converse e preserve', 'Revisite essa voz quando sentir saudade, e passe adiante.', 'infinity']].map(([title, text, icon], i) => ({ title, text, icon, bg: t.pastel[[0, 2, 1][i]] })),
@@ -65,8 +89,9 @@ export default class Conta extends React.Component {
       toastOk: () => toast('Tudo certo. Alterações salvas.'), toastErr: () => toast('A conexão caiu. Tente enviar de novo.'),
       askDemo: () => this.ask({ title: 'Apagar esta conversa?', text: 'Ela será removida do seu histórico. Essa ação não pode ser desfeita.', cta: 'Apagar', run: () => toast('Conversa apagada.') }),
       go404: () => nav('404'),
-      modal: m ? { ...m, needType: !!m.needType } : null, typed: s.typed, onTyped: e => this.setState({ typed: e.target.value }),
-      confirmDisabled: !!(m && m.needType && s.typed.trim().toUpperCase() !== 'EXCLUIR'), confirmBg: m && m.needType && s.typed.trim().toUpperCase() !== 'EXCLUIR' ? t.card3 : t.danger,
+      modal: m ? { ...m, needType: !!m.needType || m.kind === 'senha' } : null, typed: s.typed, onTyped: e => this.setState({ typed: e.target.value }),
+      confirmDisabled: !!(m && (m.kind === 'senha' ? s.typed.length < 8 : m.needType && s.typed.trim().toUpperCase() !== 'EXCLUIR')), confirmBg: m && (m.kind === 'senha' ? s.typed.length < 8 : m.needType && s.typed.trim().toUpperCase() !== 'EXCLUIR') ? t.card3 : m && m.kind === 'senha' ? t.accent : t.danger,
+      modalType: m && m.kind === 'senha' ? 'password' : 'text', modalPh: m && m.kind === 'senha' ? 'Nova senha' : 'Digite EXCLUIR',
       confirm: () => { const run = m && m.run; this.setState({ modal: null }); run && run(); }, closeModal: () => this.setState({ modal: null }), stop: e => e.stopPropagation(),
       modalPlace: mob ? 'end center' : 'center', modalPadOuter: mob ? '12px' : '24px',
     };
@@ -170,18 +195,18 @@ export default class Conta extends React.Component {
             <section data-screen-label={"13 Perfil"} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
                 <span style={{ flex: "none", width: v.avSize, height: v.avSize, borderRadius: "50%", background: v.t?.pastel0, color: "#15130E", display: "grid", placeItems: "center", font: `800 ${v.avFont ?? ''} Urbanist` }}>
-                  AC
+                  {v.u?.iniciais}
                 </span>
                 <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                   <h1 style={{ margin: "0", font: `700 ${v.h1 ?? ''}/1.05 Urbanist`, letterSpacing: "-.025em" }}>
-                    Ana Clara Souza
+                    {v.u?.nome}
                   </h1>
                   <span style={{ font: "500 15px Urbanist", color: v.t?.muted }}>
-                    {"33 anos · "}
+                    {v.u?.idade ? `${v.u.idade} anos · ` : ''}
                     <span style={{ fontFamily: "'EB Garamond',serif", color: v.t?.accentText }}>
-                      ♐︎
+                      {v.u?.signoSym}︎
                     </span>
-                    {" Sagitário · membro desde 20 de setembro"}
+                    {` ${v.u?.signo || ''} · membro desde ${v.u?.membroDesde || ''}`}
                   </span>
                 </div>
               </div>
@@ -606,7 +631,7 @@ export default class Conta extends React.Component {
                 </span>
                 {v.modal?.needType ? (
                   <>
-                    <input value={v.typed ?? ''} onChange={v.onTyped} placeholder={"Digite EXCLUIR"} style={{ height: "52px", padding: "0 18px", borderRadius: "16px", border: "0", background: v.t?.card2, boxShadow: `inset 0 0 0 1px ${v.t?.line ?? ''}`, color: v.t?.ink, font: "700 16px Urbanist", letterSpacing: ".08em", outline: "none" }} />
+                    <input type={v.modalType} value={v.typed ?? ''} onChange={v.onTyped} placeholder={v.modalPh} style={{ height: "52px", padding: "0 18px", borderRadius: "16px", border: "0", background: v.t?.card2, boxShadow: `inset 0 0 0 1px ${v.t?.line ?? ''}`, color: v.t?.ink, font: "700 16px Urbanist", letterSpacing: ".08em", outline: "none" }} />
                   </>
                 ) : null}
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>

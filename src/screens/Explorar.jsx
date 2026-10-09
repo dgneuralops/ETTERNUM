@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { ETT } from '../data.js';
+import { signoCard } from '../lib/signos.js';
 import { Icon } from '../components/Icon.jsx';
 import { ImageSlot } from '../components/ImageSlot.jsx';
 
@@ -27,8 +28,8 @@ export default class Explorar extends React.Component {
       area: { ...area, tint: E.hexA(area.color, .14), ring: E.hexA(area.color, .35) }, bigIcon: mob ? '72px' : '96px', bigIconInner: mob ? '34' : '44', headDir: mob ? 'column' : 'row', headAlign: mob ? 'flex-start' : 'center',
       actCols: mob ? '1fr' : '1fr 1fr', goAreas: () => nav('areas'), goConselho: () => nav('conselho', area.slug), goMaestroArea: () => nav('maestro', '', 'area:' + area.slug),
       astroPad: mob ? '24px' : '36px', signSize: mob ? '88px' : '120px', signGlyph: mob ? '56px' : '76px', signCols: mob ? '1fr' : 'repeat(4,1fr)',
-      signTags: ['Elemento Fogo', 'Mutável', 'Regente: Júpiter'],
-      signBlocks: [['Forças', 'Otimismo, curiosidade, generosidade e um senso de aventura que contagia.', 'sun', '#E0C78E'], ['Desafios', 'Impaciência com rotinas e a tendência de prometer mais do que cabe no dia.', 'mountain', '#F3A977'], ['Sob estresse', 'Foge para o próximo plano, se dispersa e se irrita com limites.', 'cloud-lightning', '#F2A7B8'], ['O que ajuda', 'Movimento, um horizonte de sentido, conversas francas e aprender algo novo.', 'compass', '#A4DD8C']].map(([title, text, icon, color]) => ({ title, text, icon, color })),
+      signTags: signoCard((a.user || {}).signo).tags, signoNome: (a.user || {}).signo || 'Sagitário', signoSym: ((a.user || {}).signoSym || '♐') + '︎',
+      signBlocks: signoCard((a.user || {}).signo).blocks,
       chipMargin: mob ? '0 -16px' : '0', chipPad: mob ? '0 16px' : '0',
       filters, minds: list.map(card), gridCols: mob ? '1fr 1fr' : 'repeat(auto-fill,minmax(240px,1fr))', imgH: mob ? '170px' : '230px',
     };
@@ -105,14 +106,14 @@ export default class Explorar extends React.Component {
                   <div style={{ position: "relative", borderRadius: "32px", overflow: "hidden", background: "radial-gradient(1.5px 1.5px at 12% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 27% 62%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 41% 28%,#E0C78E 50%,transparent 51%),radial-gradient(1px 1px at 58% 74%,#fff 50%,transparent 51%),radial-gradient(1.6px 1.6px at 71% 22%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 84% 58%,#E0C78E 50%,transparent 51%),radial-gradient(1px 1px at 92% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 8% 82%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 35% 90%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 66% 44%,#fff 50%,transparent 51%),radial-gradient(700px 400px at 85% 0%,rgba(185,166,242,.28),transparent 70%),radial-gradient(500px 300px at 0% 100%,rgba(224,199,142,.16),transparent 70%),#0C0B14", color: "#F3EFE6", padding: v.astroPad, display: "flex", flexDirection: "column", gap: "24px" }}>
                     <div style={{ display: "flex", gap: "24px", alignItems: "center", flexWrap: "wrap" }}>
                       <span style={{ flex: "none", width: v.signSize, height: v.signSize, borderRadius: "50%", boxShadow: "inset 0 0 0 1px rgba(224,199,142,.45),0 0 60px rgba(185,166,242,.3)", display: "grid", placeItems: "center", font: `400 ${v.signGlyph ?? ''}/1 'EB Garamond',serif`, color: "#E0C78E" }}>
-                        ♐︎
+                        {v.signoSym}
                       </span>
                       <div style={{ display: "flex", flexDirection: "column", gap: "6px", minWidth: "0" }}>
                         <span style={{ font: "700 12px Urbanist", letterSpacing: ".16em", color: "#B9A6F2" }}>
                           SEU SIGNO SOLAR
                         </span>
                         <span style={{ font: `700 ${v.h1 ?? ''}/1 Urbanist`, letterSpacing: "-.025em" }}>
-                          Sagitário
+                          {v.signoNome}
                         </span>
                         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "4px" }}>
                           {(v.signTags || []).map((g, $index) => (

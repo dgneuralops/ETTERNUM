@@ -2,10 +2,23 @@ import React, { Fragment } from 'react';
 import { ETT } from '../data.js';
 import { Icon } from '../components/Icon.jsx';
 import { ImageSlot } from '../components/ImageSlot.jsx';
+import { listConversas, quando } from '../lib/supabase.js';
 
 export default class Inicio extends React.Component {
-  state = { msg: '' };
+  state = { msg: '', last: null };
   carRef = React.createRef();
+  componentDidMount() {
+    const a = this.props.app || {};
+    if (a.loggedIn) listConversas({ tipo: 'mente' }).then(l => l[0] && this.setState({ last: l[0] })).catch(() => {});
+  }
+  // "Continuar de onde parei": the latest conversation with a mind; before any, the first triagem pick.
+  cont(a, E, nav) {
+    const u = a.user || {}, last = this.state.last;
+    if (last && E.bySlug[last.slug]) return { cont: { slug: last.slug, name: E.bySlug[last.slug].name, title: last.titulo, when: quando(last.updated_at), kicker: 'Continuar de onde parei', cta: 'Continuar conversa' }, goCont: () => nav('mente', last.slug) };
+    if (u.demo) return { cont: { slug: 'frankl', name: 'Viktor Frankl', title: 'Reencontrar o porquê no trabalho', when: 'Ontem, 22:14', kicker: 'Continuar de onde parei', cta: 'Continuar conversa' }, goCont: () => nav('mente', 'frankl', 'conversa') };
+    const slug = (u.recomendadas || []).find(k => E.bySlug[k]) || 'frankl', m = E.bySlug[slug];
+    return { cont: { slug, name: m.name, title: m.spec.split(' · ')[0], when: 'Para você', kicker: 'Recomendada na sua triagem', cta: 'Começar conversa' }, goCont: () => nav('mente', slug) };
+  }
   renderVals() {
     const a = this.props.app || {}, E = ETT, t = a.t || {}, mob = !!a.mobile;
     if (!E) return {};
@@ -13,7 +26,7 @@ export default class Inicio extends React.Component {
     const favs = Object.keys(a.favs || {}).filter(k => a.favs[k] && E.bySlug[k]);
     const prio = ['vida-interior', 'relacionamentos', 'negocios', 'filosofia', 'luto', 'espiritualidade'];
     return {
-      t, mobile: mob, desktop: !mob, cols: mob || (a.w || 1440) < 1180 ? 'minmax(0,1fr)' : 'minmax(0,1fr) 310px',
+      t, u: a.user || {}, saudacao: (h => h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite')(new Date().getHours()), mobile: mob, desktop: !mob, cols: mob || (a.w || 1440) < 1180 ? 'minmax(0,1fr)' : 'minmax(0,1fr) 310px',
       h1: mob ? '30px' : '34px', h2: mob ? '26px' : '32px', heroPad: mob ? '22px' : '28px 32px', heroDir: mob ? 'column' : 'row', heroGap: mob ? '18px' : '30px', heroAlign: mob ? 'flex-start' : 'center',
       medal: mob ? '64px' : '120px', medalIcon: mob ? '32' : '60', sendPad: mob ? '12px' : '22px',
       areaCols: mob ? '1fr 1fr' : 'repeat(3,1fr)', tileH: mob ? '128px' : '132px',
@@ -26,7 +39,7 @@ export default class Inicio extends React.Component {
       carRef: this.carRef, prev: () => this.carRef.current?.scrollBy({ left: -224 }), next: () => this.carRef.current?.scrollBy({ left: 224 }),
       favs: favs.map((k, i) => { const m = E.bySlug[k]; return { ...m, ini: E.initials(m.name), first: m.name.split(' ').slice(-1)[0], short: m.spec.split(' · ')[0], bg: t.pastel[i % 6], go: () => nav('mente', k) }; }),
       hasFavs: favs.length > 0, noFavs: favs.length === 0,
-      goCont: () => nav('mente', 'frankl', 'conversa'), goAreas: () => nav('areas'), goMentes: () => nav('mentes'), goMemoria: () => nav('memoria'), goPerfil: () => nav('perfil'),
+      ...this.cont(a, E, nav), goAreas: () => nav('areas'), goMentes: () => nav('mentes'), goMemoria: () => nav('memoria'), goPerfil: () => nav('perfil'),
     };
   }
 
@@ -38,16 +51,16 @@ export default class Inicio extends React.Component {
         <div style={{ minWidth: "0", display: "flex", flexDirection: "column", gap: "22px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
             <h1 style={{ margin: "0", font: `700 ${v.h1 ?? ''}/1.05 Urbanist`, letterSpacing: "-.025em" }}>
-              {"Boa noite, "}
+              {v.saudacao + ", "}
               <span style={{ fontFamily: "'EB Garamond',serif", fontStyle: "italic", fontWeight: "400", color: v.t?.accentText }}>
-                Ana
+                {v.u?.primeiro}
               </span>
             </h1>
             <span style={{ height: "30px", padding: "0 12px", borderRadius: "999px", background: v.t?.pillBg, color: v.t?.pillFg, font: "700 13px Urbanist", display: "flex", alignItems: "center", gap: "5px" }}>
               <span style={{ fontFamily: "'EB Garamond',serif", fontSize: "15px" }}>
-                ♐︎
+                {v.u?.signoSym}︎
               </span>
-              Sagitário
+              {v.u?.signo}
             </span>
           </div>
           <section style={{ borderRadius: "30px", background: v.t?.hero, color: v.t?.heroInk, padding: v.heroPad, display: "flex", flexDirection: v.heroDir, gap: v.heroGap, alignItems: v.heroAlign }}>
@@ -94,14 +107,14 @@ export default class Inicio extends React.Component {
             <>
               <button onClick={v.goCont} style={{ display: "flex", alignItems: "center", gap: "14px", padding: "10px 16px 10px 10px", borderRadius: "24px", border: "0", background: v.t?.card, boxShadow: `inset 0 0 0 1px ${v.t?.line ?? ''}`, color: v.t?.ink, cursor: "pointer", textAlign: "left" }}>
                 <div style={{ position: "relative", flex: "none", width: "60px", height: "60px", borderRadius: "18px", overflow: "hidden", background: "#1A1510", filter: "grayscale(1) sepia(.38) contrast(1.08) brightness(.88)" }}>
-                  <ImageSlot id={"mind-frankl"} shape={"rect"} placeholder={"VF"} />
+                  <ImageSlot id={`mind-${v.cont.slug}`} shape={"rect"} placeholder={v.cont.name} />
                 </div>
                 <div style={{ flex: "1", minWidth: "0", display: "flex", flexDirection: "column", gap: "2px" }}>
                   <span style={{ font: "600 12px Urbanist", color: v.t?.muted }}>
-                    Continuar de onde parei
+                    {v.cont.kicker}
                   </span>
                   <span style={{ font: "700 15.5px/1.25 Urbanist" }}>
-                    Viktor Frankl · Reencontrar o porquê no trabalho
+                    {v.cont.name} · {v.cont.title}
                   </span>
                 </div>
                 <Icon n={"chevron-right"} s={"20"} c={v.t?.muted} />
@@ -262,22 +275,22 @@ export default class Inicio extends React.Component {
               <div style={{ borderRadius: "26px", background: v.t?.card, boxShadow: `inset 0 0 0 1px ${v.t?.line ?? ''}`, padding: "10px 10px 16px", display: "flex", flexDirection: "column", gap: "12px" }}>
                 <div style={{ position: "relative", height: "150px", borderRadius: "18px", overflow: "hidden", background: "#1A1510" }}>
                   <div style={{ position: "absolute", inset: "0", filter: "grayscale(1) sepia(.38) contrast(1.08) brightness(.88)" }}>
-                    <ImageSlot id={"mind-frankl"} shape={"rect"} placeholder={"Viktor Frankl"} />
+                    <ImageSlot id={`mind-${v.cont.slug}`} shape={"rect"} placeholder={v.cont.name} />
                   </div>
                   <span style={{ position: "absolute", left: "10px", bottom: "10px", height: "26px", padding: "0 10px", borderRadius: "999px", background: "rgba(0,0,0,.6)", color: "#F3EFE6", font: "600 11.5px Urbanist", display: "flex", alignItems: "center", pointerEvents: "none" }}>
-                    Ontem, 22:14
+                    {v.cont.when}
                   </span>
                 </div>
                 <div style={{ padding: "0 6px", display: "flex", flexDirection: "column", gap: "4px" }}>
                   <span style={{ font: "600 12.5px Urbanist", color: v.t?.muted }}>
-                    Continuar de onde parei
+                    {v.cont.kicker}
                   </span>
                   <span style={{ font: "700 17px/1.25 Urbanist" }}>
-                    Viktor Frankl · Reencontrar o porquê no trabalho
+                    {v.cont.name} · {v.cont.title}
                   </span>
                 </div>
                 <button onClick={v.goCont} style={{ margin: "0 6px", height: "44px", borderRadius: "999px", border: "0", background: v.t?.accent, color: v.t?.onAccent, font: "700 14.5px Urbanist", cursor: "pointer" }}>
-                  Continuar conversa
+                  {v.cont.cta}
                 </button>
               </div>
               <div style={{ borderRadius: "26px", background: v.t?.card, boxShadow: `inset 0 0 0 1px ${v.t?.line ?? ''}`, padding: "18px 14px", display: "flex", flexDirection: "column", gap: "10px" }}>

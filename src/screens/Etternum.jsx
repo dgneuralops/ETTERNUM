@@ -1,6 +1,7 @@
 import React, { Fragment, Suspense, lazy } from 'react';
 import { ETT } from '../data.js';
 import { Icon } from '../components/Icon.jsx';
+import { supabase, toUser, loadProfile, updateProfile, profileForAi, authErro } from '../lib/supabase.js';
 
 // Screens load on demand; the shell (sidebar, header, nav) stays mounted while a chunk loads.
 const Chat = lazy(() => import('./Chat.jsx'));
@@ -24,6 +25,10 @@ const TITLES = { inicio: 'Início', maestro: 'Maestro', mente: 'Conversa', areas
 const PUBLIC = ['landing', 'cadastro', 'entrar', 'termos', 'privacidade', '404'];
 const PRIVATE = ['admin', 'triagem', 'inicio', 'maestro', 'mente', 'areas', 'area', 'mentes', 'conselho', 'clube', 'conversas', 'perfil', 'plano', 'memoria', 'estados'];
 const THEME_KEY = 'ett-theme';
+// Telas que não exigem conta.
+const OPEN = ['landing', 'cadastro', 'entrar', 'termos', 'privacidade', '404', 'admin'];
+// Usuário do modo demonstração (sem Supabase).
+const DEMO_USER = { id: null, email: 'ana@exemplo.com', nome: 'Ana Clara Souza', primeiro: 'Ana', iniciais: 'AC', signoSym: '♐', signo: 'Sagitário', nascimento: '12/12/1992', idade: 33, cpf: '***.982.247-**', membroDesde: '20 de setembro', plano: 'trial', diasTrial: 14, capsula: 'seneca', favoritos: ['frankl', 'seneca', 'jung'], triagem: null, recomendadas: [], demo: true };
 // URL <-> route. Routes are `name` or `name:param` (e.g. mente:frankl -> /mente/frankl).
 const pathFor = (route, param) => route === 'landing' ? '/' : route === 'memoria' ? '/memoria-viva' : '/' + route + (param ? '/' + param : '');
 const parsePath = pathname => {
@@ -43,21 +48,52 @@ export default class Etternum extends React.Component {
     const sp = (p.screen || 'landing').split(':');
     let theme = p.theme || 'dark';
     try { theme = p.theme || localStorage.getItem(THEME_KEY) || 'dark'; } catch (e) {}
-    this.state = { route: loc ? loc.route : sp[0], param: loc ? loc.param : p.param || sp[1] || '', theme, plan: p.plan || 'trial', favs: { frankl: true, seneca: true, jung: true }, toast: '', w: window.innerWidth || 1440, mapOpen: false, nonce: 0, variant: (window.history.state || {}).variant || p.variant || '' };
+    this.state = { route: loc ? loc.route : sp[0], param: loc ? loc.param : p.param || sp[1] || '', theme, plan: p.plan || 'trial', favs: { frankl: true, seneca: true, jung: true }, session: supabase ? undefined : null, user: supabase ? null : DEMO_USER, toast: '', w: window.innerWidth || 1440, mapOpen: false, nonce: 0, variant: (window.history.state || {}).variant || p.variant || '' };
   }
   componentDidMount() {
     window.addEventListener('popstate', this.onPop);
     this.syncTitle();
+    if (supabase) {
+      supabase.auth.getSession().then(({ data }) => this.onSession(data.session));
+      this.authSub = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'PASSWORD_RECOVERY') this.nav('perfil', '', 'nova-senha');
+        if (event === 'SIGNED_OUT' || event === 'SIGNED_IN' || event === 'USER_UPDATED') this.onSession(session);
+      }).data.subscription;
+    }
   }
+  // Carrega o perfil da pessoa logada; protege as telas internas.
+  onSession = async session => {
+    if (!session) return this.setState({ session: null, user: null }, () => this.guard());
+    if (this.state.session && this.state.session.user.id === session.user.id && this.state.user) return this.setState({ session });
+    let profile = null;
+    try { profile = await loadProfile(session.user.id); } catch (e) { console.error('[perfil]', e.message); }
+    const user = toUser(profile || { id: session.user.id, nome: session.user.user_metadata?.nome, created_at: session.user.created_at }, session.user.email);
+    this.setState({ session, user, plan: user.plano, favs: Object.fromEntries(user.favoritos.map(k => [k, true])) });
+    if (['entrar', 'cadastro'].includes(this.state.route)) this.nav(user.triagem ? 'inicio' : 'triagem');
+  };
+  guard() {
+    const s = this.state;
+    if (supabase && s.session === null && !OPEN.includes(s.route)) this.nav('entrar', '', 'voltar:' + window.location.pathname);
+  }
+  refreshUser = async () => {
+    if (!this.state.session) return;
+    const profile = await loadProfile(this.state.session.user.id);
+    const user = toUser(profile, this.state.session.user.email);
+    this.setState({ user, plan: user.plano, favs: Object.fromEntries(user.favoritos.map(k => [k, true])) });
+  };
+  saveProfile = async patch => {
+    if (!this.state.user || this.state.user.demo) return;
+    try { await updateProfile(this.state.user.id, patch); await this.refreshUser(); } catch (e) { console.error('[perfil]', e.message); this.toast('Não foi possível salvar agora.'); }
+  };
   componentDidUpdate(pp, ps) {
     const p = this.props;
     if (pp.theme !== p.theme && p.theme) this.setState({ theme: p.theme });
     if (pp.plan !== p.plan && p.plan) this.setState({ plan: p.plan });
     if (pp.screen !== p.screen && p.screen) { const sp = p.screen.split(':'); this.setState({ route: sp[0], param: p.param || sp[1] || '' }); }
-    if (ps.route !== this.state.route || ps.param !== this.state.param) this.syncTitle();
+    if (ps.route !== this.state.route || ps.param !== this.state.param) { this.syncTitle(); this.guard(); }
     if (ps.theme !== this.state.theme) { try { localStorage.setItem(THEME_KEY, this.state.theme); } catch (e) {} }
   }
-  componentWillUnmount() { clearTimeout(this.tt); this.ro && this.ro.disconnect(); window.removeEventListener('popstate', this.onPop); }
+  componentWillUnmount() { this.authSub && this.authSub.unsubscribe(); clearTimeout(this.tt); this.ro && this.ro.disconnect(); window.removeEventListener('popstate', this.onPop); }
   onPop = e => {
     const { route, param } = parsePath(window.location.pathname);
     this.setState(s => ({ route, param, variant: (e.state || {}).variant || '', nonce: s.nonce + 1, mapOpen: false }));
@@ -86,7 +122,19 @@ export default class Etternum extends React.Component {
       t, mobile, w: s.w, route: isPublic && !PUBLIC.includes(route) ? '404' : route, param: s.param, variant: s.variant || P.variant || '', plan: s.plan, favs: s.favs, nonce: s.nonce,
       nav: this.nav, toast: this.toast,
       setPlan: plan => this.setState({ plan }),
-      toggleFav: slug => { const on = !s.favs[slug]; this.setState(st => ({ favs: { ...st.favs, [slug]: on } })); const m = E.bySlug[slug]; if (m) this.toast(on ? `${m.name} entrou no seu Quadro Eterno.` : `${m.name} saiu do seu Quadro Eterno.`); },
+      toggleFav: slug => { const on = !s.favs[slug]; const favs = { ...s.favs, [slug]: on }; this.setState({ favs }); this.saveProfile({ favoritos: Object.keys(favs).filter(k => favs[k]) }); const m = E.bySlug[slug]; if (m) this.toast(on ? `${m.name} entrou no seu Quadro Eterno.` : `${m.name} saiu do seu Quadro Eterno.`); },
+      user: s.user || DEMO_USER, loggedIn: !!s.session, demo: !supabase, profileAi: profileForAi(s.user), saveProfile: this.saveProfile, refreshUser: this.refreshUser,
+      auth: {
+        signUp: async ({ email, senha, nome, nascimento, cpf }) => {
+          const { data, error } = await supabase.auth.signUp({ email, password: senha, options: { data: { nome, nascimento, cpf }, emailRedirectTo: window.location.origin + '/triagem' } });
+          if (error) return { error: authErro(error) };
+          return { confirm: !data.session };
+        },
+        signIn: async ({ email, senha }) => { const { error } = await supabase.auth.signInWithPassword({ email, password: senha }); return error ? { error: authErro(error) } : {}; },
+        reset: async email => { const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/perfil' }); return error ? { error: authErro(error) } : {}; },
+        newPassword: async senha => { const { error } = await supabase.auth.updateUser({ password: senha }); return error ? { error: authErro(error) } : {}; },
+        signOut: async () => { await supabase.auth.signOut(); this.nav('landing'); },
+      },
       toggleTheme: () => this.setState({ theme: s.theme === 'dark' ? 'light' : 'dark' }),
     };
     const active = { inicio: 0, maestro: 1, areas: 2, area: 2, conselho: 2, mentes: 3, mente: 3, clube: 4, conversas: 5, perfil: 6, plano: 7 }[route];
@@ -95,21 +143,21 @@ export default class Etternum extends React.Component {
     const mobActive = active === 3 ? 2 : active === 5 || active === 7 ? 6 : active;
     const isChat = route === 'maestro' || route === 'mente';
     return {
-      ready: true, t, app, wide: s.w >= 1180, nameDisplay: s.w >= 1180 ? 'flex' : 'none', rootRef: this.rootRef, scrollRef: this.scrollRef, rootH: P.frameless ? '100%' : '100dvh',
+      ready: !(supabase && s.session === undefined && !OPEN.includes(route)), t, app, wide: s.w >= 1180, nameDisplay: s.w >= 1180 ? 'flex' : 'none', rootRef: this.rootRef, scrollRef: this.scrollRef, rootH: P.frameless ? '100%' : '100dvh',
       isPublic, isTriagem, isAdminR, isApp: !isPublic && !isTriagem && !isAdminR, desktop, mobile,
       shellDir: desktop ? 'row' : 'column', shellGap: desktop ? '14px' : '0px', shellPad: desktop ? '14px' : '0px',
       topH: desktop ? '64px' : 'calc(60px + env(safe-area-inset-top))', topPad: desktop ? '0 4px 0 12px' : 'env(safe-area-inset-top) 16px 0', topBg: desktop ? 'transparent' : t.glass, topBorder: desktop ? '0' : `1px solid ${t.line}`,
       contentPad: isChat ? '0' : desktop ? '8px 4px 40px 12px' : '16px 16px 32px',
       pageTitle: TITLES[route] || '',
-      planLabel: { trial: 'Teste grátis · 14 dias', free: 'Gratuito', premium: 'Premium' }[s.plan], showUpgrade: s.plan !== 'premium' && desktop,
+      planLabel: { trial: `Teste grátis · ${app.user.diasTrial} dias`, free: 'Gratuito', premium: 'Premium' }[s.plan], u: app.user, signoLine: app.user.signo ? `${app.user.signoSym}︎ ${app.user.signo}` : app.user.email, showUpgrade: s.plan !== 'premium' && desktop,
       toggleTheme: app.toggleTheme,
       sideItems: side.map(([label, icon, r], i) => ({ k: label + (i === active ? '-on' : '-off') + s.theme, label, icon, bg: i === active ? t.navBg : 'transparent', fg: i === active ? t.navFg : t.muted, hover: i === active ? t.navFg : t.ink, go: () => this.nav(r) })),
       bottomItems: bottom.map(([label, icon, r, i]) => ({ k: label + (i === mobActive ? '-on' : '-off') + s.theme, label, icon, fg: i === mobActive ? t.ink : t.faint, bg: i === mobActive ? t.accentSoft : 'transparent', go: () => this.nav(r) })),
-      goInicio: () => this.nav('inicio'), goMaestro: () => this.nav('maestro'), goSair: () => this.nav('landing'), goPlano: () => this.nav('plano'), goPerfil: () => this.nav('perfil'), goMentes: () => this.nav('mentes'),
+      goInicio: () => this.nav('inicio'), goMaestro: () => this.nav('maestro'), goSair: () => (supabase && s.session ? app.auth.signOut() : this.nav('landing')), goPlano: () => this.nav('plano'), goPerfil: () => this.nav('perfil'), goMentes: () => this.nav('mentes'),
       r: { inicio: route === 'inicio', chat: isChat, explorar: ['areas', 'area', 'mentes'].includes(route), conselho: route === 'conselho', clube: route === 'clube', conta: ['conversas', 'perfil', 'plano', 'memoria', 'estados'].includes(route) },
       routeKey: route + s.param + s.nonce, clubeMode: s.param === 'admin' ? 'admin' : 'leitor', notChat: !isChat,
       toast: s.toast, toastBottom: mobile && !isPublic && !isTriagem ? '104px' : '28px',
-      showMap: !P.frameless && !isAdminR, goLanding: () => this.nav('landing'), mapOpen: s.mapOpen, toggleMap: () => this.setState({ mapOpen: !s.mapOpen }), mapBottom: mobile && !isPublic && !isTriagem ? '100px' : '14px',
+      showMap: !P.frameless && !isAdminR, goLanding: () => this.nav('landing'), mapOpen: s.mapOpen, toggleMap: () => this.setState({ mapOpen: !s.mapOpen }), mapBottom: mobile && !isPublic && !isTriagem ? '100px' : desktop && !isPublic && !isTriagem ? '72px' : '14px',
       mapItems: ROUTES.map(([k, label, path]) => { const [r, p] = k.split(':'); return { label, path, bg: r === route && (p || '') === (s.param || '') ? '#2A2A2E' : 'transparent', go: () => this.nav(r, p, '', path) }; }),
     };
   }
@@ -183,7 +231,7 @@ export default class Etternum extends React.Component {
                           <span style={{ flex: "1 0 auto", font: "700 22px Urbanist", letterSpacing: "-.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {"Olá, "}
                             <span style={{ fontFamily: "'EB Garamond',serif", fontStyle: "italic", fontWeight: "400", color: v.t?.accentText }}>
-                              Ana
+                              {v.u?.primeiro}
                             </span>
                           </span>
                           {v.wide ? (
@@ -223,14 +271,14 @@ export default class Etternum extends React.Component {
                         <>
                           <button onClick={v.goPerfil} style={{ display: "flex", alignItems: "center", gap: "10px", border: "0", background: "transparent", color: v.t?.ink, cursor: "pointer", padding: "0 0 0 6px", textAlign: "left" }}>
                             <span style={{ width: "40px", height: "40px", borderRadius: "50%", background: v.t?.pastel1, color: "#15130E", display: "grid", placeItems: "center", font: "700 15px Urbanist" }}>
-                              AC
+                              {v.u?.iniciais}
                             </span>
                             <span style={{ display: v.nameDisplay, flexDirection: "column", whiteSpace: "nowrap" }}>
                               <span style={{ font: "700 14px Urbanist" }}>
-                                Ana Clara
+                                {v.u?.nome.split(' ').slice(0, 2).join(' ')}
                               </span>
                               <span style={{ font: "500 12px Urbanist", color: v.t?.muted }}>
-                                ♐︎ Sagitário
+                                {v.signoLine}
                               </span>
                             </span>
                           </button>

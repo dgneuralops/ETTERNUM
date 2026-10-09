@@ -101,13 +101,29 @@ spacing, type and colour match the design exactly. Hover/focus/active styles liv
 
 The host must serve `index.html` for every path (SPA fallback).
 
-## What is still mocked
+## Supabase (contas e dados)
 
-Besides the AI backend, everything runs in the browser with demo data:
+Projeto `zjjipazdxkdxecqcjngo` (URL e chave *anon* em `src/lib/supabase-config.js` — são públicas por
+natureza; a proteção vem do Row Level Security). **Uma vez:** abra o SQL Editor do Supabase, cole
+`supabase/schema.sql` e rode. Ele cria:
 
-- **Accounts**: cadastro validates CPF and terms, then goes to the triagem; "Entrar" accepts any e-mail + 8-char password. The user is always "Ana Clara".
-- **Conversations** are live (see above) but not saved anywhere: the history lives only while the screen is open, and the user profile sent to the model is the demo profile in `server/ai.js`. Triagem answers are used for the recommendations but not stored.
-- **Plan** (trial / free / premium) and favourites live in memory; the theme is remembered in `localStorage`.
-- **Clube admin**: the login is a demo (any valid e-mail + 4-char password, kept in `sessionStorage`). Books, edits and uploaded covers are saved to `localStorage`. Real protection needs admin users checked on the server.
-- **"Mapa de telas"** (bottom-left) is the prototype's screen navigator, kept on purpose; remove it from `Etternum.jsx` (`showMap`) before launch.
-- Testimonials on the landing are fictional placeholders — replace with real ones before publishing.
+| Tabela | O quê |
+|---|---|
+| `profiles` | nome, nascimento (→ signo), CPF, plano/teste de 14 dias, cápsula, favoritos, triagem, mentes recomendadas |
+| `conversas`, `mensagens` | Maestro, mentes e Conselho — "continuar de onde parei", histórico, apagar |
+| `livros`, `admins`, bucket `clube` | Clube do Livro: leitura pública dos publicados, escrita só de admin, capas no Storage |
+| `excluir_conta()` | a própria pessoa apaga a conta e tudo o que é dela |
+
+- Cadastro e login com e-mail e senha; "Esqueci minha senha" envia o link do Supabase.
+- Em **Authentication → URL Configuration**, coloque a URL do site (ex.: `https://etternum.vercel.app`) em *Site URL* e em *Redirect URLs*.
+- Para testar sem confirmar e-mail: **Authentication → Providers → Email → desligue "Confirm email"**.
+- Admin do Clube: crie sua conta no app e rode `insert into public.admins (user_id) select id from auth.users where email = 'seu@email.com';`
+- A API (`/api/*`) só responde a quem está logado (o servidor confere o token no Supabase), então ninguém de fora gasta seus créditos da OpenRouter.
+- Modo demonstração sem banco: `VITE_DEMO=1 npm run dev`.
+
+## Ainda falta
+
+- **Pagamento do Premium**: o plano vem do banco e só o servidor pode mudá-lo; falta ligar um meio de pagamento.
+- **Materiais do Clube** (imagens soltas no admin) ainda ficam só no navegador; as capas já vão para o Supabase.
+- **"Mapa de telas"** (canto inferior esquerdo) é o navegador de telas do protótipo; remova em `Etternum.jsx` (`showMap`) antes do lançamento.
+- Os depoimentos da landing são fictícios — troque por reais antes de publicar.

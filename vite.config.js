@@ -10,6 +10,6 @@ const api = () => {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  for (const k of ['OPENROUTER_API_KEY', 'OPENROUTER_CHAT_MODEL', 'JEV_MODEL', 'OPENROUTER_ORIGIN', 'APP_URL', 'CORS_ORIGIN']) if (env[k] && !process.env[k]) process.env[k] = env[k];
+  for (const k of ['OPENROUTER_API_KEY', 'OPENROUTER_CHAT_MODEL', 'JEV_MODEL', 'OPENROUTER_ORIGIN', 'APP_URL', 'CORS_ORIGIN', 'SUPABASE_URL', 'SUPABASE_ANON_KEY', 'DIAGNOSTICO_CHAVE', 'AI_OPEN']) if (env[k] && !process.env[k]) process.env[k] = env[k];
   return { plugins: [react(), api()] };
 });
